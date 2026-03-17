@@ -3,6 +3,7 @@ import injectHTML from 'vite-plugin-html-inject';
 import { resolve } from 'node:path';
 
 export default defineConfig({
+  base: './',
   plugins: [injectHTML()],
   build: {
     rollupOptions: {
