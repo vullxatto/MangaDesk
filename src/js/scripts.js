@@ -1,32 +1,3 @@
-// Временный скрипт для гида
-async function loadComponents() {
-    const loadTags = document.querySelectorAll('load');
-    
-    for (const tag of loadTags) {
-        const file = tag.getAttribute('='); // Получаем путь из атрибута
-        if (file) {
-            try {
-                const response = await fetch(file);
-                if (response.ok) {
-                    const content = await response.text();
-                    tag.outerHTML = content; // Заменяем тег <load> на контент файла
-                } else {
-                    console.error(`Ошибка загрузки: ${file}`);
-                }
-            } catch (err) {
-                console.error(`Не удалось загрузить компонент: ${err}`);
-            }
-        }
-    }
-    // Переинициализируем иконки после загрузки хедера и футера
-    if (window.lucide) {
-        lucide.createIcons();
-    }
-}
-
-// Запускаем загрузку сразу
-loadComponents();
-
 // Смена светлой и тёмной темы
 const themeToggle = document.getElementById('theme-toggle');
 themeToggle?.addEventListener('click', () => {

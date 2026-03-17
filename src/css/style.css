@@ -260,7 +260,7 @@ dialog p {
 /* Стеклянная панель навигации */
 .nav-glass {
     background: var(--bg-glass);
-    -webkit-backdrop-filter: blur(10px);
+    --webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border-glass);
     border-radius: var(--space-md);
     padding: var(--space-sm) var(--space-lg);
