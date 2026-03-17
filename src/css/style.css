@@ -260,7 +260,6 @@ dialog p {
 /* Стеклянная панель навигации */
 .nav-glass {
     background: var(--bg-glass);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border-glass);
     border-radius: var(--space-md);
@@ -272,6 +271,12 @@ dialog p {
     max-width: 1300px;
     margin: 0 auto;
     width: 100%;
+}
+
+@supports (backdrop-filter: blur(10px)) {
+    .nav-glass {
+        backdrop-filter: blur(10px);
+    }
 }
 
 /* Логотип. Иконка и Текст */

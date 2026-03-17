@@ -1,0 +1,308 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root {
+  --bg-primary: #f8fafc;
+  --purple-main: #8B5CF6;
+  --purple-dark: #6D28D9;
+  --text-gradient: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple-main) 100%);
+  --shadow-soft: 0 10px 25px rgba(0,0,0,0.1);
+  --shadow-medium: 0 10px 20px -5px rgba(139, 92, 246, 0.4);
+  --shadow-strong: 0 12px 24px -5px rgba(139, 92, 246, 0.5);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+  --radius-full: 9999px;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  scroll-behavior: smooth;
+  background-color: var(--bg-primary);
+  background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+    
+.sidebar-item.active {  
+  background-color: #F5F3FF;
+  color: #8B5CF6;
+}
+
+/* Левое меню в личном кабинете: плавное переключение цвета кнопок, серое и фиолетовое выделение активной кнопки*/
+.sidebar-item { 
+    transition: all 0.2s ease;
+}
+.sidebar-item:hover {
+    background-color: #F3F4F6;
+}
+.active-nav {
+   background-color: #F5F3FF;
+   color: #8B5CF6;
+}
+        
+/* Градиенты и текст */
+.purple-gradient { background: var(--text-gradient); }
+.text-gradient {
+  background: var(--text-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Анимация появления */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.user-block-shadow {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+}
+
+@keyframes progressLoad {         
+  from { width: 0; }
+  to { width: 45%; }
+}
+.progress-fill {
+  animation: progressLoad 1s ease-out forwards;
+}
+
+/* ─── Стили слайдера (адаптировано из примера) ─────────────────────────────── */
+
+.comparison-container,
+.comparison-slider,
+#slider-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  background-color: #eee;
+  cursor: zoom-in;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.comparison-container img,
+#slider-container img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.zoom-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  cursor: zoom-in;
+  background: transparent;
+}
+
+.before-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 10;
+  border-right: 2px solid white;
+  pointer-events: none;
+}
+
+.before-overlay img {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+}
+
+.handle {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  bottom: 0;
+  width: 4px;
+  margin-left: -2px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  pointer-events: none;
+}
+
+.handle-circle {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  color: var(--purple-main);
+  cursor: ew-resize;
+  pointer-events: auto;
+  transition: transform 0.2s ease;
+  z-index: 30;
+}
+
+.handle-circle:hover {
+  transform: scale(1.1);
+}
+
+.badge {
+  position: absolute;
+  top: 1rem;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  z-index: 15;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.badge-before {
+  left: 1rem;
+  background: rgba(255,255,255,0.9);
+  color: #1e293b;
+  border: 1px solid rgba(226,232,240,0.8);
+}
+
+.badge-after {
+  right: 1rem;
+  background: var(--purple-main);
+  color: white;
+}
+
+/* Modal (полноэкранный просмотр) */
+#modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+#modal-overlay.active {
+  display: flex;
+}
+
+.close-modal {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  color: white;
+  cursor: pointer;
+  background: rgba(255,255,255,0.1);
+  padding: 10px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.close-modal:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+
+/* дашборд-главы */
+.status-badge {
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 11px;
+        text-transform: uppercase;
+        display: inline-block;
+        min-width: 135px;
+        text-align: center;
+        letter-spacing: 0.05em;
+        border: 1px solid transparent;
+    }
+    
+    .status-ready { 
+        border-color: #e2e8f0; 
+        color: #000000; 
+        font-weight: 800; 
+        background-color: #ffffff;
+    }
+    .status-ai { 
+        border-color: #cbd5e1; 
+        color: #64748b; 
+        font-weight: 700;
+    }
+    .status-edit { 
+        border-color: #e2e8f0; 
+        color: #94a3b8; 
+        font-weight: 700;
+    }
+    .status-upload { 
+        border-color: #f1f5f9; 
+        color: #cbd5e1; 
+        font-weight: 700;
+    }
+
+    .table-row-custom {
+        transition: all 0.2s ease;
+    }
+    .table-row-custom:hover {
+        background-color: #fcfdfe;
+    }
+
+    .table-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1.2fr 1fr 0.6fr;
+        align-items: center;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 50;
+        min-width: 200px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+        margin-top: 8px;
+        overflow: hidden;
+    }
+    .dropdown-menu.active {
+        display: block;
+    }
+    .filter-option {
+        padding: 12px 16px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748b;
+    }
+    .filter-option:hover {
+        background-color: #f1f5f9;
+        color: #6366f1;
+    }
