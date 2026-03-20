@@ -6,7 +6,7 @@
     --purple-dark: #6D28D9;
     --purple-gradient: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple-light) 100%);
     --nav-hover-color: var(--purple-dark);
-    --bg-glass: rgba(255, 255, 255, 0.4);
+    --bg-glass: rgba(255, 255, 255, 0.85);
     --border-glass: rgba(187, 187, 187, 0.3);
     --shadow-main: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     --space-sm: 8px;
@@ -228,26 +228,6 @@ dialog p {
     margin-bottom: var(--space-md);
 }
 
-/* Производительность/доступность: уважать reduced motion */
-@media (prefers-reduced-motion: reduce) {
-    html:focus-within {
-        scroll-behavior: auto;
-    }
-
-    body {
-        scroll-behavior: auto;
-    }
-
-    *,
-    *::before,
-    *::after {
-        transition: none !important;
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
-    }
-}
-
 /* Header. Фиксация */
 .header-fixed {
     position: fixed;
@@ -260,7 +240,8 @@ dialog p {
 /* Стеклянная панель навигации */
 .nav-glass {
     background: var(--bg-glass);
-    --webkit-backdrop-filter: blur(10px);
+     -webkit-backdrop-filter: blur(10=6px);
+    backdrop-filter: blur(16px);
     border: 1px solid var(--border-glass);
     border-radius: var(--space-md);
     padding: var(--space-sm) var(--space-lg);
@@ -271,12 +252,6 @@ dialog p {
     max-width: 1300px;
     margin: 0 auto;
     width: 100%;
-}
-
-@supports (backdrop-filter: blur(10px)) {
-    .nav-glass {
-        backdrop-filter: blur(10px);
-    }
 }
 
 /* Логотип. Иконка и Текст */
@@ -361,14 +336,13 @@ dialog p {
 .btn-primary {
     background: var(--purple-gradient);
     color: white;
-    padding: 8px 12px;
     border-radius: 12px;
     border: none;
     font-size: 0.875rem;
     font-weight: 700;
-    display: flex;
-    align-items: center;
+    display: inline-flex;
     gap: var(--space-sm);
+    padding: 8px 12px 10px;
     cursor: pointer;
 }
 
@@ -408,6 +382,10 @@ dialog p {
     display: grid;
     grid-template-columns: 1fr;
     gap: 40px;
+}
+
+.footer-links a {
+    transition: padding-left 0.2s ease, color 0.2s ease, opacity 0.2s ease;
 }
 
 /* Адаптивность для планшетов и ПК */
