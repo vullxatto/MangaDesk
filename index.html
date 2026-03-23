@@ -44,14 +44,112 @@
 
         <div class="hero-actions">
           <a class="btn-primary hero-cta" href="auth.html" role="button">Начать работу</a>
-
-          <button class="btn-secondary open-modal-btn" type="button" data-modal="auth-modal">
-            Открыть демо-модалку
-          </button>
         </div>
       </div>
     </section>
   </main>
+
+  <section id="how-it-works" class="how-it-works-section">
+    <div class="page-content">
+        <div class="section-card glass-effect reveal">
+            <h2 class="section-title">Как это работает</h2>
+            
+            <div class="steps-grid">
+                <div class="step">
+                    <div class="step-number">01</div>
+                    <div class="step-icon-wrapper">
+                        <i data-lucide="file-archive" class="step-icon-svg"></i>
+                    </div>
+                    <h3 class="step-title">Загрузите ZIP</h3>
+                    <p class="step-description">
+                        Перетащите архив с оригинальными сканами. Мы поддерживаем все популярные форматы изображений.
+                    </p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">02</div>
+                    <div class="step-icon-wrapper">
+                        <i data-lucide="cpu" class="step-icon-svg"></i>
+                    </div>
+                    <h3 class="step-title">AI Обработка</h3>
+                    <p class="step-description">
+                        Наша нейросеть автоматически клинит фон, переводит и тайпит текст на русском языке.
+                    </p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">03</div>
+                    <div class="step-icon-wrapper">
+                        <i data-lucide="layers-2" class="step-icon-svg"></i>
+                    </div>
+                    <h3 class="step-title">Скачайте PSD</h3>
+                    <p class="step-description">
+                        Получите готовый архив с PSD, где оригинал, клин и текст разнесены по отдельным слоям.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+<!-- features / comparison slider -->
+<section id="features" class="features-section">
+    <div class="page-content">
+        <h2 class="section-title">Обзор возможностей</h2>
+        <p class="section-subtitle">
+            Посмотрите, как MangaDesk справляется с очисткой страниц, переводом и наложением нового текста.
+        </p>
+
+        <div class="comparison-container" data-slider>
+            <!-- Зона клика → полноэкранный режим -->
+            <div class="zoom-overlay"></div>
+
+            <img src="src/assets/landing_ru.jpg" alt="После">
+
+            <div class="before-overlay">
+                <img src="src/assets/landing_eng.jpg" alt="До">
+            </div>
+
+            <!-- Метки -->
+            <span class="badge badge-before">До</span>
+            <span class="badge badge-after">После</span>
+
+            <!-- Ручка -->
+            <div class="handle">
+                <div class="handle-circle">
+                    <i data-lucide="move-horizontal" class="w-5 h-5"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-wrapper reveal">
+            <a href="#" class="btn-secondary more-examples">
+                Больше примеров
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Полноэкранный просмотр слайдера (должен быть в body, лучше ближе к концу) -->
+<div id="modal-overlay" class="modal-overlay">
+    <div class="close-modal">
+        <i data-lucide="x" class="w-8 h-8"></i>
+    </div>
+    <div id="modal-slider-target" class="modal-slider-target"></div>
+</div>
+
+
+
+
+
+
+
+
+
 
   <load src="parts/footer.html" />
   <load src="parts/modals.html" />
