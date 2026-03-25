@@ -1,161 +1,329 @@
 <!DOCTYPE html>
 <html lang="ru" class="scroll-smooth">
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MangaDesk</title>
-  <meta name="description" content="MangaDesk — инструмент для автоматизации перевода." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap">
-  <link rel="stylesheet" href="src/css/style.css">
-  <link rel="icon" type="image/svg+xml" href="/logo.svg">
-  <script>
-    (function () {
-      const saved = localStorage.getItem('theme');
-      const preferDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MangaDesk</title>
+    <meta name="description" content="MangaDesk — инструмент для автоматизации перевода." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="src/css/style.css">
+    <link rel="icon" type="image/svg+xml" href="/logo.svg">
+    <script>
+      (function () {
+        const saved = localStorage.getItem('theme');
+        const preferDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-      if (saved === 'dark' || (!saved && preferDark)) {
-        document.documentElement.classList.add('dark');
-      }
-    })();
-  </script>
-</head>
+        if (saved === 'dark' || (!saved && preferDark)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
 
-<body>
-  <load src="parts/header-index.html" />
+  <body>
+    <load src="parts/header-index.html" />
 
-  <main class="container">
-    <section class="hero">
-      <div class="page-content">
-        <div class="hero-badge">
-          <span class="hero-dot" aria-hidden="true"></span>
-          <span class="hero-badge-text">Новое поколение перевода</span>
+    <main>
+      <section class="hero">
+        <div class="page-content">
+          <div class="hero-badge">
+            <span class="hero-dot" aria-hidden="true"></span>
+            <span class="hero-badge-text">Новое поколение перевода</span>
+          </div>
+
+          <h1 class="hero-title">
+            Переводите главы за секунды с сохранением <span class="text-gradient">слоёв в PSD</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            Мы экономим ваше время, чтобы вы занимались творчеством, а не рутиной
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn-primary hero-cta" href="auth.html" role="button">Начать работу</a>
+          </div>
         </div>
+      </section>
 
-        <h1 class="hero-title">
-          Переводите главы за секунды с сохранением <span class="text-gradient">слоёв в PSD</span>
-        </h1>
+      <section id="how-it-works" class="how-it-works-section">
+        <div class="page-content">
+          <div class="section-card glass-effect reveal">
+            <h2 class="section-title section-title--in-card">Как это работает</h2>
 
-        <p class="hero-subtitle">
-          Мы экономим ваше время, чтобы вы занимались творчеством, а не рутиной
-        </p>
-
-        <div class="hero-actions">
-          <a class="btn-primary hero-cta" href="auth.html" role="button">Начать работу</a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <section id="how-it-works" class="how-it-works-section">
-    <div class="page-content">
-        <div class="section-card glass-effect reveal">
-            <h2 class="section-title">Как это работает</h2>
-            
             <div class="steps-grid">
-                <div class="step">
-                    <div class="step-number">01</div>
-                    <div class="step-icon-wrapper">
-                        <i data-lucide="file-archive" class="step-icon-svg"></i>
-                    </div>
-                    <h3 class="step-title">Загрузите ZIP</h3>
-                    <p class="step-description">
-                        Перетащите архив с оригинальными сканами. Мы поддерживаем все популярные форматы изображений.
-                    </p>
+              <div class="step">
+                <div class="step-number">01</div>
+                <div class="step-icon-wrapper">
+                  <i data-lucide="file-archive" class="step-icon-svg"></i>
                 </div>
+                <h3 class="step-title">Загрузите ZIP</h3>
+                <p class="step-description">
+                  Перетащите архив с оригинальными сканами. Мы поддерживаем все популярные форматы изображений.
+                </p>
+              </div>
 
-                <div class="step">
-                    <div class="step-number">02</div>
-                    <div class="step-icon-wrapper">
-                        <i data-lucide="cpu" class="step-icon-svg"></i>
-                    </div>
-                    <h3 class="step-title">AI Обработка</h3>
-                    <p class="step-description">
-                        Наша нейросеть автоматически клинит фон, переводит и тайпит текст на русском языке.
-                    </p>
+              <div class="step">
+                <div class="step-number">02</div>
+                <div class="step-icon-wrapper">
+                  <i data-lucide="cpu" class="step-icon-svg"></i>
                 </div>
+                <h3 class="step-title">AI Обработка</h3>
+                <p class="step-description">
+                  Наша нейросеть автоматически клинит фон, переводит и тайпит текст на русском языке.
+                </p>
+              </div>
 
-                <div class="step">
-                    <div class="step-number">03</div>
-                    <div class="step-icon-wrapper">
-                        <i data-lucide="layers-2" class="step-icon-svg"></i>
-                    </div>
-                    <h3 class="step-title">Скачайте PSD</h3>
-                    <p class="step-description">
-                        Получите готовый архив с PSD, где оригинал, клин и текст разнесены по отдельным слоям.
-                    </p>
+              <div class="step">
+                <div class="step-number">03</div>
+                <div class="step-icon-wrapper">
+                  <i data-lucide="layers-2" class="step-icon-svg"></i>
                 </div>
+                <h3 class="step-title">Скачайте PSD</h3>
+                <p class="step-description">
+                  Получите готовый архив с PSD, где оригинал, клин и текст разнесены по отдельным слоям.
+                </p>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-</section>
+      </section>
 
+      <!-- Секция: сравнение до / после -->
+      <section id="features" class="section-before-after">
+        <div class="page-content">
+          <div class="section-head">
+            <h2 class="section-title">Обзор возможностей</h2>
+            <p class="section-subtitle">
+              Посмотрите, как MangaDesk справляется с очисткой страниц, переводом и наложением нового текста.
+            </p>
+          </div>
 
-
-
-
-<!-- features / comparison slider -->
-<section id="features" class="features-section">
-    <div class="page-content">
-        <h2 class="section-title">Обзор возможностей</h2>
-        <p class="section-subtitle">
-            Посмотрите, как MangaDesk справляется с очисткой страниц, переводом и наложением нового текста.
-        </p>
-
-        <div class="comparison-container" data-slider>
-            <!-- Зона клика → полноэкранный режим -->
-            <div class="zoom-overlay"></div>
+          <div class="before-after-slider" data-slider>
+            <div class="before-after-zoom-layer" aria-hidden="true"></div>
 
             <img src="src/assets/landing_ru.jpg" alt="После">
 
-            <div class="before-overlay">
-                <img src="src/assets/landing_eng.jpg" alt="До">
+            <div class="before-after-pane">
+              <img src="src/assets/landing_eng.jpg" alt="До">
             </div>
 
-            <!-- Метки -->
-            <span class="badge badge-before">До</span>
-            <span class="badge badge-after">После</span>
+            <span class="before-after-label before-after-label--before">До</span>
+            <span class="before-after-label before-after-label--after">После</span>
 
-            <!-- Ручка -->
-            <div class="handle">
-                <div class="handle-circle">
-                    <i data-lucide="move-horizontal" class="w-5 h-5"></i>
+            <div class="before-after-divider">
+              <div class="before-after-grip">
+                <i data-lucide="move-horizontal" class="icon-20"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="cta-wrapper reveal">
+            <a href="#" class="btn-secondary more-examples">Больше примеров</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Секция: слои PSD на выходе -->
+      <section class="section-psd-layers">
+        <div class="page-content">
+          <div class="section-card psd-layers-layout">
+            <div class="psd-layers-intro reveal">
+              <h2 class="psd-layers-heading">
+                Ваш файл — <br>
+                <span class="text-gradient">ваши правила.</span>
+              </h2>
+              <p class="psd-layers-lead">
+                Мы не навязываем финальный результат. На выходе вы получаете полноценный рабочий проект,
+                где можно в один клик поправить шрифт, изменить перевод или дорисовать мелкие детали.
+              </p>
+
+              <div class="psd-layers-points">
+                <div class="psd-layers-point">
+                  <div class="psd-layers-point-icon">
+                    <i data-lucide="maximize" class="psd-layers-point-icon-svg"></i>
+                  </div>
+                  <div>
+                    <h4 class="psd-layers-point-title">Длинные холсты</h4>
+                    <p class="psd-layers-point-text">
+                      Автоматическая склейка страниц до 30.000px с возможностью автоматического шумодава.
+                    </p>
+                  </div>
                 </div>
+
+                <div class="psd-layers-point">
+                  <div class="psd-layers-point-icon">
+                    <i data-lucide="files" class="psd-layers-point-icon-svg"></i>
+                  </div>
+                  <div>
+                    <h4 class="psd-layers-point-title">Масштабная работа</h4>
+                    <p class="psd-layers-point-text">
+                      Загружайте главы целиком через ZIP архивы и экономьте часы работы.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-        </div>
 
-        <div class="cta-wrapper reveal">
-            <a href="#" class="btn-secondary more-examples">
-                Больше примеров
+            <div class="psd-layers-panel reveal">
+              <div class="psd-layers-panel-head">
+                <i data-lucide="layers-2" class="psd-layers-panel-head-icon"></i>
+                <span class="psd-layers-panel-head-label">Слои Photoshop (.PSD)</span>
+              </div>
+
+              <div class="psd-layers-panel-rows">
+                <div class="psd-layers-row">
+                  <div class="psd-layers-row-main">
+                    <div class="psd-layers-row-thumb psd-layers-row-thumb--text">
+                      <i data-lucide="type" class="psd-layers-row-thumb-svg"></i>
+                    </div>
+                    <span class="psd-layers-row-label">Группа: Текст</span>
+                  </div>
+                  <i data-lucide="eye" class="psd-layers-row-eye"></i>
+                </div>
+
+                <div class="psd-layers-row">
+                  <div class="psd-layers-row-main">
+                    <div class="psd-layers-row-thumb psd-layers-row-thumb--clean">
+                      <i data-lucide="brush" class="psd-layers-row-thumb-svg"></i>
+                    </div>
+                    <span class="psd-layers-row-label">Слой: Клин</span>
+                  </div>
+                  <i data-lucide="eye" class="psd-layers-row-eye"></i>
+                </div>
+
+                <div class="psd-layers-row psd-layers-row--inactive">
+                  <div class="psd-layers-row-main">
+                    <div class="psd-layers-row-thumb psd-layers-row-thumb--original">
+                      <i data-lucide="image" class="psd-layers-row-thumb-svg"></i>
+                    </div>
+                    <span class="psd-layers-row-label">Слой: Оригинал</span>
+                  </div>
+                  <i data-lucide="eye-off" class="psd-layers-row-eye-off"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Тарифы -->
+      <section id="pricing" class="pricing-section">
+        <div class="page-content">
+          <div class="pricing-header section-head">
+            <h2 class="section-title">Тарифы</h2>
+            <p class="section-subtitle">Выберите подходящий объём для ваших нужд</p>
+          </div>
+
+          <div class="pricing-grid">
+            <div class="pricing-card">
+              <div class="pricing-card-header">
+                <span class="pricing-plan-name">Стартовый</span>
+              </div>
+              <div class="pricing-price">
+                <span class="price">0</span>
+                <span class="currency">₽</span>
+                <span class="period">/ мес</span>
+              </div>
+              <ul class="pricing-features">
+                <li><i data-lucide="check" class="check-icon"></i> 100 000 px</li>
+                <li><i data-lucide="file-output" class="check-icon"></i> Экспорт в PSD</li>
+                <li><i data-lucide="alert-circle" class="check-icon"></i> Водяной знак</li>
+              </ul>
+              <button type="button" class="pricing-btn secondary">Оформить</button>
+            </div>
+
+            <div class="pricing-card featured">
+              <div class="pricing-card-header">
+                <span class="pricing-plan-name">Максимум</span>
+              </div>
+              <div class="pricing-price">
+                <span class="price">2 300</span>
+                <span class="currency">₽</span>
+                <span class="period">/ мес</span>
+              </div>
+              <ul class="pricing-features">
+                <li><i data-lucide="check" class="check-icon"></i> 20 000 000 px</li>
+                <li><i data-lucide="files" class="check-icon"></i> Параллельная обработка глав</li>
+                <li><i data-lucide="flame" class="check-icon"></i> Приоритет в очереди</li>
+                <li class="note">Включает всё из «Стандартного»</li>
+              </ul>
+              <button type="button" class="pricing-btn primary">Оформить</button>
+            </div>
+
+            <div class="pricing-card">
+              <div class="pricing-card-header">
+                <span class="pricing-plan-name">Стандартный</span>
+              </div>
+              <div class="pricing-price">
+                <span class="price">1 500</span>
+                <span class="currency">₽</span>
+                <span class="period">/ мес</span>
+              </div>
+              <ul class="pricing-features">
+                <li><i data-lucide="check" class="check-icon"></i> 7 500 000 px</li>
+                <li><i data-lucide="users" class="check-icon"></i> Создание команд</li>
+                <li><i data-lucide="heart" class="check-icon"></i> Без водяного знака</li>
+                <li class="note">Включает всё из «Стартового»</li>
+              </ul>
+              <button type="button" class="pricing-btn secondary">Оформить</button>
+            </div>
+          </div>
+
+          <div class="pricing-promo reveal">
+            <a href="auth.html" class="pricing-promo-link">
+              <i data-lucide="ticket" class="pricing-promo-link-icon" aria-hidden="true"></i>
+              У меня есть промокод
             </a>
+          </div>
         </div>
+      </section>
+
+      <section id="faq" class="faq-section">
+        <div class="page-content">
+          <div class="section-head faq-section-head">
+            <h2 class="section-title faq-section-title">Частые вопросы</h2>
+          </div>
+
+          <div class="faq-list reveal">
+            <div class="faq-item">
+              <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-answer-1" id="faq-trigger-1">
+                <span class="faq-question-text">Какие языки поддерживаются?</span>
+                <i data-lucide="chevron-down" class="faq-chevron" aria-hidden="true"></i>
+              </button>
+              <div class="faq-answer" id="faq-answer-1" role="region" aria-labelledby="faq-trigger-1" hidden>
+                Мы поддерживаем распознавание с английского, японского, китайского и корейского языков. Перевод осуществляется на русский язык с использованием специализированных моделей, понимающих контекст проекта.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-answer-2" id="faq-trigger-2">
+                <span class="faq-question-text">Почему оплата рассчитывается в пикселях?</span>
+                <i data-lucide="chevron-down" class="faq-chevron" aria-hidden="true"></i>
+              </button>
+              <div class="faq-answer" id="faq-answer-2" role="region" aria-labelledby="faq-trigger-2" hidden>
+                Поскольку длина глав в разных проектах существенно отличается, мы ввели единую систему расчёта стоимости на основе высоты изображения (в пикселях). Это позволяет сделать оплату максимально справедливой: вы платите только за фактический объём контента, а не одинаковую цену за короткую и длинную главы.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="modal-overlay" class="modal-overlay">
+      <div class="close-modal">
+        <i data-lucide="x" class="icon-32"></i>
+      </div>
+      <div id="modal-slider-target" class="modal-slider-target"></div>
     </div>
-</section>
 
-<!-- Полноэкранный просмотр слайдера (должен быть в body, лучше ближе к концу) -->
-<div id="modal-overlay" class="modal-overlay">
-    <div class="close-modal">
-        <i data-lucide="x" class="w-8 h-8"></i>
-    </div>
-    <div id="modal-slider-target" class="modal-slider-target"></div>
-</div>
+    <load src="parts/footer.html" />
+    <load src="parts/modals.html" />
 
-
-
-
-
-
-
-
-
-
-  <load src="parts/footer.html" />
-  <load src="parts/modals.html" />
-
-  <script src="https://unpkg.com/lucide@0.539.0/dist/umd/lucide.min.js"></script>
-  <script type="module" src="src/js/scripts.js"></script>
-</body>
+    <script src="https://unpkg.com/lucide@0.539.0/dist/umd/lucide.min.js"></script>
+    <script type="module" src="src/js/scripts.js"></script>
+  </body>
 
 </html>

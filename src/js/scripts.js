@@ -19,6 +19,19 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// FAQ: аккордеон
+document.querySelectorAll('.faq-item').forEach((item) => {
+    const btn = item.querySelector('.faq-question');
+    const panel = item.querySelector('.faq-answer');
+    if (!btn || !panel) return;
+
+    btn.addEventListener('click', () => {
+        const open = item.classList.toggle('is-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        panel.hidden = !open;
+    });
+});
+
 // Иконки
 window.lucide?.createIcons?.();
 
@@ -29,12 +42,12 @@ window.lucide?.createIcons?.();
 
 // ─── Логика слайдера (скопирована из oldscript.js без изменений) ─────────────
 function setupSlider(slider) {
-    const beforeOverlay = slider.querySelector('.before-overlay');
+    const beforeOverlay = slider.querySelector('.before-after-pane');
     const beforeImg     = beforeOverlay?.querySelector('img');
-    const handle        = slider.querySelector('.handle');
-    const circle        = slider.querySelector('.handle-circle');
-    const badgeBefore   = slider.querySelector('.badge-before');
-    const badgeAfter    = slider.querySelector('.badge-after');
+    const handle        = slider.querySelector('.before-after-divider');
+    const circle        = slider.querySelector('.before-after-grip');
+    const badgeBefore   = slider.querySelector('.before-after-label--before');
+    const badgeAfter    = slider.querySelector('.before-after-label--after');
 
     if (!beforeOverlay || !handle || !circle) return;
 
@@ -101,25 +114,50 @@ function openFullscreen(element) {
 
     const clone = element.cloneNode(true);
     
-    const zoomOverlay = clone.querySelector('.zoom-overlay');
+    const zoomOverlay = clone.querySelector('.before-after-zoom-layer');
     if (zoomOverlay) zoomOverlay.remove();
 
-    clone.style.cursor = 'default';
-    clone.style.width = '100%';
-    clone.style.maxWidth = '640px';
-    clone.style.height = 'auto';
-    clone.style.aspectRatio = '3/4';
-    clone.style.margin = '0 auto';
-
-    const originalWidth = element.querySelector('.before-overlay')?.style.width;
-    const originalHandle = element.querySelector('.handle')?.style.left;
-    if (originalWidth) {
-        clone.querySelector('.before-overlay').style.width = originalWidth;
-        clone.querySelector('.handle').style.left = originalHandle;
+    /* Те же px-размеры, что на лэндинге — иначе другой бокс → object-fit: cover режет иначе.
+       Вписываем в экран равномерным scale, без смены пропорций контейнера. */
+    let w = element.offsetWidth;
+    let h = element.offsetHeight;
+    if (!w || !h) {
+        const r = element.getBoundingClientRect();
+        w = r.width || 600;
+        h = r.height || (w * 4 / 3);
     }
 
+    const pad = 48; /* ≈ 1.5rem × 2, как padding у .modal-overlay */
+    const scale = Math.min((window.innerWidth - pad) / w, (window.innerHeight - pad) / h);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'modal-slider-scale-wrap';
+    wrap.style.width = `${w * scale}px`;
+    wrap.style.height = `${h * scale}px`;
+    wrap.style.overflow = 'hidden';
+    wrap.style.flexShrink = '0';
+
+    clone.style.cursor = 'default';
+    clone.style.boxSizing = 'border-box';
+    clone.style.width = `${w}px`;
+    clone.style.height = `${h}px`;
+    clone.style.aspectRatio = 'unset';
+    clone.style.maxWidth = 'none';
+    clone.style.maxHeight = 'none';
+    clone.style.margin = '0';
+    clone.style.transform = `scale(${scale})`;
+    clone.style.transformOrigin = 'top left';
+
+    const originalWidth = element.querySelector('.before-after-pane')?.style.width;
+    const originalHandle = element.querySelector('.before-after-divider')?.style.left;
+    if (originalWidth) {
+        clone.querySelector('.before-after-pane').style.width = originalWidth;
+        clone.querySelector('.before-after-divider').style.left = originalHandle;
+    }
+
+    wrap.appendChild(clone);
     target.innerHTML = '';
-    target.appendChild(clone);
+    target.appendChild(wrap);
 
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -143,15 +181,15 @@ document.addEventListener('click', function(e) {
         const target = document.getElementById('modal-slider-target');
 
         if (currentOriginalSlider && target) {
-            const clonedSlider = target.querySelector('.comparison-container, [data-slider]');
+            const clonedSlider = target.querySelector('.before-after-slider, [data-slider]');
 
             if (clonedSlider) {
-                const finalWidth  = clonedSlider.querySelector('.before-overlay')?.style.width;
-                const finalHandle = clonedSlider.querySelector('.handle')?.style.left;
+                const finalWidth  = clonedSlider.querySelector('.before-after-pane')?.style.width;
+                const finalHandle = clonedSlider.querySelector('.before-after-divider')?.style.left;
 
                 if (finalWidth && finalHandle) {
-                    currentOriginalSlider.querySelector('.before-overlay').style.width = finalWidth;
-                    currentOriginalSlider.querySelector('.handle').style.left = finalHandle;
+                    currentOriginalSlider.querySelector('.before-after-pane').style.width = finalWidth;
+                    currentOriginalSlider.querySelector('.before-after-divider').style.left = finalHandle;
                 }
             }
         }
@@ -164,17 +202,17 @@ document.addEventListener('click', function(e) {
 
 // ─── Инициализация слайдера на странице ──────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.comparison-container, [data-slider]').forEach(slider => {
+    document.querySelectorAll('.before-after-slider, [data-slider]').forEach(slider => {
         setupSlider(slider);
     });
     lucide.createIcons();
 });
 
-// Делегирование клика по zoom-overlay
+// Делегирование клика по слою полноэкранного зума
 document.addEventListener('click', function(e) {
-    const zoomOverlay = e.target.closest('.zoom-overlay');
+    const zoomOverlay = e.target.closest('.before-after-zoom-layer');
     if (zoomOverlay) {
-        const slider = zoomOverlay.closest('.comparison-container, [data-slider]');
+        const slider = zoomOverlay.closest('.before-after-slider, [data-slider]');
         if (slider) {
             openFullscreen(slider);
         }

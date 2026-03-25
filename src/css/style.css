@@ -20,6 +20,9 @@
     /* Соотношение сторон для манги */
     --handle-color: #ffffff;
     --accent-color: #8B5CF6;
+    --section-padding-y: 70px;
+    --section-title-gap: 0.75rem;
+    --section-block-gap: 3rem;
 }
 
 .dark {
@@ -64,6 +67,17 @@ a {
     margin: 0 auto;
     padding: 0 20px;
     width: 100%;
+}
+
+/* Унифицированные иконки (без Tailwind) */
+.icon-20 {
+    width: 20px;
+    height: 20px;
+}
+
+.icon-32 {
+    width: 32px;
+    height: 32px;
 }
 
 h1 {
@@ -252,13 +266,13 @@ body,
 
 /* Hero */
 .hero {
-    padding: 30px 0 50px;
+    padding: 15px 0 25px;
     text-align: center;
 }
 
 @media (max-width: 768px) {
     .hero {
-        padding: 64px 0 44px;
+        padding: 32px 0 22px;
     }
 }
 
@@ -344,18 +358,43 @@ body,
 
 /*Как это работает?*/
 .how-it-works-section {
-    padding: 10px 0;
+    padding: var(--section-padding-y) 0;
 }
 
 .section-title {
     text-align: center;
-    font-size: 2.5rem;
+    font-size: 2.85rem;
     font-weight: 800;
     text-transform: uppercase;
-    margin-bottom: 80px;
+    margin-bottom: 2.5rem;
     color: var(--text-main);
     letter-spacing: -0.02em;
 }
+
+/* Заголовок только с контентом ниже (без подзаголовка подряд) */
+.section-title--in-card {
+    margin-bottom: 3rem;
+}
+
+/* Заголовок + подзаголовок: без огромного зазора между ними (ширина — от .page-content) */
+.section-head {
+    width: 100%;
+}
+
+.section-head .section-title {
+    margin-bottom: var(--section-title-gap);
+}
+
+.section-head .section-subtitle {
+    margin-top: 0;
+    margin-bottom: var(--section-block-gap);
+}
+
+.faq-section-head .faq-section-title,
+.faq-section-head .section-title {
+    margin-bottom: 0;
+}
+
 
 .steps-grid {
     display: grid;
@@ -437,36 +476,6 @@ body,
     box-shadow: var(--shadow-main);
 }
 
-/* Метки */
-.badge {
-    position: absolute;
-    bottom: 20px;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    z-index: 4;
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    backdrop-filter: blur(4px);
-}
-
-.badge-before {
-    left: 20px;
-}
-
-.badge-after {
-    right: 20px;
-}
-
-/* Подзаголовок секции */
-.section-subtitle {
-    color: var(--text-main);
-    opacity: 0.6;
-    margin-bottom: 48px;
-}
-
 /* Модалки */
 dialog::backdrop {
     background-color: rgba(0, 0, 0, 0.5);
@@ -502,8 +511,8 @@ dialog p {
 .main-footer {
     background-color: var(--bg-primary);
     border-top: 1px solid var(--border-glass);
-    padding: 80px 0 40px;
-    margin-top: 80px;
+    padding: 48px 0 40px;
+    margin-top: 0;
 }
 
 .footer-grid {
@@ -602,28 +611,50 @@ dialog p {
 
 
 
-/* ─── Features / Before-After Slider ─────────────────────────────────────── */
+/* ─── Секция «до / после» (слайдер сравнения) ─────────────────────────────── */
 
-.features-section {
-    padding: 80px 0;
+.section-before-after {
+    padding: var(--section-padding-y) 0;
     text-align: center;
 }
 
-.section-title {
-    font-size: clamp(2.2rem, 5vw, 3.5rem);
+/* Метки «До» / «После» на слайдере */
+.before-after-label {
+    position: absolute;
+    bottom: 20px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
     font-weight: 700;
-    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    z-index: 4;
+    backdrop-filter: blur(4px);
+}
+
+.before-after-label--before {
+    left: 1rem;
+    background: rgba(255, 255, 255, 0.92);
+    color: black;
+    border: 1px solid rgba(226, 232, 240, 0.7);
+}
+
+.before-after-label--after {
+    right: 1rem;
+    background: var(--purple-light);
+    color: white;
 }
 
 .section-subtitle {
     font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+    color: var(--text-main);
     opacity: 0.75;
-    max-width: 780px;
-    margin: 0 auto 3rem;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
     line-height: 1.6;
 }
 
-.comparison-container {
+.before-after-slider {
     position: relative;
     width: 100%;
     max-width: var(--slider-width, 600px);
@@ -636,7 +667,7 @@ dialog p {
     user-select: none;
 }
 
-.zoom-overlay {
+.before-after-zoom-layer {
     position: absolute;
     inset: 0;
     z-index: 5;
@@ -647,13 +678,13 @@ dialog p {
     transition: opacity 0.25s;
 }
 
-.zoom-overlay:hover {
+.before-after-zoom-layer:hover {
     opacity: 0.08;
     background: rgba(255, 255, 255, 0.08);
     transition: background 0.2s;
 }
 
-.before-overlay {
+.before-after-pane {
     position: absolute;
     inset: 0 50% 0 0;
     overflow: hidden;
@@ -662,8 +693,8 @@ dialog p {
     pointer-events: none;
 }
 
-.before-overlay img,
-.comparison-container>img {
+.before-after-pane img,
+.before-after-slider>img {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -672,7 +703,7 @@ dialog p {
     pointer-events: none;
 }
 
-.handle {
+.before-after-divider {
     position: absolute;
     inset: 0 auto 0 50%;
     width: 4px;
@@ -682,7 +713,7 @@ dialog p {
     pointer-events: none;
 }
 
-.handle-circle {
+.before-after-grip {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -701,21 +732,8 @@ dialog p {
     transition: transform 0.15s ease;
 }
 
-.handle-circle:hover {
+.before-after-grip:hover {
     transform: translate(-50%, -50%) scale(1.08);
-}
-
-.badge-before {
-    left: 1rem;
-    background: rgba(255, 255, 255, 0.92);
-    color: black;
-    border: 1px solid rgba(226, 232, 240, 0.7);
-}
-
-.badge-after {
-    right: 1rem;
-    background: var(--purple-light);
-    color: white;
 }
 
 /* Кнопка "Больше примеров" */
@@ -802,9 +820,584 @@ dialog p {
 
 .modal-slider-target {
     position: relative;
-    z-index: 2;             
+    z-index: 2;
     pointer-events: auto;
     width: 100%;
-    max-width: 90vw;
-    max-height: 85vh;
+    max-width: 100%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
+
+/* Обёртка под scale: те же пропорции, что у слайдера на лэндинге */
+.modal-slider-scale-wrap {
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: var(--radius-lg, 1.5rem);
+}
+
+
+
+
+
+
+
+/* ─── Секция: слои PSD (превью выходного файла) ──────────────────────────── */
+
+.section-psd-layers {
+  padding: var(--section-padding-y) 0;
+}
+
+.psd-layers-layout {
+  display: grid;
+  gap: 48px;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .psd-layers-layout {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.psd-layers-heading {
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.psd-layers-lead {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  opacity: 0.85;
+  margin-bottom: 2.5rem;
+  max-width: 560px;
+}
+
+.psd-layers-points {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.psd-layers-point {
+  display: flex;
+  gap: 16px;
+}
+
+.psd-layers-point-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--purple-light);
+}
+
+.psd-layers-point-icon-svg {
+  width: 24px;
+  height: 24px;
+}
+
+.psd-layers-point-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.psd-layers-point-text {
+  opacity: 0.8;
+  line-height: 1.6;
+}
+
+/* Имитация панели слоёв Photoshop */
+.psd-layers-panel {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-main);
+  overflow: hidden;
+}
+
+.psd-layers-panel-head {
+  background: var(--dot-color);
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border-glass);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.875rem;
+  color: var(--text-main);
+  opacity: 0.7;
+}
+
+.psd-layers-panel-head-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.psd-layers-panel-head-label {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.psd-layers-panel-rows {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.psd-layers-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  transition: background 0.2s ease;
+}
+
+.psd-layers-row:hover {
+  background: var(--dot-color);
+}
+
+.psd-layers-row--inactive {
+  opacity: 0.55;
+}
+
+.psd-layers-row-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.psd-layers-row-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.psd-layers-row-thumb--text     { background: rgba(139, 92, 246, 0.12); color: var(--purple-light); }
+.psd-layers-row-thumb--clean    { background: rgba(226, 232, 240, 0.6);  color: #64748b; }
+.psd-layers-row-thumb--original { background: rgba(226, 232, 240, 0.4);  color: #94a3b8; }
+
+.psd-layers-row-thumb-svg {
+  width: 18px;
+  height: 18px;
+}
+
+.psd-layers-row-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.psd-layers-row-eye,
+.psd-layers-row-eye-off {
+  width: 20px;
+  height: 20px;
+  color: var(--purple-light);
+  opacity: 0.9;
+}
+
+/* Тёмная тема: панель как отдельная «подложка» внутри карточки */
+.dark .psd-layers-panel {
+  background: #252525;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+}
+
+.dark .psd-layers-panel-head {
+  background: #1a1a1a;
+  border-bottom-color: var(--border-glass);
+  opacity: 1;
+  color: var(--text-main);
+}
+
+.dark .psd-layers-panel-head-icon {
+  color: var(--purple-light);
+  opacity: 0.95;
+}
+
+.dark .psd-layers-panel-rows {
+  background: #252525;
+}
+
+.dark .psd-layers-row {
+  background: #2e2e2e;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .psd-layers-row:hover {
+  background: #383838;
+}
+
+.dark .psd-layers-row-label {
+  color: var(--text-main);
+}
+
+.dark .psd-layers-row--inactive .psd-layers-row-label {
+  opacity: 0.55;
+  font-weight: 600;
+}
+
+.dark .psd-layers-row-thumb--text {
+  background: rgba(139, 92, 246, 0.22);
+  color: #c4b5fd;
+}
+
+.dark .psd-layers-row-thumb--clean {
+  background: rgba(148, 163, 184, 0.18);
+  color: #94a3b8;
+}
+
+.dark .psd-layers-row-thumb--original {
+  background: rgba(148, 163, 184, 0.1);
+  color: #787f8a;
+}
+
+.dark .psd-layers-row-eye-off {
+  color: #787f8a;
+  opacity: 0.85;
+}
+
+/* ─── Тарифы ─────────────────────────────────────────────────────────────── */
+
+.pricing-section {
+  padding: var(--section-padding-y) 0;
+  text-align: center;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+.pricing-promo {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+}
+
+.pricing-promo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-main);
+  opacity: 0.55;
+  text-decoration: none;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.pricing-promo-link:hover {
+  color: var(--nav-hover-color);
+  opacity: 1;
+}
+
+.pricing-promo-link-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Карточка тарифа */
+.pricing-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg, 1.5rem);
+  padding: 2.5rem 1.35rem;
+  box-shadow: var(--shadow-main);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  /* только transform/box-shadow: иначе при смене темы transition: all + spring-bezier
+     даёт overshoot по background-color и фон на мгновение уходит почти в чёрный */
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.pricing-card:hover {
+  transform: translateY(-14px) scale(1.03);   /* основной эффект подпрыгивания + лёгкое увеличение */
+  box-shadow: 0 25px 40px -10px rgba(139, 92, 246, 0.25),
+              0 10px 15px -3px rgba(0, 0, 0, 0.15);
+}
+
+.pricing-card.featured {
+  border-color: var(--purple-light);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+}
+
+/* Добавляем лёгкий "подсвет" снизу при наведении */
+.pricing-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--purple-gradient);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+.pricing-card:hover::after {
+  transform: scaleX(1);
+}
+
+/* Заголовок тарифа */
+.pricing-card-header {
+  margin-bottom: 1.5rem;
+}
+
+.pricing-plan-name {
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-main);
+}
+
+/* Цена */
+.pricing-price {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 2rem;
+}
+
+.price {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-main);
+}
+
+.currency,
+.period {
+  font-size: 1.25rem;
+  color: #888;
+  font-weight: 500;
+}
+
+.dark .currency,
+.dark .period {
+  color: var(--text-main);
+  opacity: 0.45;
+}
+
+/* Список возможностей */
+.pricing-features {
+  flex-grow: 1;
+  margin-bottom: 2rem;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+
+.pricing-features li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  color: var(--text-main);
+  opacity: 0.9;
+}
+
+.check-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--purple-light);
+  flex-shrink: 0;
+}
+
+.note {
+  margin-top: 1rem;
+  font-size: 0.8125rem;
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+/* Кнопки */
+.pricing-btn {
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: var(--radius-lg, 1rem);
+  font-weight: 700;
+  font-size: 1.02rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-top: auto;
+}
+
+.pricing-btn.primary {
+  background: var(--purple-gradient);
+  color: white;
+  border: none;
+}
+
+.pricing-btn.primary:hover {
+  opacity: 0.92;
+  transform: translateY(-2px);
+}
+
+.pricing-btn.secondary {
+  background: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-glass);
+}
+
+.pricing-btn.secondary:hover {
+  background: var(--dot-color);
+  border-color: var(--purple-light);
+  transform: translateY(-2px);
+}
+
+/* ─── FAQ ─────────────────────────────────────────────────────────────────── */
+
+.faq-section {
+  padding: 70px;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-glass);
+}
+
+/* Одна колонка; сверху и снизу одинаковый inset — блок с заголовком и вопросами визуально по центру секции */
+.faq-section .page-content {
+  max-width: 48rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1.5rem 1.5rem;
+  box-sizing: border-box;
+}
+
+@media (min-width: 640px) {
+  .faq-section .page-content {
+    padding: 1.875rem 1.5rem;
+  }
+}
+
+.faq-section-head {
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .faq-section-head {
+    margin-bottom: 1.75rem;
+  }
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.faq-item {
+  text-align: left;
+}
+
+.faq-item:first-child .faq-question {
+  padding-top: 0;
+}
+
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.125rem 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: left;
+  transition: color 0.2s ease;
+}
+
+.faq-question:hover {
+  color: var(--nav-hover-color);
+}
+
+.faq-question:focus-visible {
+  outline: 2px solid var(--purple-light);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.faq-question-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.faq-chevron {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--text-main);
+  opacity: 0.65;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+.faq-item.is-open .faq-chevron {
+  transform: rotate(180deg);
+  opacity: 0.9;
+}
+
+.faq-answer {
+  padding: 0 0 1.125rem;
+  margin-top: -0.25rem;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--text-main);
+  opacity: 0.65;
+}
+
+.faq-item:last-child .faq-answer {
+  padding-bottom: 0.75rem;
+}
+
+.faq-item.is-open .faq-question {
+  color: var(--text-main);
+}
+
+.faq-item.is-open .faq-question:hover {
+  color: var(--nav-hover-color);
+}
+
+
+
