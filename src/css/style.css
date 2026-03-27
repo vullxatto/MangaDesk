@@ -625,14 +625,19 @@ dialog p {
 /* Метки «До» / «После» на слайдере */
 .before-after-label {
     position: absolute;
-    bottom: 20px;
+    top: auto;
+    bottom: 12px;
     padding: 6px 12px;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     z-index: 4;
     backdrop-filter: blur(4px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 .before-after-label--before {
@@ -710,7 +715,7 @@ dialog p {
 .before-after-divider {
     position: absolute;
     inset: 0 auto 0 50%;
-    width: 4px;
+    width: 2px;
     background: var(--handle-color, white);
     transform: translateX(-50%);
     z-index: 10;
@@ -738,6 +743,39 @@ dialog p {
 
 .before-after-grip:hover {
     transform: translate(-50%, -50%) scale(1.08);
+}
+
+/* Более компактные контролы в fullscreen-режиме */
+#modal-slider-target .before-after-label {
+    font-size: 6px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    top: auto;
+    bottom: 12px;
+}
+
+#modal-slider-target .before-after-grip {
+    width: 25px;
+    height: 25px;
+    transition: none;
+}
+
+#modal-slider-target .before-after-grip .icon-20 {
+    width: 13px;
+    height: 13px;
+    pointer-events: none;
+}
+
+#modal-slider-target .before-after-grip:hover {
+    transform: translate(-50%, -50%);
+}
+
+#modal-slider-target .before-after-divider {
+    width: 2px;
+}
+
+#modal-slider-target .before-after-slider {
+    border-radius: var(--radius-lg, 1.5rem);
 }
 
 /* Кнопка "Больше примеров" */
@@ -925,9 +963,10 @@ dialog p {
 .psd-layers-panel {
   background: var(--bg-primary);
   border: 1px solid var(--border-glass);
-  border-radius: var(--radius-lg);
+  border-radius: 20px;
   box-shadow: var(--shadow-main);
   overflow: hidden;
+  width: min(100%, 430px);
 }
 
 .psd-layers-panel-head {
@@ -967,7 +1006,7 @@ dialog p {
   padding: 12px 16px;
   background: var(--bg-primary);
   border: 1px solid var(--border-glass);
-  border-radius: var(--radius-sm);
+  border-radius: 12px;
   transition: background 0.2s ease;
 }
 
@@ -1439,6 +1478,16 @@ dialog p {
   gap: 24px;
 }
 
+.bento-grid-3 .bento-card {
+  min-height: 620px;
+  height: 620px;
+  cursor: pointer;
+}
+
+#features .bento-card[data-preview-fullscreen] {
+  cursor: pointer;
+}
+
 .bento-layout {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -1467,56 +1516,14 @@ dialog p {
 .bento-card {
   background: var(--bg-glass);
   border: 1px solid var(--border-glass);
-  border-radius: var(--radius-lg, 24px);
+  border-radius: 48px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: var(--shadow-main);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-}
-
-.bento-card[data-expandable-card] {
-  position: relative;
-  cursor: pointer;
-  transition: transform 0.58s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.42s ease,
-              border-color 0.42s ease,
-              grid-column 0.58s cubic-bezier(0.16, 1, 0.3, 1),
-              min-height 0.58s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.bento-card[data-expandable-card].is-expanded {
-  grid-column: 1 / -1;
-  min-height: min(92vh, 860px);
-  z-index: 5;
-  box-shadow: 0 22px 50px -20px rgba(139, 92, 246, 0.42);
-  display: flex;
-  flex-direction: column;
-}
-
-.bento-card[data-expandable-card] .bento-visual {
-  transition: height 0.58s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.bento-card[data-expandable-card].is-expanded .bento-visual {
-  order: 1;
-  flex: 1 1 auto;
-  min-height: 0;
-  height: auto;
-}
-
-.bento-card[data-expandable-card] .bento-card-content {
-  transition: padding 0.58s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.bento-card[data-expandable-card].is-expanded .bento-card-content {
-  order: 2;
-  flex: 0 0 auto;
-  padding: clamp(16px, 1.6vw, 24px);
-  gap: 8px;
-}
-
-.bento-card[data-expandable-card].is-expanded .bento-card-content .bento-text {
-  margin-bottom: 0;
 }
 
 .bento-card:hover {
@@ -1670,6 +1677,18 @@ dialog p {
   overflow: hidden;
 }
 
+.bento-grid-3 .bento-card .bento-visual {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+}
+
+.bento-grid-3 .bento-card .bento-card-content {
+  flex: 0 0 auto;
+  min-height: 210px;
+  padding: 20px 24px 22px;
+}
+
 .bento-visual .before-after-slider {
   max-width: none;
   height: 100%;
@@ -1686,18 +1705,9 @@ dialog p {
 }
 
 @media (min-width: 800px) {
-  .bento-layout > .bento-article-card:not(.is-expanded),
+  .bento-layout > .bento-article-card,
   .bento-layout > .col-span-4.flex-col-gap {
     height: 100%;
-  }
-
-  .bento-layout.article-expanded > .features-side-stack {
-    grid-column: 1 / -1;
-    flex-direction: row;
-  }
-
-  .bento-layout.article-expanded > .features-side-stack > .bento-card {
-    flex: 1 1 0;
   }
 }
 

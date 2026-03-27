@@ -32,69 +32,22 @@ document.querySelectorAll('.faq-item').forEach((item) => {
     });
 });
 
-// Разворачивание карточек "Обзор возможностей"
-document.addEventListener('DOMContentLoaded', () => {
-    const expandableCards = Array.from(document.querySelectorAll('#features [data-expandable-card]'));
-    const bentoLayout = document.querySelector('#features .bento-layout');
-    if (!expandableCards.length) return;
+// Полноэкранный просмотр примера по клику на превью в "Обзоре возможностей"
+document.addEventListener('click', (e) => {
+    const card = e.target.closest('#features .bento-grid-3 .bento-card, #features .bento-card[data-preview-fullscreen]');
+    if (!card) return;
 
-    let expandedCard = null;
+    const slider = card.querySelector('.before-after-slider, [data-slider]');
+    if (slider) {
+        if (slider.dataset.draggingJustNow === 'true') return;
+        openFullscreen(slider);
+        return;
+    }
 
-    const syncArticleLayoutState = (card) => {
-        if (!bentoLayout) return;
-        const isArticleExpanded = Boolean(card?.classList.contains('bento-article-card'));
-        bentoLayout.classList.toggle('article-expanded', isArticleExpanded);
-    };
-
-    const collapseCard = (card) => {
-        card.classList.remove('is-expanded');
-        card.setAttribute('aria-expanded', 'false');
-        if (expandedCard === card) expandedCard = null;
-        syncArticleLayoutState(expandedCard);
-    };
-
-    const expandCard = (card) => {
-        if (expandedCard && expandedCard !== card) {
-            collapseCard(expandedCard);
-        }
-        card.classList.add('is-expanded');
-        card.setAttribute('aria-expanded', 'true');
-        expandedCard = card;
-        syncArticleLayoutState(expandedCard);
-        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-
-    expandableCards.forEach((card) => {
-        card.setAttribute('aria-expanded', 'false');
-
-        card.addEventListener('click', (event) => {
-            const sliderInCard = event.target.closest('.before-after-slider');
-            if (sliderInCard) {
-                if (sliderInCard.dataset.draggingJustNow === 'true') {
-                    return;
-                }
-                if (expandedCard === card) {
-                    collapseCard(card);
-                } else {
-                    expandCard(card);
-                }
-                return;
-            }
-
-            if (expandedCard === card) {
-                collapseCard(card);
-                return;
-            }
-
-            expandCard(card);
-        });
-    });
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && expandedCard) {
-            collapseCard(expandedCard);
-        }
-    });
+    const image = card.querySelector('.bento-visual img');
+    if (image) {
+        openImageFullscreen(image);
+    }
 });
 
 // Иконки
@@ -275,6 +228,30 @@ function openFullscreen(element) {
 
     setupSlider(clone);
     lucide.createIcons();
+}
+
+function openImageFullscreen(imageElement) {
+    const overlay = document.getElementById('modal-overlay');
+    const target = document.getElementById('modal-slider-target');
+    if (!overlay || !target) return;
+
+    currentOriginalSlider = null;
+
+    const img = document.createElement('img');
+    img.src = imageElement.currentSrc || imageElement.src;
+    img.alt = imageElement.alt || 'Пример';
+    img.style.maxWidth = 'min(96vw, 1400px)';
+    img.style.maxHeight = '92vh';
+    img.style.width = 'auto';
+    img.style.height = 'auto';
+    img.style.objectFit = 'contain';
+    img.style.borderRadius = '16px';
+    img.style.boxShadow = 'var(--shadow-main)';
+
+    target.innerHTML = '';
+    target.appendChild(img);
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
 }
 
 // Закрытие полноэкранного режима (клик по фону или крестику)
