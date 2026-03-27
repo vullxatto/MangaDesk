@@ -63,7 +63,7 @@ a {
 }
 
 .page-content {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
     width: 100%;
@@ -309,13 +309,17 @@ body,
     font-weight: 700;
     margin-bottom: 28px;
     letter-spacing: -0.02em;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
 }
 
 .hero-subtitle {
     font-size: clamp(1.05rem, 2.2vw, 1.25rem);
     opacity: 0.75;
     max-width: 780px;
-    margin: 0 auto 32px;
+    margin: 30px auto;
     line-height: 1.7;
 }
 
@@ -944,7 +948,7 @@ dialog p {
 }
 
 .psd-layers-panel-head-label {
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -1000,8 +1004,8 @@ dialog p {
 }
 
 .psd-layers-row-label {
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-weight: 600;
+  font-size: 0.8rem;
   letter-spacing: -0.01em;
   text-transform: uppercase;
 }
@@ -1420,6 +1424,7 @@ dialog p {
 .bento-subtitle {
   margin: 0 auto;
   max-width: 640px;
+  text-align: center;
 }
 
 .bento-grid-2 {
@@ -1455,6 +1460,10 @@ dialog p {
   gap: 24px;
 }
 
+.flex-1 {
+  flex: 1 1 0;
+}
+
 .bento-card {
   background: var(--bg-glass);
   border: 1px solid var(--border-glass);
@@ -1465,10 +1474,91 @@ dialog p {
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
+.bento-card[data-expandable-card] {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.58s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.42s ease,
+              border-color 0.42s ease,
+              grid-column 0.58s cubic-bezier(0.16, 1, 0.3, 1),
+              min-height 0.58s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bento-card[data-expandable-card].is-expanded {
+  grid-column: 1 / -1;
+  min-height: min(92vh, 860px);
+  z-index: 5;
+  box-shadow: 0 22px 50px -20px rgba(139, 92, 246, 0.42);
+  display: flex;
+  flex-direction: column;
+}
+
+.bento-card[data-expandable-card] .bento-visual {
+  transition: height 0.58s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bento-card[data-expandable-card].is-expanded .bento-visual {
+  order: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+}
+
+.bento-card[data-expandable-card] .bento-card-content {
+  transition: padding 0.58s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bento-card[data-expandable-card].is-expanded .bento-card-content {
+  order: 2;
+  flex: 0 0 auto;
+  padding: clamp(16px, 1.6vw, 24px);
+  gap: 8px;
+}
+
+.bento-card[data-expandable-card].is-expanded .bento-card-content .bento-text {
+  margin-bottom: 0;
+}
+
 .bento-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 24px -10px rgba(139, 92, 246, 0.15);
   border-color: var(--border-glass); /* Опционально: можно заменить на var(--purple-light) */
+}
+
+.bento-link-card {
+  text-decoration: none;
+  color: inherit;
+}
+
+.bento-link-card .bento-card-content {
+  min-height: 84px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bento-link-card-label {
+  font-size: 1.06rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.bento-link-card-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.85;
+  transition: transform 0.25s ease;
+}
+
+.bento-link-card:hover .bento-link-card-icon {
+  transform: translateX(4px);
+}
+
+.bento-layout > .bento-card.col-span-8 .bento-card-content.p-8-lg,
+.bento-layout > .col-span-4.flex-col-gap .bento-card-content.p-8-lg {
+  padding: 24px;
 }
 
 .bento-card-content {
@@ -1531,7 +1621,7 @@ dialog p {
 /* Большая карточка PSD */
 .bento-psd-card {
   flex-direction: column;
-  background: linear-gradient(to bottom, var(--bg-glass), var(--dot-color));
+  background: var(--bg-primary);
 }
 
 @media (min-width: 900px) {
@@ -1558,6 +1648,16 @@ dialog p {
   box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
 }
 
+.bento-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Картинка заполнит блок, лишнее обрежется (как в Instagram) */
+  /* Если хотите, чтобы картинка была видна целиком без обрезки, используйте: object-fit: contain; */
+  
+  display: block;
+  transition: transform 0.5s ease;
+}
+
 /* Утилиты и мок-элементы для визуала */
 .bento-visual {
   height: 200px;
@@ -1570,158 +1670,46 @@ dialog p {
   overflow: hidden;
 }
 
-.mock-badge {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 6px 12px;
-  border-radius: 6px;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-main);
-  opacity: 0.6;
-  z-index: 10;
-  backdrop-filter: blur(4px);
-  pointer-events: none;
-}
-
-.mock-caption { font-size: 10px; text-transform: uppercase; opacity: 0.5; font-weight: 600; }
-.mock-icon { color: var(--text-main); opacity: 0.3; }
-
-/* Скелетоны UI */
-.mock-skel { height: 12px; background: var(--border-glass); border-radius: 4px; }
-.mock-skel-accent { height: 12px; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 4px; }
-.w-20 { width: 20%; } .w-25 { width: 25%; } .w-30 { width: 30%; } .w-40 { width: 40%; }
-.w-50 { width: 50%; } .w-70 { width: 70%; } .w-80 { width: 80%; } .w-90 { width: 90%; } .w-100 { width: 100%; }
-
-/* Глоссарий UI */
-.mock-ui {
-  width: 100%;
+.bento-visual .before-after-slider {
+  max-width: none;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  opacity: 0.4;
-}
-.mock-ui-header { font-size: 12px; font-weight: 600; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px; margin-bottom: 12px; }
-.mock-ui-row { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
-
-/* Локализация */
-.mock-dashed-box {
-  width: calc(100% - 40px);
-  height: calc(100% - 40px);
-  border: 1px dashed var(--border-glass);
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  background: rgba(139, 92, 246, 0.05);
+  aspect-ratio: auto;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
-/* Сплит-вью (До/После) */
-.split-visual { display: flex; width: 100%; }
-.split-left, .split-right { width: 50%; height: 100%; position: relative; }
-.split-left { background: var(--bg-primary); opacity: 0.8; }
-.split-right { background: var(--border-glass); opacity: 0.3; }
-.split-divider { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--border-glass); margin-left: -1px; }
-.split-handle { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 24px; height: 24px; background: var(--bg-primary); border: 2px solid var(--border-glass); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-main); box-shadow: var(--shadow-main); }
-.mock-label { position: absolute; top: 12px; padding: 4px 8px; border-radius: 4px; background: var(--bg-glass); font-size: 10px; color: var(--text-main); opacity: 0.7; }
-.left-label { left: 12px; } .right-label { right: 12px; }
-.mock-kanji { position: absolute; top: 40%; left: 30%; font-size: 32px; font-weight: 900; opacity: 0.2; transform: rotate(15deg); }
-.blur { filter: blur(2px); } .solid { opacity: 0.6; }
-.noise-bg { background-image: radial-gradient(var(--text-main) 1px, transparent 1px); background-size: 8px 8px; opacity: 0.15; }
+.bento-visual--cabinet {
+  height: 250px;
+  border-top: 1px solid var(--border-glass);
+  border-bottom: 0;
+}
 
-/* Таблица QC */
-.mock-table { display: flex; width: 100%; height: 100%; opacity: 0.5; }
-.mock-table-col { flex: 1; padding: 16px; display: flex; flex-direction: column; }
-.border-r { border-right: 1px solid var(--border-glass); }
-.bg-dim { background: rgba(0,0,0,0.03); }
-.dark .bg-dim { background: rgba(255,255,255,0.03); }
-.outline { background: transparent; }
+@media (min-width: 800px) {
+  .bento-layout > .bento-article-card:not(.is-expanded),
+  .bento-layout > .col-span-4.flex-col-gap {
+    height: 100%;
+  }
 
-/* Типографика */
-.flex-row-center { display: flex; align-items: center; padding: 20px; }
-.mock-type-ui { display: flex; width: 100%; gap: 16px; opacity: 0.6; align-items: center; }
-.mock-type-controls { flex: 1; }
-.mock-slider { height: 6px; background: var(--border-glass); border-radius: 3px; overflow: hidden; margin-top: 4px; }
-.mock-slider-fill { height: 100%; background: var(--text-main); opacity: 0.4; }
-.mock-bubble-preview { flex: 1; display: flex; justify-content: center; }
-.mock-speech-bubble { background: var(--bg-primary); border: 1px solid var(--border-glass); padding: 12px 16px; border-radius: 50px; font-size: 10px; font-weight: 600; position: relative; }
-.mock-speech-bubble::after { content: ''; position: absolute; bottom: -5px; left: 20px; width: 10px; height: 10px; background: var(--bg-primary); border-bottom: 1px solid var(--border-glass); border-right: 1px solid var(--border-glass); transform: rotate(45deg); }
+  .bento-layout.article-expanded > .features-side-stack {
+    grid-column: 1 / -1;
+    flex-direction: row;
+  }
+
+  .bento-layout.article-expanded > .features-side-stack > .bento-card {
+    flex: 1 1 0;
+  }
+}
 
 /* Заметка инфраструктуры */
 .bento-note {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: var(--text-main);
   opacity: 0.6;
   background: var(--dot-color);
   padding: 12px;
   border-radius: 8px;
   border: 1px solid var(--border-glass);
-}
-
-/* Мок-браузер */
-.mock-dashboard-visual {
-  height: 250px;
-  background: var(--dot-color);
-  border-top: 1px solid var(--border-glass);
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  padding: 0 32px;
-}
-.mock-browser {
-  width: 100%;
-  max-width: 800px;
-  height: 200px;
-  background: var(--bg-primary);
-  border-radius: 12px 12px 0 0;
-  border: 1px solid var(--border-glass);
-  border-bottom: none;
-  display: flex;
-  flex-direction: column;
-}
-.mock-browser-header {
-  height: 32px;
-  border-bottom: 1px solid var(--border-glass);
-  background: var(--dot-color);
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  gap: 6px;
-}
-.mock-browser-header i { width: 10px; height: 10px; border-radius: 50%; background: var(--border-glass); }
-.mock-browser-body { display: flex; flex: 1; opacity: 0.3; }
-.mock-sidebar { width: 120px; border-right: 1px solid var(--border-glass); padding: 16px; }
-.mock-main { flex: 1; padding: 16px; display: flex; flex-direction: column; }
-.mock-content-box { flex: 1; border: 1px solid var(--border-glass); border-radius: 8px; }
-
-/* Мок-статья */
-.mock-article-visual {
-  height: 200px;
-  background: var(--dot-color);
-  border-top: 1px solid var(--border-glass);
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-}
-.mock-article-page {
-  width: 80%;
-  height: 160px;
-  background: var(--bg-primary);
-  border-radius: 12px 12px 0 0;
-  border: 1px solid var(--border-glass);
-  border-bottom: none;
-  padding: 24px;
-  opacity: 0.4;
 }
 
 /* ─── Анимация Reveal ────────────────────────────────────────────────────── */

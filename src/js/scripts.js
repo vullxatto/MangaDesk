@@ -32,6 +32,71 @@ document.querySelectorAll('.faq-item').forEach((item) => {
     });
 });
 
+// Разворачивание карточек "Обзор возможностей"
+document.addEventListener('DOMContentLoaded', () => {
+    const expandableCards = Array.from(document.querySelectorAll('#features [data-expandable-card]'));
+    const bentoLayout = document.querySelector('#features .bento-layout');
+    if (!expandableCards.length) return;
+
+    let expandedCard = null;
+
+    const syncArticleLayoutState = (card) => {
+        if (!bentoLayout) return;
+        const isArticleExpanded = Boolean(card?.classList.contains('bento-article-card'));
+        bentoLayout.classList.toggle('article-expanded', isArticleExpanded);
+    };
+
+    const collapseCard = (card) => {
+        card.classList.remove('is-expanded');
+        card.setAttribute('aria-expanded', 'false');
+        if (expandedCard === card) expandedCard = null;
+        syncArticleLayoutState(expandedCard);
+    };
+
+    const expandCard = (card) => {
+        if (expandedCard && expandedCard !== card) {
+            collapseCard(expandedCard);
+        }
+        card.classList.add('is-expanded');
+        card.setAttribute('aria-expanded', 'true');
+        expandedCard = card;
+        syncArticleLayoutState(expandedCard);
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    expandableCards.forEach((card) => {
+        card.setAttribute('aria-expanded', 'false');
+
+        card.addEventListener('click', (event) => {
+            const sliderInCard = event.target.closest('.before-after-slider');
+            if (sliderInCard) {
+                if (sliderInCard.dataset.draggingJustNow === 'true') {
+                    return;
+                }
+                if (expandedCard === card) {
+                    collapseCard(card);
+                } else {
+                    expandCard(card);
+                }
+                return;
+            }
+
+            if (expandedCard === card) {
+                collapseCard(card);
+                return;
+            }
+
+            expandCard(card);
+        });
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && expandedCard) {
+            collapseCard(expandedCard);
+        }
+    });
+});
+
 // Иконки
 window.lucide?.createIcons?.();
 
@@ -101,22 +166,47 @@ function setupSlider(slider) {
     };
 
     let active = false;
+    let dragStartX = 0;
+    let didDrag = false;
 
     const start = e => {
         e.preventDefault();
         e.stopPropagation();
         active = true;
+        didDrag = false;
+        dragStartX = e.touches ? e.touches[0].clientX : e.clientX;
         move(e);
     };
 
     circle.addEventListener('mousedown', start);
     circle.addEventListener('touchstart', start, { passive: false });
 
-    window.addEventListener('mouseup',   () => { active = false; });
-    window.addEventListener('mousemove', e => active && move(e));
-    window.addEventListener('touchend',  () => { active = false; });
+    window.addEventListener('mouseup',   () => {
+        if (!active) return;
+        active = false;
+        if (didDrag) {
+            slider.dataset.draggingJustNow = 'true';
+            setTimeout(() => { delete slider.dataset.draggingJustNow; }, 180);
+        }
+    });
+    window.addEventListener('mousemove', e => {
+        if (!active) return;
+        const deltaX = Math.abs(e.clientX - dragStartX);
+        if (deltaX > 4) didDrag = true;
+        move(e);
+    });
+    window.addEventListener('touchend',  () => {
+        if (!active) return;
+        active = false;
+        if (didDrag) {
+            slider.dataset.draggingJustNow = 'true';
+            setTimeout(() => { delete slider.dataset.draggingJustNow; }, 180);
+        }
+    });
     window.addEventListener('touchmove', e => {
         if (active) {
+            const deltaX = Math.abs(e.touches[0].clientX - dragStartX);
+            if (deltaX > 4) didDrag = true;
             e.preventDefault();
             move(e);
         }
