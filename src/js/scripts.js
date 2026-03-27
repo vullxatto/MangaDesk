@@ -19,7 +19,7 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// FAQ: аккордеон
+// FAQ: ответ-вопрос
 document.querySelectorAll('.faq-item').forEach((item) => {
     const btn = item.querySelector('.faq-question');
     const panel = item.querySelector('.faq-answer');
@@ -35,12 +35,33 @@ document.querySelectorAll('.faq-item').forEach((item) => {
 // Иконки
 window.lucide?.createIcons?.();
 
+// Анимация появления элементов при скролле (reveal)
+document.addEventListener('DOMContentLoaded', () => {
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.15 // Элемент начнет появляться, когда покажется на 15%
+    };
 
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Добавляем класс active, когда элемент попадает в зону видимости
+                entry.target.classList.add('active');
+                
+                // Перестаем наблюдать, чтобы анимация проигрывалась только один раз
+                observer.unobserve(entry.target); 
+            }
+        });
+    }, observerOptions);
 
+    // Находим все элементы с классом .reveal и вешаем на них наблюдатель
+    document.querySelectorAll('.reveal').forEach(element => {
+        observer.observe(element);
+    });
+});
 
-
-
-// ─── Логика слайдера (скопирована из oldscript.js без изменений) ─────────────
+// Логика слайдера
 function setupSlider(slider) {
     const beforeOverlay = slider.querySelector('.before-after-pane');
     const beforeImg     = beforeOverlay?.querySelector('img');
@@ -102,7 +123,7 @@ function setupSlider(slider) {
     }, { passive: false });
 }
 
-// ─── Полноэкранный просмотр (скопировано из old без изменений) ───────────────
+// Полноэкранный просмотр
 let currentOriginalSlider = null;
 
 function openFullscreen(element) {
@@ -200,7 +221,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// ─── Инициализация слайдера на странице ──────────────────────────────────────
+// Инициализация слайдера на странице
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.before-after-slider, [data-slider]').forEach(slider => {
         setupSlider(slider);

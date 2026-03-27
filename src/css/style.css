@@ -1401,3 +1401,345 @@ dialog p {
 
 
 
+/* ─── Bento Grid: Особенности и технологии ───────────────────────────────── */
+.bento-section {
+  padding: var(--section-padding-y) 0;
+}
+
+.bento-head-margin {
+  margin-bottom: 4rem;
+}
+
+.bento-title-main {
+  font-size: clamp(2.2rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+}
+
+.bento-subtitle {
+  margin: 0 auto;
+  max-width: 640px;
+}
+
+.bento-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.bento-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.bento-layout {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+.col-span-12 { grid-column: span 12; }
+.col-span-8 { grid-column: span 12; }
+.col-span-4 { grid-column: span 12; }
+
+@media (min-width: 860px) {
+  .col-span-8 { grid-column: span 8; }
+  .col-span-4 { grid-column: span 4; }
+}
+
+.flex-col-gap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.bento-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg, 24px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.bento-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -10px rgba(139, 92, 246, 0.15);
+  border-color: var(--border-glass); /* Опционально: можно заменить на var(--purple-light) */
+}
+
+.bento-card-content {
+  padding: 32px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.bento-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm, 12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: var(--purple-light);
+  box-shadow: var(--shadow-main);
+}
+
+.bento-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+
+.bento-title-lg {
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.bento-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-main);
+  opacity: 0.7;
+}
+
+.text-purple { color: var(--purple-light); }
+.text-md { font-size: 1.05rem; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.gap-2 { gap: 8px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.mt-auto { margin-top: auto; }
+.p-8-lg { padding: 40px; }
+
+@media (max-width: 640px) {
+  .hidden-mobile { display: none; }
+}
+
+/* Большая карточка PSD */
+.bento-psd-card {
+  flex-direction: column;
+  background: linear-gradient(to bottom, var(--bg-glass), var(--dot-color));
+}
+
+@media (min-width: 900px) {
+  .bento-psd-card {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.psd-card-content {
+  padding: 40px;
+  flex: 1;
+}
+
+.psd-card-visual {
+  padding: 40px;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mock-shadow {
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
+}
+
+/* Утилиты и мок-элементы для визуала */
+.bento-visual {
+  height: 200px;
+  background: var(--dot-color);
+  border-bottom: 1px solid var(--border-glass);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.mock-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-main);
+  opacity: 0.6;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.mock-caption { font-size: 10px; text-transform: uppercase; opacity: 0.5; font-weight: 600; }
+.mock-icon { color: var(--text-main); opacity: 0.3; }
+
+/* Скелетоны UI */
+.mock-skel { height: 12px; background: var(--border-glass); border-radius: 4px; }
+.mock-skel-accent { height: 12px; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 4px; }
+.w-20 { width: 20%; } .w-25 { width: 25%; } .w-30 { width: 30%; } .w-40 { width: 40%; }
+.w-50 { width: 50%; } .w-70 { width: 70%; } .w-80 { width: 80%; } .w-90 { width: 90%; } .w-100 { width: 100%; }
+
+/* Глоссарий UI */
+.mock-ui {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  opacity: 0.4;
+}
+.mock-ui-header { font-size: 12px; font-weight: 600; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px; margin-bottom: 12px; }
+.mock-ui-row { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
+
+/* Локализация */
+.mock-dashed-box {
+  width: calc(100% - 40px);
+  height: calc(100% - 40px);
+  border: 1px dashed var(--border-glass);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(139, 92, 246, 0.05);
+}
+
+/* Сплит-вью (До/После) */
+.split-visual { display: flex; width: 100%; }
+.split-left, .split-right { width: 50%; height: 100%; position: relative; }
+.split-left { background: var(--bg-primary); opacity: 0.8; }
+.split-right { background: var(--border-glass); opacity: 0.3; }
+.split-divider { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--border-glass); margin-left: -1px; }
+.split-handle { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 24px; height: 24px; background: var(--bg-primary); border: 2px solid var(--border-glass); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-main); box-shadow: var(--shadow-main); }
+.mock-label { position: absolute; top: 12px; padding: 4px 8px; border-radius: 4px; background: var(--bg-glass); font-size: 10px; color: var(--text-main); opacity: 0.7; }
+.left-label { left: 12px; } .right-label { right: 12px; }
+.mock-kanji { position: absolute; top: 40%; left: 30%; font-size: 32px; font-weight: 900; opacity: 0.2; transform: rotate(15deg); }
+.blur { filter: blur(2px); } .solid { opacity: 0.6; }
+.noise-bg { background-image: radial-gradient(var(--text-main) 1px, transparent 1px); background-size: 8px 8px; opacity: 0.15; }
+
+/* Таблица QC */
+.mock-table { display: flex; width: 100%; height: 100%; opacity: 0.5; }
+.mock-table-col { flex: 1; padding: 16px; display: flex; flex-direction: column; }
+.border-r { border-right: 1px solid var(--border-glass); }
+.bg-dim { background: rgba(0,0,0,0.03); }
+.dark .bg-dim { background: rgba(255,255,255,0.03); }
+.outline { background: transparent; }
+
+/* Типографика */
+.flex-row-center { display: flex; align-items: center; padding: 20px; }
+.mock-type-ui { display: flex; width: 100%; gap: 16px; opacity: 0.6; align-items: center; }
+.mock-type-controls { flex: 1; }
+.mock-slider { height: 6px; background: var(--border-glass); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+.mock-slider-fill { height: 100%; background: var(--text-main); opacity: 0.4; }
+.mock-bubble-preview { flex: 1; display: flex; justify-content: center; }
+.mock-speech-bubble { background: var(--bg-primary); border: 1px solid var(--border-glass); padding: 12px 16px; border-radius: 50px; font-size: 10px; font-weight: 600; position: relative; }
+.mock-speech-bubble::after { content: ''; position: absolute; bottom: -5px; left: 20px; width: 10px; height: 10px; background: var(--bg-primary); border-bottom: 1px solid var(--border-glass); border-right: 1px solid var(--border-glass); transform: rotate(45deg); }
+
+/* Заметка инфраструктуры */
+.bento-note {
+  font-size: 0.75rem;
+  color: var(--text-main);
+  opacity: 0.6;
+  background: var(--dot-color);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-glass);
+}
+
+/* Мок-браузер */
+.mock-dashboard-visual {
+  height: 250px;
+  background: var(--dot-color);
+  border-top: 1px solid var(--border-glass);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 0 32px;
+}
+.mock-browser {
+  width: 100%;
+  max-width: 800px;
+  height: 200px;
+  background: var(--bg-primary);
+  border-radius: 12px 12px 0 0;
+  border: 1px solid var(--border-glass);
+  border-bottom: none;
+  display: flex;
+  flex-direction: column;
+}
+.mock-browser-header {
+  height: 32px;
+  border-bottom: 1px solid var(--border-glass);
+  background: var(--dot-color);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 6px;
+}
+.mock-browser-header i { width: 10px; height: 10px; border-radius: 50%; background: var(--border-glass); }
+.mock-browser-body { display: flex; flex: 1; opacity: 0.3; }
+.mock-sidebar { width: 120px; border-right: 1px solid var(--border-glass); padding: 16px; }
+.mock-main { flex: 1; padding: 16px; display: flex; flex-direction: column; }
+.mock-content-box { flex: 1; border: 1px solid var(--border-glass); border-radius: 8px; }
+
+/* Мок-статья */
+.mock-article-visual {
+  height: 200px;
+  background: var(--dot-color);
+  border-top: 1px solid var(--border-glass);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.mock-article-page {
+  width: 80%;
+  height: 160px;
+  background: var(--bg-primary);
+  border-radius: 12px 12px 0 0;
+  border: 1px solid var(--border-glass);
+  border-bottom: none;
+  padding: 24px;
+  opacity: 0.4;
+}
+
+/* ─── Анимация Reveal ────────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), 
+              transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity, transform; /* Оптимизация для браузера */
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Опционально: задержка для элементов внутри сетки, 
+   чтобы они появлялись лесенкой, если находятся на одном уровне */
+.bento-grid-2 .reveal:nth-child(2) { transition-delay: 0.1s; }
+.bento-grid-3 .reveal:nth-child(2) { transition-delay: 0.1s; }
+.bento-grid-3 .reveal:nth-child(3) { transition-delay: 0.2s; }
