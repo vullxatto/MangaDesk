@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap">
   <link rel="stylesheet" href="src/css/style.css">
-  <link rel="icon" type="image/svg+xml" href="/logo.svg">
+  <link rel="icon" type="image/svg+xml" href="public/logo.svg">
   <script>
     (function () {
       const saved = localStorage.getItem('theme');
@@ -26,7 +26,8 @@
 <body class="page-auth">
   <div class="auth-split">
     <aside class="auth-split-left" aria-hidden="true">
-      <video class="auth-split-video" autoplay muted loop playsinline preload="auto">
+      <video class="auth-split-video" autoplay muted loop playsinline preload="auto"
+        width="1920" height="1080">
         <source src="src/assets/auth.mp4" type="video/mp4">
       </video>
     </aside>
@@ -41,7 +42,7 @@
         <div class="auth-panel">
           <a href="index.html" class="logo-group auth-panel-logo" aria-label="MangaDesk — на главную">
             <div class="logo-icon">
-              <img src="/logo.svg" alt="" class="main-logo" width="20" height="20">
+              <img src="public/logo.svg" alt="" class="main-logo" width="20" height="20">
             </div>
             <span class="logo-text">MangaDesk</span>
           </a>
