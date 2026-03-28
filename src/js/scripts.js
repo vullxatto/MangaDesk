@@ -1,25 +1,9 @@
-import landingEngUrl from '../assets/landing_eng.jpg?url';
-import landingRuUrl from '../assets/landing_ru.jpg?url';
-
 // Смена светлой и тёмной темы
 const themeToggle = document.getElementById('theme-toggle');
 themeToggle?.addEventListener('click', () => {
     const html = document.documentElement;
     html.classList.toggle('dark');
     localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
-});
-
-// Модалки
-document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.open-modal-btn');
-    if (btn) {
-        const modalId = btn.getAttribute('data-modal');
-        const modal = document.getElementById(modalId);
-        modal?.showModal();
-    }
-    if (e.target instanceof HTMLDialogElement) {
-        e.target.close();
-    }
 });
 
 // FAQ: ответ-вопрос
@@ -38,7 +22,7 @@ document.querySelectorAll('.faq-item').forEach((item) => {
 // Полноэкранный просмотр примера по клику на превью в "Обзоре возможностей" и на examples.html
 document.addEventListener('click', (e) => {
     const card = e.target.closest(
-        '#features .bento-grid-3 .bento-card, #features .bento-card[data-preview-fullscreen], #examples-grid .examples-card'
+        '#features .bento-grid-3 .bento-card, #features .bento-card[data-preview-fullscreen], #examples-page .examples-category-grid .bento-card'
     );
     if (!card) return;
 
@@ -58,48 +42,108 @@ document.addEventListener('click', (e) => {
 // Иконки
 window.lucide?.createIcons?.();
 
+function escapeHtml(s) {
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function exampleSliderCard(item, imgBefore, imgAfter) {
+    const t = escapeHtml(item.title);
+    const d = escapeHtml(item.desc);
+    const srcBefore = escapeHtml(imgBefore);
+    const srcAfter = escapeHtml(imgAfter);
+    return `
+          <div class="bento-card bento-card--slider-preview reveal">
+            <div class="bento-visual">
+              <div class="before-after-slider" data-slider>
+                <img src="${srcAfter}" alt="После, ${t}">
+                <div class="before-after-pane">
+                  <img src="${srcBefore}" alt="До, ${t}">
+                </div>
+                <span class="before-after-label before-after-label--before">До</span>
+                <span class="before-after-label before-after-label--after">После</span>
+                <div class="before-after-divider">
+                  <div class="before-after-grip">
+                    <i data-lucide="move-horizontal" class="icon-20"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bento-card-content">
+              <h3 class="bento-title">${t}</h3>
+              <p class="bento-text">${d}</p>
+            </div>
+          </div>`;
+}
+
 function initExamplesGrid() {
-    const grid = document.getElementById('examples-grid');
-    if (!grid) return;
+    const root = document.getElementById('examples-root');
+    if (!root) return;
 
-    const imgBefore = landingEngUrl;
-    const imgAfter = landingRuUrl;
+    const defaultImgBefore = 'src/assets/landing_eng.jpg';
+    const defaultImgAfter = 'src/assets/landing_ru.jpg';
 
-    const items = [
-        { title: 'Пример #1', desc: 'Очистка скана и перевод текста на странице' },
-        { title: 'Пример #2', desc: 'Работа со сложным фоном и звуковыми эффектами' },
-        { title: 'Пример #3', desc: 'Сохранение деталей иллюстрации при обработке' },
-        { title: 'Пример #4', desc: 'Локализация реплик с сохранением композиции' },
-        { title: 'Пример #5', desc: 'Подготовка под печать и цифровой релиз' },
-        { title: 'Пример #6', desc: 'Коррекция баланса и читаемости текста в баблах' },
-        { title: 'Пример #7', desc: 'Обработка теней и полутонов на скане' },
-        { title: 'Пример #8', desc: 'Итоговый вид страницы перед выгрузкой в PSD' },
+    /**
+     * Категории и карточки примеров.
+     * У item: title, desc — обязательны; imgBefore, imgAfter — необязательны (как в index.html, напр. "src/assets/foo.jpg").
+     * У категории: defaultImgBefore, defaultImgAfter — общие для всех item без своих путей.
+     */
+    const categories = [
+        {
+            id: 'examples-cat-clean',
+            title: 'Клин и подготовка скана',
+            subtitle: 'Очистка исходников, шумодав и подготовка страницы к переводу',
+            items: [
+                { title: 'Очистка от артефактов', desc: 'Убираем грязь, потёртости и следы сканирования без потери линий и штриховки',  imgBefore: 'src/assets/gif.jpg', imgAfter: 'src/assets/png.jpg', },
+                { title: 'Шумоподавление', desc: 'Настраиваемый шумодав снимает зернистость и мусор, сохраняя детали иллюстрации' },
+                { title: 'Выравнивание тонов', desc: 'Более ровные блики и тени — текст и эффекты читаются предсказуемо на всей главе' },
+            ],
+        },
+        {
+            id: 'examples-cat-translate',
+            title: 'Перевод и локализация',
+            subtitle: 'Контекст, терминология и естественные реплики на русском',
+            items: [
+                { title: 'Контекстный перевод', desc: 'Учитываем сюжет, обращения и стиль речи персонажей от панели к панели' },
+                { title: 'Глоссарий проекта', desc: 'Имена, локации и устойчивые формулировки остаются единообразными во всём томе' },
+                { title: 'Адаптация идиом', desc: 'Метафоры и шутки переносим так, чтобы звучало по-русски, а не как дословный след оригинала' },
+            ],
+        },
+        {
+            id: 'examples-cat-type',
+            title: 'Типографика и выдача',
+            subtitle: 'Шрифты, контроль результата и готовый PSD для дальнейшей работы',
+            items: [
+                { title: 'Настройка типографики', desc: 'Шрифты, кегль и переносы в бабблах — с живым предпросмотром на странице' },
+                { title: 'Контроль качества', desc: 'Правки в таблице перевода до сборки: в PSD попадает только согласованный вариант' },
+                { title: 'Многослойный PSD', desc: 'Не склейка картинки, а рабочий файл со слоями для доработки в Photoshop' },
+            ],
+        },
     ];
 
-    grid.innerHTML = items
+    const resolveImages = (item, cat) => ({
+        before: item.imgBefore ?? cat.defaultImgBefore ?? defaultImgBefore,
+        after: item.imgAfter ?? cat.defaultImgAfter ?? defaultImgAfter,
+    });
+
+    root.innerHTML = categories
         .map(
-            (item, i) => `
-    <article class="examples-card reveal">
-      <div class="examples-slider-wrap">
-        <div class="before-after-slider" data-slider>
-          <img src="${imgAfter}" alt="После, ${item.title}">
-          <div class="before-after-pane">
-            <img src="${imgBefore}" alt="До, ${item.title}">
-          </div>
-          <span class="before-after-label before-after-label--before">До</span>
-          <span class="before-after-label before-after-label--after">После</span>
-          <div class="before-after-divider">
-            <div class="before-after-grip">
-              <i data-lucide="move-horizontal" class="icon-20"></i>
-            </div>
-          </div>
-        </div>
+            (cat) => `
+    <section class="examples-category" aria-labelledby="${cat.id}">
+      <div class="section-head examples-category-head">
+        <h2 id="${cat.id}" class="examples-category-title">${escapeHtml(cat.title)}</h2>
+        <p class="examples-category-subtitle">${escapeHtml(cat.subtitle)}</p>
       </div>
-      <div class="examples-card-caption">
-        <h2 class="examples-card-title">${item.title}</h2>
-        <p class="examples-card-desc">${item.desc}</p>
+      <div class="examples-category-grid mb-24">
+        ${cat.items.map((item) => {
+        const { before, after } = resolveImages(item, cat);
+        return exampleSliderCard(item, before, after);
+    }).join('')}
       </div>
-    </article>`
+    </section>`
         )
         .join('');
 }
@@ -120,9 +164,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (entry.isIntersecting) {
                 // Добавляем класс active, когда элемент попадает в зону видимости
                 entry.target.classList.add('active');
-                
+
                 // Перестаем наблюдать, чтобы анимация проигрывалась только один раз
-                observer.unobserve(entry.target); 
+                observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
@@ -136,28 +180,50 @@ document.addEventListener('DOMContentLoaded', () => {
 // Логика слайдера
 function setupSlider(slider) {
     const beforeOverlay = slider.querySelector('.before-after-pane');
-    const beforeImg     = beforeOverlay?.querySelector('img');
-    const handle        = slider.querySelector('.before-after-divider');
-    const circle        = slider.querySelector('.before-after-grip');
-    const badgeBefore   = slider.querySelector('.before-after-label--before');
-    const badgeAfter    = slider.querySelector('.before-after-label--after');
+    const beforeImg = beforeOverlay?.querySelector('img');
+    const handle = slider.querySelector('.before-after-divider');
+    const circle = slider.querySelector('.before-after-grip');
+    const badgeBefore = slider.querySelector('.before-after-label--before');
+    const badgeAfter = slider.querySelector('.before-after-label--after');
 
     if (!beforeOverlay || !handle || !circle) return;
 
     // Синхронизация ширины изображения "до"
     const syncSize = () => {
+        if (slider.classList.contains('before-after-slider--dragging')) return;
         if (beforeImg) beforeImg.style.width = `${slider.offsetWidth}px`;
     };
     syncSize();
-    new ResizeObserver(syncSize).observe(slider);
+    if (!slider.closest('#modal-slider-target')) {
+        let roFrame = 0;
+        const syncSizeRaf = () => {
+            cancelAnimationFrame(roFrame);
+            roFrame = requestAnimationFrame(syncSize);
+        };
+        new ResizeObserver(syncSizeRaf).observe(slider);
+    }
+    /* В #modal-slider-target не вешаем ResizeObserver: клон под CSS scale, observer даёт лишние перерисовки */
+
+    /* Полноэкранный клон под scale: живой getBoundingClientRect() и % «плавают» на субпикселях — фиксируем бокс на время drag и шаг в px layout. */
+    let frozenModalHit = null;
 
     const move = e => {
-        const rect = slider.getBoundingClientRect();
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        let x = clientX - rect.left;
-        x = Math.max(0, Math.min(x, rect.width));
+        const live = slider.getBoundingClientRect();
+        const left = frozenModalHit ? frozenModalHit.left : live.left;
+        const hitW = frozenModalHit ? frozenModalHit.width : live.width;
+        const ow = frozenModalHit ? frozenModalHit.ow : slider.offsetWidth;
 
-        const percent = (x / rect.width) * 100;
+        let xVisual = clientX - left;
+        xVisual = Math.max(0, Math.min(xVisual, hitW));
+
+        let xLayout = hitW > 0 ? (xVisual / hitW) * ow : 0;
+        xLayout = Math.max(0, Math.min(xLayout, ow));
+        if (frozenModalHit) {
+            xLayout = Math.round(xLayout);
+        }
+
+        const percent = ow > 0 ? (xLayout / ow) * 100 : 50;
 
         beforeOverlay.style.width = `${percent}%`;
         handle.style.left = `${percent}%`;
@@ -179,6 +245,13 @@ function setupSlider(slider) {
     const start = e => {
         e.preventDefault();
         e.stopPropagation();
+        slider.classList.add('before-after-slider--dragging');
+        if (slider.closest('#modal-slider-target')) {
+            const r = slider.getBoundingClientRect();
+            frozenModalHit = { left: r.left, width: r.width, ow: slider.offsetWidth };
+        } else {
+            frozenModalHit = null;
+        }
         active = true;
         didDrag = false;
         dragStartX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -188,9 +261,11 @@ function setupSlider(slider) {
     circle.addEventListener('mousedown', start);
     circle.addEventListener('touchstart', start, { passive: false });
 
-    window.addEventListener('mouseup',   () => {
+    window.addEventListener('mouseup', () => {
         if (!active) return;
         active = false;
+        frozenModalHit = null;
+        slider.classList.remove('before-after-slider--dragging');
         if (didDrag) {
             slider.dataset.draggingJustNow = 'true';
             setTimeout(() => { delete slider.dataset.draggingJustNow; }, 180);
@@ -202,14 +277,18 @@ function setupSlider(slider) {
         if (deltaX > 4) didDrag = true;
         move(e);
     });
-    window.addEventListener('touchend',  () => {
+    const endTouchDrag = () => {
         if (!active) return;
         active = false;
+        frozenModalHit = null;
+        slider.classList.remove('before-after-slider--dragging');
         if (didDrag) {
             slider.dataset.draggingJustNow = 'true';
             setTimeout(() => { delete slider.dataset.draggingJustNow; }, 180);
         }
-    });
+    };
+    window.addEventListener('touchend', endTouchDrag);
+    window.addEventListener('touchcancel', endTouchDrag);
     window.addEventListener('touchmove', e => {
         if (active) {
             const deltaX = Math.abs(e.touches[0].clientX - dragStartX);
@@ -225,15 +304,12 @@ let currentOriginalSlider = null;
 
 function openFullscreen(element) {
     const overlay = document.getElementById('modal-overlay');
-    const target  = document.getElementById('modal-slider-target');
+    const target = document.getElementById('modal-slider-target');
     if (!overlay || !target) return;
 
     currentOriginalSlider = element;
 
     const clone = element.cloneNode(true);
-    
-    const zoomOverlay = clone.querySelector('.before-after-zoom-layer');
-    if (zoomOverlay) zoomOverlay.remove();
 
     /* Те же px-размеры, что на лэндинге — иначе другой бокс → object-fit: cover режет иначе.
        Вписываем в экран равномерным scale, без смены пропорций контейнера. */
@@ -280,8 +356,8 @@ function openFullscreen(element) {
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
 
-    setupSlider(clone);
     lucide.createIcons();
+    setupSlider(clone);
 }
 
 function openImageFullscreen(imageElement) {
@@ -300,7 +376,7 @@ function openImageFullscreen(imageElement) {
     img.style.height = 'auto';
     img.style.objectFit = 'contain';
     img.style.borderRadius = '16px';
-    img.style.boxShadow = 'var(--shadow-main)';
+    img.style.boxShadow = 'var(--shadow__base)';
 
     target.innerHTML = '';
     target.appendChild(img);
@@ -309,7 +385,7 @@ function openImageFullscreen(imageElement) {
 }
 
 // Закрытие полноэкранного режима (клик по фону или крестику)
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const overlay = document.getElementById('modal-overlay');
     if (!overlay || !overlay.classList.contains('active')) return;
 
@@ -326,7 +402,7 @@ document.addEventListener('click', function(e) {
             const clonedSlider = target.querySelector('.before-after-slider, [data-slider]');
 
             if (clonedSlider) {
-                const finalWidth  = clonedSlider.querySelector('.before-after-pane')?.style.width;
+                const finalWidth = clonedSlider.querySelector('.before-after-pane')?.style.width;
                 const finalHandle = clonedSlider.querySelector('.before-after-divider')?.style.left;
 
                 if (finalWidth && finalHandle) {
@@ -348,15 +424,4 @@ document.addEventListener('DOMContentLoaded', () => {
         setupSlider(slider);
     });
     lucide.createIcons();
-});
-
-// Делегирование клика по слою полноэкранного зума
-document.addEventListener('click', function(e) {
-    const zoomOverlay = e.target.closest('.before-after-zoom-layer');
-    if (zoomOverlay) {
-        const slider = zoomOverlay.closest('.before-after-slider, [data-slider]');
-        if (slider) {
-            openFullscreen(slider);
-        }
-    }
 });

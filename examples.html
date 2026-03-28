@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Примеры работ — MangaDesk</title>
-  <meta name="description" content="Примеры обработки и перевода манги в MangaDesk" />
+  <title>MangaDesk — Примеры работ</title>
+  <meta name="description" content="MangaDesk — Примеры работ" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap">
@@ -23,103 +23,20 @@
 </head>
 
 <body>
-  <header class="header-fixed">
-    <nav class="container nav-glass">
-      <a href="index.html" class="logo-group">
-        <div class="logo-icon">
-          <img src="public/logo.svg" alt="MangaDesk Logo" class="main-logo">
-        </div>
-        <span class="logo-text">MangaDesk</span>
-      </a>
+  <load src="parts/header-simple.html" />
 
-      <div class="header-actions">
-        <button type="button" id="theme-toggle" class="icon-btn" aria-label="Сменить тему">
-          <i data-lucide="sun" class="sun-icon"></i>
-          <i data-lucide="moon" class="moon-icon"></i>
-        </button>
-
-        <a class="btn-primary" href="auth.html" role="button">
-          <i data-lucide="user" class="user-icon"></i>
-          <span>кабинет</span>
-        </a>
-      </div>
-    </nav>
-  </header>
-
-  <main class="examples-page">
+  <main class="examples-page" id="examples-page">
     <div class="page-content">
       <div class="examples-head section-head">
         <h1 class="section-title">Примеры работ</h1>
-        <p class="section-subtitle">Демонстрация возможностей сервиса</p>
+        <p class="section-subtitle">Демонстрация возможностей сервиса по категориям</p>
       </div>
 
-      <div id="examples-grid" class="examples-grid" aria-label="Галерея примеров"></div>
+      <div id="examples-root" class="examples-categories" aria-label="Примеры по категориям"></div>
     </div>
   </main>
-
-  <div id="modal-overlay" class="modal-overlay">
-    <div class="close-modal">
-      <i data-lucide="x" class="icon-32"></i>
-    </div>
-    <div id="modal-slider-target" class="modal-slider-target"></div>
-  </div>
-
-  <footer class="main-footer">
-    <div class="container footer-grid">
-      <div class="footer-brand">
-        <div class="logo-group">
-          <div class="logo-icon">
-            <img src="public/logo.svg" alt="Logo" class="main-logo">
-          </div>
-          <span class="logo-text">MangaDesk</span>
-        </div>
-        <p class="footer-description">
-          Профессиональный инструмент для автоматизации перевода манги, манхвы и вебтунов
-          Создано для тех, кто ценит идеальное качество и своё личное время
-        </p>
-      </div>
-
-      <div class="footer-links">
-        <h4>О нас</h4>
-        <ul>
-          <li><a href="#">Кто мы?</a></li>
-          <li><a href="#">Вакансии</a></li>
-          <li><a href="#">Реклама</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-links">
-        <h4>Общее</h4>
-        <ul>
-          <li><a href="#">Правообладателям</a></li>
-          <li><a href="#">Правила сайта</a></li>
-          <li><a href="#">Соглашения</a></li>
-          <li><a href="#">Privacy Policy</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-links">
-        <h4>Связь</h4>
-        <ul class="social-links">
-          <li><a href="#"><i data-lucide="send" class="send-icon"></i> Telegram</a></li>
-          <li><a href="#"><i data-lucide="mail" class="mail-icon"></i> Gmail</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="container footer-bottom">
-      <p>© 2026 MANGADESK — ИИ ДЛЯ СКАНЛЕЙТА ВСЕ ПРАВА ЗАЩИЩЕНЫ</p>
-    </div>
-  </footer>
-
-  <dialog id="auth-modal" aria-label="Авторизация">
-    <h2>Авторизация</h2>
-    <p>Заглушка модалки Позже сюда можно добавить форму входа</p>
-    <form method="dialog">
-      <button class="btn-primary" type="submit">Закрыть</button>
-    </form>
-  </dialog>
-
+  <load src="parts/footer.html" />
+  <load src="parts/modals.html" />
   <script src="https://unpkg.com/lucide@0.539.0/dist/umd/lucide.min.js"></script>
   <script type="module" src="src/js/scripts.js"></script>
 </body>

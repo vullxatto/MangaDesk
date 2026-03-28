@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MangaDesk</title>
-  <meta name="description" content="MangaDesk — инструмент для автоматизации перевода" />
+  <title>MangaDesk — Инструмент для автоматизации перевода</title>
+  <meta name="description" content="MangaDesk — Инструмент для автоматизации перевода" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap">
@@ -28,7 +28,8 @@
 
   <main>
     <section class="hero">
-      <div class="page-content">
+      <canvas id="hero-particles-canvas" class="hero-particles-canvas" aria-hidden="true"></canvas>
+      <div class="page-content hero-content">
         <div class="hero-badge">
           <span class="hero-dot" aria-hidden="true"></span>
           <span class="hero-badge-text">Новое поколение перевода</span>
@@ -93,7 +94,7 @@
 
     <section id="features" class="bento-section">
       <div class="page-content">
-        <div class="section-head text-center bento-head-margin">
+        <div class="section-head bento-head-margin">
           <h2 class="section-title bento-title-main">Обзор возможностей</h2>
           <p class="section-subtitle bento-subtitle">
             Зачем мы Вам нужны?
@@ -256,11 +257,11 @@
         <div class="bento-layout">
 
           <div class="bento-card col-span-8 reveal">
-            <div class="bento-card-content justify-center p-8-lg">
-              <div class="flex items-center gap-3 mb-16">
-                <h3 class="bento-title mb-0">Гибкий конструктор процессов</h3>
+            <div class="bento-card-content p-8-lg">
+              <div class="mb-16">
+                <h3 class="bento-title">Гибкий конструктор процессов</h3>
               </div>
-              <p class="bento-text mb-24 max-w-lg text-md">Используйте сервис так, как удобно Вам: делегируйте полный
+              <p class="bento-text mb-24 text-md">Используйте сервис так, как удобно Вам: делегируйте полный
                 цикл «под ключ» или выбирайте отдельные этапы</p>
               <div class="bento-note mt-auto">
                 <span class="text-purple"></span> Стоимость каждой отдельной главы определяется динамически, в
@@ -271,7 +272,7 @@
 
           <div class="col-span-4 flex-col-gap">
             <div class="bento-card reveal">
-              <div class="bento-card-content p-8-lg flex-col">
+              <div class="bento-card-content p-8-lg">
                 <h3 class="bento-title">Доступность для всех</h3>
                 <p class="bento-text mt-auto">Мы радикально снизили порог входа, чтобы автоматизация была доступна как
                   крупным командам, так и соло-переводчикам</p>
@@ -286,13 +287,13 @@
           </div>
 
           <div class="bento-card col-span-12 reveal" data-preview-fullscreen>
-            <div class="bento-card-content max-w-3xl mb-0 z-10 relative pb-0">
-              <div class="flex items-center gap-3 mb-16">
-                <h3 class="bento-title mb-0">Единый личный кабинет</h3>
+            <div class="bento-card-content">
+              <div class="mb-16">
+                <h3 class="bento-title">Единый личный кабинет</h3>
               </div>
-              <p class="bento-text mb-16 max-w-2xl text-md">Все ваши проекты, главы, статистика, выдачи задач участникам
+              <p class="bento-text mb-16 text-md">Все ваши проекты, главы, статистика, выдачи задач участникам
                 команды и многое другое в одном месте. Мы предоставляем полноценную рабочую среду</p>
-              <div class="bento-note bg-transparent border-0 p-0 text-xs text-opacity-70 mb-24">
+              <div class="bento-note mb-24">
                 Оплату производит только создатель команды. Участники получают доступ бесплатно после приглашения
               </div>
             </div>
@@ -302,11 +303,11 @@
           </div>
 
           <div class="bento-card col-span-8 bento-article-card reveal" data-preview-fullscreen>
-            <div class="bento-card-content z-10 relative pb-0">
-              <div class="flex items-center gap-3 mb-16">
-                <h3 class="bento-title mb-0">Редактируемые статьи</h3>
+            <div class="bento-card-content">
+              <div class="mb-16">
+                <h3 class="bento-title">Редактируемые статьи</h3>
               </div>
-              <p class="bento-text max-w-lg mb-24">Мы подготовили мануалы по переводу, клину и тайпу — редактируйте и
+              <p class="bento-text mb-24">Мы подготовили мануалы по переводу, клину и тайпу — редактируйте и
                 используйте их для обучения новых членов Вашей команды</p>
             </div>
             <div class="bento-visual bento-visual--cabinet">
@@ -444,18 +445,12 @@
     </section>
   </main>
 
-  <div id="modal-overlay" class="modal-overlay">
-    <div class="close-modal">
-      <i data-lucide="x" class="icon-32"></i>
-    </div>
-    <div id="modal-slider-target" class="modal-slider-target"></div>
-  </div>
-
   <load src="parts/footer.html" />
   <load src="parts/modals.html" />
 
   <script src="https://unpkg.com/lucide@0.539.0/dist/umd/lucide.min.js"></script>
   <script type="module" src="src/js/scripts.js"></script>
+  <script type="module" src="src/js/hero-particles.js"></script>
 </body>
 
 </html>
