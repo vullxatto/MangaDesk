@@ -1,3 +1,6 @@
+import landingEngUrl from '../assets/landing_eng.jpg?url';
+import landingRuUrl from '../assets/landing_ru.jpg?url';
+
 // Смена светлой и тёмной темы
 const themeToggle = document.getElementById('theme-toggle');
 themeToggle?.addEventListener('click', () => {
@@ -59,8 +62,8 @@ function initExamplesGrid() {
     const grid = document.getElementById('examples-grid');
     if (!grid) return;
 
-    const imgBefore = 'src/assets/landing_eng.jpg';
-    const imgAfter = 'src/assets/landing_ru.jpg';
+    const imgBefore = landingEngUrl;
+    const imgAfter = landingRuUrl;
 
     const items = [
         { title: 'Пример #1', desc: 'Очистка скана и перевод текста на странице' },
