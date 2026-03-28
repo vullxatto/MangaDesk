@@ -1,3 +1,8 @@
+import landingEngUrl from '../assets/landing_eng.jpg?url';
+import landingRuUrl from '../assets/landing_ru.jpg?url';
+import exampleGifUrl from '../assets/gif.jpg?url';
+import examplePngUrl from '../assets/png.jpg?url';
+
 // Смена светлой и тёмной темы
 const themeToggle = document.getElementById('theme-toggle');
 themeToggle?.addEventListener('click', () => {
@@ -83,13 +88,13 @@ function initExamplesGrid() {
     const root = document.getElementById('examples-root');
     if (!root) return;
 
-    const defaultImgBefore = 'src/assets/landing_eng.jpg';
-    const defaultImgAfter = 'src/assets/landing_ru.jpg';
+    const defaultImgBefore = landingEngUrl;
+    const defaultImgAfter = landingRuUrl;
 
     /**
      * Категории и карточки примеров.
-     * У item: title, desc — обязательны; imgBefore, imgAfter — необязательны (как в index.html, напр. "src/assets/foo.jpg").
-     * У категории: defaultImgBefore, defaultImgAfter — общие для всех item без своих путей.
+     * imgBefore / imgAfter: URL из import '../assets/...jpg?url' (иначе на GitHub Pages пути вида src/assets/... в dist не существуют).
+     * У категории: defaultImgBefore, defaultImgAfter — те же правила.
      */
     const categories = [
         {
@@ -97,7 +102,12 @@ function initExamplesGrid() {
             title: 'Клин и подготовка скана',
             subtitle: 'Очистка исходников, шумодав и подготовка страницы к переводу',
             items: [
-                { title: 'Очистка от артефактов', desc: 'Убираем грязь, потёртости и следы сканирования без потери линий и штриховки',  imgBefore: 'src/assets/gif.jpg', imgAfter: 'src/assets/png.jpg', },
+                {
+                    title: 'Очистка от артефактов',
+                    desc: 'Убираем грязь, потёртости и следы сканирования без потери линий и штриховки',
+                    imgBefore: exampleGifUrl,
+                    imgAfter: examplePngUrl,
+                },
                 { title: 'Шумоподавление', desc: 'Настраиваемый шумодав снимает зернистость и мусор, сохраняя детали иллюстрации' },
                 { title: 'Выравнивание тонов', desc: 'Более ровные блики и тени — текст и эффекты читаются предсказуемо на всей главе' },
             ],
