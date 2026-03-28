@@ -11,6 +11,7 @@ export default defineConfig(({ command }) => ({
     rollupOptions: {
       input: {
         index: resolve(__dirname, 'index.html'),
+        examples: resolve(__dirname, 'examples.html'),
         auth: resolve(__dirname, 'auth.html'),
       },
       output: {
