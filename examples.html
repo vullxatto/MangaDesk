@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Примеры работ — MangaDesk</title>
+  <meta name="description" content="Примеры обработки и перевода манги в MangaDesk" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap">
+  <link rel="stylesheet" href="src/css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/logo.svg">
+  <script>
+    (function () {
+      const saved = localStorage.getItem('theme');
+      const preferDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && preferDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+</head>
+
+<body>
+  <load src="parts/header-simple.html" />
+
+  <main class="examples-page">
+    <div class="page-content">
+      <div class="examples-head section-head">
+        <h1 class="section-title">Примеры работ</h1>
+        <p class="section-subtitle">Демонстрация возможностей сервиса</p>
+      </div>
+
+      <div id="examples-grid" class="examples-grid" aria-label="Галерея примеров"></div>
+    </div>
+  </main>
+
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="close-modal">
+      <i data-lucide="x" class="icon-32"></i>
+    </div>
+    <div id="modal-slider-target" class="modal-slider-target"></div>
+  </div>
+
+  <load src="parts/footer.html" />
+  <load src="parts/modals.html" />
+
+  <script src="https://unpkg.com/lucide@0.539.0/dist/umd/lucide.min.js"></script>
+  <script type="module" src="src/js/scripts.js"></script>
+</body>
+
+</html>

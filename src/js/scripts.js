@@ -32,9 +32,11 @@ document.querySelectorAll('.faq-item').forEach((item) => {
     });
 });
 
-// Полноэкранный просмотр примера по клику на превью в "Обзоре возможностей"
+// Полноэкранный просмотр примера по клику на превью в "Обзоре возможностей" и на examples.html
 document.addEventListener('click', (e) => {
-    const card = e.target.closest('#features .bento-grid-3 .bento-card, #features .bento-card[data-preview-fullscreen]');
+    const card = e.target.closest(
+        '#features .bento-grid-3 .bento-card, #features .bento-card[data-preview-fullscreen], #examples-grid .examples-card'
+    );
     if (!card) return;
 
     const slider = card.querySelector('.before-after-slider, [data-slider]');
@@ -53,12 +55,61 @@ document.addEventListener('click', (e) => {
 // Иконки
 window.lucide?.createIcons?.();
 
+function initExamplesGrid() {
+    const grid = document.getElementById('examples-grid');
+    if (!grid) return;
+
+    const imgBefore = 'src/assets/landing_eng.jpg';
+    const imgAfter = 'src/assets/landing_ru.jpg';
+
+    const items = [
+        { title: 'Пример #1', desc: 'Очистка скана и перевод текста на странице' },
+        { title: 'Пример #2', desc: 'Работа со сложным фоном и звуковыми эффектами' },
+        { title: 'Пример #3', desc: 'Сохранение деталей иллюстрации при обработке' },
+        { title: 'Пример #4', desc: 'Локализация реплик с сохранением композиции' },
+        { title: 'Пример #5', desc: 'Подготовка под печать и цифровой релиз' },
+        { title: 'Пример #6', desc: 'Коррекция баланса и читаемости текста в баблах' },
+        { title: 'Пример #7', desc: 'Обработка теней и полутонов на скане' },
+        { title: 'Пример #8', desc: 'Итоговый вид страницы перед выгрузкой в PSD' },
+    ];
+
+    grid.innerHTML = items
+        .map(
+            (item, i) => `
+    <article class="examples-card reveal">
+      <div class="examples-slider-wrap">
+        <div class="before-after-slider" data-slider>
+          <img src="${imgAfter}" alt="После, ${item.title}">
+          <div class="before-after-pane">
+            <img src="${imgBefore}" alt="До, ${item.title}">
+          </div>
+          <span class="before-after-label before-after-label--before">До</span>
+          <span class="before-after-label before-after-label--after">После</span>
+          <div class="before-after-divider">
+            <div class="before-after-grip">
+              <i data-lucide="move-horizontal" class="icon-20"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="examples-card-caption">
+        <h2 class="examples-card-title">${item.title}</h2>
+        <p class="examples-card-desc">${item.desc}</p>
+      </div>
+    </article>`
+        )
+        .join('');
+}
+
 // Анимация появления элементов при скролле (reveal)
 document.addEventListener('DOMContentLoaded', () => {
+    initExamplesGrid();
+
     const observerOptions = {
         root: null,
-        rootMargin: '0px',
-        threshold: 0.15 // Элемент начнет появляться, когда покажется на 15%
+        /* Небольшой «запас» до края вьюпорта — анимация стартует раньше, без рывка */
+        rootMargin: '48px 0px 48px 0px',
+        threshold: 0,
     };
 
     const observer = new IntersectionObserver((entries, observer) => {
