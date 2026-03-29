@@ -1,4 +1,5 @@
 @import '../core.css';
+@import '../components/bento-cards.css';
 
 /* ─── Страница примеров (examples.html): 4×2 на десктопе ─────────────────── */
 .examples-page {

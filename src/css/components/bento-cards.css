@@ -1,0 +1,65 @@
+/* Карточки bento со слайдером «до/после»: главная (#features) и examples.html */
+.bento-card {
+    background: var(--color__surface-glass);
+    border: 1px solid var(--color__border-subtle);
+    border-radius: var(--radius__xl);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow__base);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.bento-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow__elev-hover);
+    border-color: var(--color__border-subtle);
+}
+
+.bento-card-content {
+    padding: var(--space__lg);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.bento-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--color__text-primary);
+    letter-spacing: -0.01em;
+}
+
+.bento-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--color__text-primary);
+    opacity: 0.7;
+}
+
+.mb-24 {
+    margin-bottom: var(--space__md);
+}
+
+.bento-visual {
+    height: 200px;
+    background: var(--color__surface-muted);
+    border-bottom: 1px solid var(--color__border-subtle);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.bento-visual .before-after-slider {
+    max-width: none;
+    height: 100%;
+    aspect-ratio: auto;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+}

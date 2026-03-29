@@ -1,4 +1,5 @@
 @import '../core.css';
+@import '../components/bento-cards.css';
 
 /* Hero */
 .hero {
@@ -803,25 +804,6 @@ a.pricing-btn {
   flex: 1 1 0;
 }
 
-.bento-card {
-  background: var(--color__surface-glass);
-  border: 1px solid var(--color__border-subtle);
-  border-radius: var(--radius__xl);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: var(--shadow__base);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-}
-
-.bento-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow__elev-hover);
-  border-color: var(--color__border-subtle); /* Опционально: можно заменить на var(--color__accent) */
-}
-
 /* «Обзор возможностей»: базовая тень; на карточках при hover — общая фиолетовая */
 #features .bento-card {
   box-shadow: var(--shadow__base);
@@ -885,21 +867,6 @@ a.pricing-btn {
   padding: 24px;
 }
 
-.bento-card-content {
-  padding: var(--space__lg);
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.bento-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: var(--color__text-primary);
-  letter-spacing: -0.01em;
-}
-
 .bento-title-lg {
   font-size: clamp(1.8rem, 3vw, 2.5rem);
   font-weight: 700;
@@ -907,19 +874,11 @@ a.pricing-btn {
   line-height: 1.2;
 }
 
-.bento-text {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--color__text-primary);
-  opacity: 0.7;
-}
-
 .text-purple { color: var(--color__accent); }
 .text-md { font-size: 1.05rem; }
 .flex-center { display: flex; align-items: center; justify-content: center; }
 .gap-2 { gap: var(--space__xs); }
 .mb-16 { margin-bottom: var(--space__sm); }
-.mb-24 { margin-bottom: var(--space__md); }
 .mt-auto { margin-top: auto; }
 .p-8-lg { padding: var(--space__xl); }
 
@@ -963,18 +922,6 @@ a.pricing-btn {
   transition: transform 0.5s ease;
 }
 
-/* Утилиты и мок-элементы для визуала */
-.bento-visual {
-  height: 200px;
-  background: var(--color__surface-muted);
-  border-bottom: 1px solid var(--color__border-subtle);
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
 .bento-grid-3 .bento-card .bento-visual {
   flex: 1 1 auto;
   min-height: 0;
@@ -985,15 +932,6 @@ a.pricing-btn {
   flex: 0 0 auto;
   min-height: 210px;
   padding: 20px 24px 22px;
-}
-
-.bento-visual .before-after-slider {
-  max-width: none;
-  height: 100%;
-  aspect-ratio: auto;
-  margin: 0;
-  border-radius: 0;
-  box-shadow: none;
 }
 
 .bento-visual--cabinet {
