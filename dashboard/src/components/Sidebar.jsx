@@ -21,9 +21,9 @@ const icons = {
 function Sidebar({ menuItems, activePage, onPageChange }) {
   return (
     <aside className="dashboard-sidebar">
-      <a className="dashboard-brand" href="../../index.html">
+      <a className="dashboard-brand" href={`${import.meta.env.BASE_URL}index.html`}>
         <span className="dashboard-brand-logo">
-          <img src="./favicon.svg" alt="MangaDesk logo" className="dashboard-brand-image" />
+          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="MangaDesk logo" className="dashboard-brand-image" />
         </span>
         <span className="dashboard-brand-text">MangaDesk</span>
       </a>
