@@ -23,7 +23,7 @@ function Sidebar({ menuItems, activePage, onPageChange }) {
     <aside className="dashboard-sidebar">
       <a className="dashboard-brand" href="../../index.html">
         <span className="dashboard-brand-logo">
-          <img src="/favicon.svg" alt="MangaDesk logo" className="dashboard-brand-image" />
+          <img src="./favicon.svg" alt="MangaDesk logo" className="dashboard-brand-image" />
         </span>
         <span className="dashboard-brand-text">MangaDesk</span>
       </a>
