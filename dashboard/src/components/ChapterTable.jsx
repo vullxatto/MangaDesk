@@ -1,4 +1,4 @@
-import { Clock3, Pencil, RotateCcw } from 'lucide-react'
+import { Clock3, CloudDownload, Pencil } from 'lucide-react'
 import StatusBadge from './StatusBadge'
 
 function ChapterTable({ rows }) {
@@ -22,19 +22,19 @@ function ChapterTable({ rows }) {
             <StatusBadge statusCode={row.statusCode} status={row.status} />
           </span>
           <span className="chapters-date">
-            <Clock3 size={12} />
+            <Clock3 size={13} strokeWidth={1.9} aria-hidden />
             {row.date}
           </span>
           <span className="chapters-editor">
-            <b>{row.editor.slice(-1)}</b>
-            {row.editor}
+            <b>{row.editor.replace(/\D/g, '') || '—'}</b>
+            <span className="chapters-editor-name">{row.editor}</span>
           </span>
           <span className="chapters-actions">
-            <button type="button" aria-label="Rollback">
-              <RotateCcw size={13} />
+            <button type="button" aria-label="Скачать">
+              <CloudDownload size={14} strokeWidth={1.8} />
             </button>
-            <button type="button" aria-label="Edit">
-              <Pencil size={13} />
+            <button type="button" aria-label="Редактировать">
+              <Pencil size={14} strokeWidth={1.8} />
             </button>
           </span>
         </div>

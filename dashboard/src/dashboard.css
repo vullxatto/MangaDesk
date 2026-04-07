@@ -20,17 +20,19 @@
 .dashboard-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space__xs);
   color: var(--color__text-primary);
   font-weight: 700;
-  font-size: 1.35rem;
+  font-size: 1.25rem;
   margin-left: 2px;
   margin-bottom: 8px;
 }
 
 .dashboard-brand-logo {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
   border-radius: var(--radius__sm);
   background: var(--gradient__accent);
   display: grid;
@@ -39,8 +41,8 @@
 }
 
 .dashboard-brand-image {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   object-fit: contain;
   filter: brightness(0) invert(1);
 }
@@ -48,7 +50,7 @@
 .dashboard-brand-text {
   letter-spacing: 0;
   text-transform: none;
-  font-size: 2rem;
+  font-size: 1.25rem;
   font-weight: 700;
 }
 
@@ -63,14 +65,14 @@
 .dashboard-nav-item {
   border: 1px solid transparent;
   text-align: left;
-  padding: 8px 10px;
+  padding: 15px 10px;
   border-radius: var(--radius__sm);
   font-size: 0.95rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-weight: 700;
   background: transparent;
-  color: color-mix(in srgb, var(--color__text-primary) 55%, transparent);
+  color: color-mix(in srgb, var(--color__text-primary) 50%, transparent);
   cursor: pointer;
   display: flex;
   width: 100%;
@@ -86,13 +88,13 @@
 }
 
 .dashboard-nav-item:hover {
-  background: var(--color__surface-muted);
+  background: color-mix(in srgb, var(--color__surface-muted) 30%, transparent);
+  color: color-mix(in srgb, var(--color__text-primary) 75%, transparent);
 }
 
 .dashboard-nav-item.is-active {
-  background: color-mix(in srgb, var(--color__accent) 14%, transparent);
+  background: color-mix(in srgb, var(--color__accent) 10%, transparent);
   color: var(--color__accent-dark);
-  border-color: color-mix(in srgb, var(--color__accent) 30%, transparent);
 }
 
 .dashboard-main {
@@ -113,7 +115,7 @@
   background: var(--color__surface-primary);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: var(--space__sm);
 }
 
@@ -143,20 +145,29 @@
   color: var(--color__text-primary);
 }
 
+/* Как .icon-btn в header-index (core.css) */
 .dashboard-theme-btn {
-  border: 1px solid var(--color__border-subtle);
-  background: transparent;
-  color: var(--color__text-primary);
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius__pill);
-  display: grid;
-  place-items: center;
+  background: none;
+  border: none;
+  padding: 8px;
   cursor: pointer;
+  border-radius: 50%;
+  color: var(--color__text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .dashboard-theme-btn:hover {
   background: var(--color__surface-muted);
+}
+
+.dashboard-theme-btn svg {
+  width: var(--icon__size-md);
+  height: var(--icon__size-md);
+  flex-shrink: 0;
 }
 
 .dashboard-content {
@@ -180,7 +191,68 @@
 }
 
 .chapters-page {
-  width: min(100%, 940px);
+  width: min(100%, 1300px);
+}
+
+.chapters-panel {
+  width: 100%;
+  background: var(--color__surface-primary);
+  border: 1px solid var(--color__border-subtle);
+  border-radius: var(--radius__xl);
+  box-shadow: var(--shadow__base);
+  overflow: hidden;
+}
+
+.chapters-panel .dashboard-toolbar {
+  padding: 20px 22px 18px;
+  margin-bottom: 0;
+  align-items: center;
+}
+
+.chapters-panel .dashboard-toolbar h1 {
+  font-size: clamp(1.45rem, 2.4vw, 1.8rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.chapters-panel .dashboard-filters {
+  gap: 10px;
+}
+
+.chapters-panel .dashboard-filter-btn {
+  height: 36px;
+  border-radius: var(--radius__pill);
+  padding: 0 14px;
+  gap: 10px;
+  background: var(--color__surface-primary);
+}
+
+.dashboard-filter-btn-text {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35em;
+}
+
+.dashboard-filter-btn-label,
+.dashboard-filter-btn-value {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.dashboard-filter-btn-label {
+  color: color-mix(in srgb, var(--color__text-primary) 52%, transparent);
+}
+
+.dashboard-filter-btn-value {
+  color: var(--color__text-primary);
+}
+
+.chapters-panel .dashboard-new-btn {
+  height: 36px;
+  border-radius: var(--radius__pill);
+  padding: 0 16px;
 }
 
 .dashboard-placeholder h2 {
@@ -267,19 +339,20 @@
 }
 
 .chapters-table {
-  border: 1px solid var(--color__border-subtle);
-  border-radius: var(--radius__lg);
+  border: 0;
+  border-top: 1px solid var(--color__border-subtle);
+  border-radius: 0;
   overflow: hidden;
   background: var(--color__surface-primary);
-  width: min(100%, 940px);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
 }
 
 .chapters-row {
   display: grid;
-  grid-template-columns: 1.5fr 1.05fr 1.2fr 1fr 0.55fr;
-  gap: 10px;
-  padding: 14px 16px;
+  grid-template-columns: 1.45fr 1.1fr 1.15fr 1.05fr 0.52fr;
+  gap: 12px;
+  padding: 18px 26px;
   border-bottom: 1px solid var(--color__border-subtle);
   align-items: center;
 }
@@ -289,11 +362,13 @@
 }
 
 .chapters-head {
-  font-size: 0.56rem;
+  font-size: 0.5rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: color-mix(in srgb, var(--color__text-primary) 55%, transparent);
+  letter-spacing: 0.12em;
+  color: color-mix(in srgb, var(--color__text-primary) 48%, transparent);
   font-weight: 700;
+  padding-top: 14px;
+  padding-bottom: 12px;
 }
 
 .chapters-actions-head {
@@ -303,21 +378,34 @@
 
 .status-badge {
   display: inline-block;
-  min-width: 104px;
+  min-width: 112px;
   text-align: center;
-  padding: 6px 10px;
-  border-radius: var(--radius__xs);
-  font-size: 0.56rem;
-  font-weight: 800;
+  padding: 8px 14px;
+  border-radius: 9px;
+  font-size: 0.52rem;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border: 1px solid var(--color__border-subtle);
+  background: #fff;
+  border: 1px solid #e0e6ed;
+  font-style: normal;
 }
 
-.status-ready { background: color-mix(in srgb, var(--color__accent) 7%, transparent); color: var(--color__text-primary); }
-.status-ai { background: color-mix(in srgb, var(--color__accent) 12%, transparent); color: var(--color__accent-dark); }
-.status-edit { background: var(--color__surface-muted); color: color-mix(in srgb, var(--color__text-primary) 70%, transparent); }
-.status-upload { background: transparent; color: color-mix(in srgb, var(--color__text-primary) 55%, transparent); }
+.status-ready {
+  color: #0f1419;
+}
+
+.status-ai {
+  color: #5a6d82;
+}
+
+.status-edit {
+  color: #8a9aad;
+}
+
+.status-upload {
+  color: #b4becd;
+}
 
 .dashboard-toolbar {
   width: 100%;
@@ -358,57 +446,66 @@
 .chapters-title {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 3px;
 }
 
 .chapters-title small {
-  font-size: 0.54rem;
-  letter-spacing: 0.08em;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color__text-primary) 52%, transparent);
-  font-weight: 800;
+  color: color-mix(in srgb, var(--color__text-primary) 45%, transparent);
+  font-weight: 700;
 }
 
 .chapters-title strong {
-  font-size: 1.5rem;
-  line-height: 1;
+  font-size: 1.05rem;
+  line-height: 1.15;
   color: var(--color__text-primary);
-  font-weight: 900;
-  letter-spacing: -0.03em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .chapters-date {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  font-size: 0.64rem;
-  color: var(--color__text-primary);
-  font-weight: 700;
+  gap: 8px;
+  font-size: 0.69rem;
+  color: color-mix(in srgb, var(--color__text-primary) 88%, transparent);
+  font-weight: 600;
 }
 
 .chapters-date svg {
+  flex-shrink: 0;
   color: var(--color__accent);
 }
 
 .chapters-editor {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.68rem;
+  gap: 10px;
+  font-size: 0.69rem;
   color: var(--color__text-primary);
-  font-weight: 700;
 }
 
 .chapters-editor b {
-  width: 20px;
-  height: 20px;
+  box-sizing: border-box;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
   border-radius: var(--radius__xs);
   display: grid;
   place-items: center;
   background: var(--color__surface-muted);
   border: 1px solid var(--color__border-subtle);
-  color: color-mix(in srgb, var(--color__text-primary) 50%, transparent);
-  font-size: 0.54rem;
+  color: color-mix(in srgb, var(--color__text-primary) 48%, transparent);
+  font-size: 0.52rem;
+  font-weight: 700;
+}
+
+.chapters-editor-name {
+  font-size: 0.69rem;
+  font-weight: 700;
+  color: var(--color__text-primary);
 }
 
 .chapters-actions {
@@ -420,9 +517,17 @@
 .chapters-actions button {
   border: 0;
   background: transparent;
-  color: color-mix(in srgb, var(--color__text-primary) 45%, transparent);
+  color: color-mix(in srgb, var(--color__text-primary) 38%, transparent);
   padding: 0;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chapters-actions svg {
+  width: 14px;
+  height: 14px;
 }
 
 .chapters-actions button:hover {

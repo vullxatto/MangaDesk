@@ -30,8 +30,11 @@ function FilterDropdown({ label, options, value, onChange, isOpen, onToggle }) {
   return (
     <div className="dashboard-dropdown">
       <button type="button" className="dashboard-filter-btn" onClick={onToggle} aria-expanded={isOpen}>
-        <span>{label}: {selectedLabel}</span>
-        <ChevronDown size={12} />
+        <span className="dashboard-filter-btn-text">
+          <span className="dashboard-filter-btn-label">{label}:</span>
+          <span className="dashboard-filter-btn-value">{selectedLabel}</span>
+        </span>
+        <ChevronDown size={12} className="dashboard-filter-chevron" strokeWidth={2.25} />
       </button>
       {isOpen ? (
         <div className="dashboard-dropdown-menu">
@@ -51,7 +54,7 @@ function FilterDropdown({ label, options, value, onChange, isOpen, onToggle }) {
   )
 }
 
-function ChaptersPage({ title, search }) {
+function ChaptersPage({ title }) {
   const [titleFilter, setTitleFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
   const [openDropdown, setOpenDropdown] = useState(null)
@@ -79,55 +82,54 @@ function ChaptersPage({ title, search }) {
   }, [])
 
   const filteredChapters = useMemo(() => {
-    const searchValue = search.trim().toLowerCase()
-
     return chaptersData.filter((row) => {
       const byTitle = titleFilter === 'all' || row.title === titleFilter
       const byStatus = statusFilter === 'all' || row.statusCode === statusFilter
-      const bySearch = !searchValue || `${row.title} ${row.number} ${row.editor}`.toLowerCase().includes(searchValue)
-      return byTitle && byStatus && bySearch
+      return byTitle && byStatus
     })
-  }, [search, statusFilter, titleFilter])
+  }, [statusFilter, titleFilter])
 
   return (
     <div className="chapters-page">
-      <div className="dashboard-toolbar">
-        <h1>{title}</h1>
-        <div className="dashboard-filters" ref={filtersRef}>
-          <FilterDropdown
-            label="Тайтл"
-            options={titleOptions}
-            value={titleFilter}
-            onChange={(value) => {
-              setTitleFilter(value)
-              setOpenDropdown(null)
-            }}
-            isOpen={openDropdown === 'title'}
-            onToggle={(event) => {
-              event.stopPropagation()
-              setOpenDropdown((value) => (value === 'title' ? null : 'title'))
-            }}
-          />
-          <FilterDropdown
-            label="Статус"
-            options={statusOptions}
-            value={statusFilter}
-            onChange={(value) => {
-              setStatusFilter(value)
-              setOpenDropdown(null)
-            }}
-            isOpen={openDropdown === 'status'}
-            onToggle={(event) => {
-              event.stopPropagation()
-              setOpenDropdown((value) => (value === 'status' ? null : 'status'))
-            }}
-          />
-          <button type="button" className="dashboard-new-btn">
-            + Новая глава
-          </button>
+      <div className="chapters-panel">
+        <div className="dashboard-toolbar">
+          <h1>{title}</h1>
+          <div className="dashboard-filters" ref={filtersRef}>
+            <FilterDropdown
+              label="Тайтл"
+              options={titleOptions}
+              value={titleFilter}
+              onChange={(value) => {
+                setTitleFilter(value)
+                setOpenDropdown(null)
+              }}
+              isOpen={openDropdown === 'title'}
+              onToggle={(event) => {
+                event.stopPropagation()
+                setOpenDropdown((value) => (value === 'title' ? null : 'title'))
+              }}
+            />
+            <FilterDropdown
+              label="Статус"
+              options={statusOptions}
+              value={statusFilter}
+              onChange={(value) => {
+                setStatusFilter(value)
+                setOpenDropdown(null)
+              }}
+              isOpen={openDropdown === 'status'}
+              onToggle={(event) => {
+                event.stopPropagation()
+                setOpenDropdown((value) => (value === 'status' ? null : 'status'))
+              }}
+            />
+            <button type="button" className="dashboard-new-btn">
+              + Новая глава
+            </button>
+          </div>
         </div>
+        <ChapterTable rows={filteredChapters} />
       </div>
-      <ChapterTable rows={filteredChapters} />
     </div>
   )
 }
