@@ -25,7 +25,7 @@ function titleByPage(page) {
 }
 
 function App() {
-  const [page, setPage] = useState('chapters')
+  const [page, setPage] = useState('review')
   const [isDark, setIsDark] = useState(() =>
     window.localStorage.getItem('dashboard-theme') === 'dark',
   )
@@ -37,7 +37,7 @@ function App() {
 
   function renderPage() {
     if (page === 'review') {
-      return <ReviewPage />
+      return <ReviewPage title={titleByPage(page)} />
     }
 
     if (page === 'tasks') {
@@ -53,7 +53,7 @@ function App() {
     }
 
     if (page === 'team') {
-      return <TeamPage />
+      return <TeamPage title={titleByPage(page)} />
     }
 
     if (page === 'statistics') {

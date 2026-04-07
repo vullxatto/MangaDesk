@@ -49,9 +49,20 @@ function Sidebar({ menuItems, activePage, onPageChange }) {
 
       <div className="dashboard-user-card">
         <div className="dashboard-user-top">
-          <div className="dashboard-user-avatar" />
+          <div className="dashboard-user-avatar-wrap">
+            <div className="dashboard-user-avatar">
+              <img
+                src="https://picsum.photos/seed/mangadesk-sidebar-user/80/80"
+                alt=""
+                className="dashboard-user-avatar-img"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <span className="dashboard-user-avatar-dot" role="img" aria-label="В сети" />
+          </div>
           <div>
-            <div className="dashboard-user-name">Stii Riss</div>
+            <div className="dashboard-user-name">Still Rise</div>
             <div className="dashboard-user-role">Руководитель</div>
           </div>
         </div>
