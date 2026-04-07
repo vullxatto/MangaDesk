@@ -56,11 +56,9 @@ function Sidebar({ menuItems, activePage, onPageChange }) {
           </div>
         </div>
         <div className="dashboard-user-meta">
-          <span>Использовано</span>
-          <span>4 500 / 20 000 000</span>
-          <span>Максимум</span>
+          <div className="dashboard-user-meta-label">Потрачено токенов</div>
+          <div className="dashboard-user-meta-value">4 500 / 20 000 000</div>
         </div>
-        <div className="dashboard-user-plan">PRO</div>
       </div>
     </aside>
   )

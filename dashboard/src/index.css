@@ -1,9 +1,23 @@
+html {
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
 body {
   margin: 0;
   padding-top: 0;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-family: inherit;
   color: var(--color__text-primary);
   background-color: var(--color__surface-primary);
   background-image: radial-gradient(var(--color__surface-muted) 1px, transparent 1px);
   background-size: 20px 20px;
+  transition:
+    background-color var(--duration__base) var(--ease__standard, ease),
+    color var(--duration__base) var(--ease__standard, ease);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }

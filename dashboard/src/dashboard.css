@@ -88,8 +88,8 @@
 }
 
 .dashboard-nav-item:hover {
-  background: color-mix(in srgb, var(--color__surface-muted) 30%, transparent);
-  color: color-mix(in srgb, var(--color__text-primary) 75%, transparent);
+  background: color-mix(in srgb, var(--color__surface-muted) 20%, transparent);
+  color: color-mix(in srgb, var(--color__text-primary) 80%, transparent);
 }
 
 .dashboard-nav-item.is-active {
@@ -145,7 +145,6 @@
   color: var(--color__text-primary);
 }
 
-/* Как .icon-btn в header-index (core.css) */
 .dashboard-theme-btn {
   background: none;
   border: none;
@@ -156,8 +155,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
-    box-shadow 0.3s ease;
 }
 
 .dashboard-theme-btn:hover {
@@ -191,7 +188,35 @@
 }
 
 .chapters-page {
-  width: min(100%, 1300px);
+  width: min(100%, 1350px);
+}
+
+.projects-page-toolbar {
+  margin-bottom: 14px;
+  padding: 0 2px;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
+
+.projects-page-toolbar h1 {
+  font-size: clamp(1.45rem, 2.4vw, 1.8rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.projects-page .dashboard-new-btn {
+  height: 36px;
+  border-radius: var(--radius__sm);
+  padding: 0 16px;
+  box-shadow: var(--shadow__base);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.projects-page .dashboard-new-btn .projects-add-project-plus {
+  flex-shrink: 0;
 }
 
 .chapters-panel {
@@ -203,28 +228,38 @@
   overflow: hidden;
 }
 
-.chapters-panel .dashboard-toolbar {
-  padding: 20px 22px 18px;
-  margin-bottom: 0;
-  align-items: center;
+.projects-page .chapters-panel {
+  border-radius: var(--radius__lg);
 }
 
-.chapters-panel .dashboard-toolbar h1 {
-  font-size: clamp(1.45rem, 2.4vw, 1.8rem);
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-
-.chapters-panel .dashboard-filters {
+.projects-page-toolbar .dashboard-filters {
   gap: 10px;
 }
 
-.chapters-panel .dashboard-filter-btn {
+.projects-page-toolbar .dashboard-filter-btn {
   height: 36px;
-  border-radius: var(--radius__pill);
+  border-radius: var(--radius__sm);
   padding: 0 14px;
   gap: 10px;
   background: var(--color__surface-primary);
+}
+
+.projects-page-toolbar .dashboard-reset-btn {
+  height: 36px;
+  border-radius: var(--radius__sm);
+  padding: 0 14px;
+  border: 1px solid var(--color__border-subtle);
+  background-color: var(--color__surface-primary);
+  color: color-mix(in srgb, var(--color__text-primary) 62%, transparent);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.projects-page-toolbar .dashboard-reset-btn:hover {
+  background-color: color-mix(in srgb, var(--color__surface-muted) 20%, var(--color__surface-primary));
 }
 
 .dashboard-filter-btn-text {
@@ -237,7 +272,7 @@
 .dashboard-filter-btn-value {
   font-size: 0.62rem;
   letter-spacing: 0.1em;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
@@ -246,13 +281,7 @@
 }
 
 .dashboard-filter-btn-value {
-  color: var(--color__text-primary);
-}
-
-.chapters-panel .dashboard-new-btn {
-  height: 36px;
-  border-radius: var(--radius__pill);
-  padding: 0 16px;
+  color: var(--color__accent-dark);
 }
 
 .dashboard-placeholder h2 {
@@ -297,7 +326,7 @@
   font-size: 0.62rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .dashboard-dropdown-menu {
@@ -325,7 +354,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 800;
   color: color-mix(in srgb, var(--color__text-primary) 80%, transparent);
 }
 
@@ -338,7 +367,8 @@
   background: color-mix(in srgb, var(--color__accent) 12%, transparent);
 }
 
-.chapters-table {
+.chapters-table,
+.projects-table {
   border: 0;
   border-top: 1px solid var(--color__border-subtle);
   border-radius: 0;
@@ -348,10 +378,109 @@
   margin: 0;
 }
 
+/* Пять колонок; «Ссылки» шире, чтобы теги не переносились на вторую строку */
+.projects-row {
+  display: grid;
+  grid-template-columns: 1.15fr 0.9fr 0.95fr 2.2fr 0.52fr;
+  gap: 16px;
+  padding: 18px 26px;
+  border-bottom: 1px solid var(--color__border-subtle);
+  align-items: center;
+}
+
+.projects-row > * {
+  min-width: 0;
+}
+
+.projects-row:last-child {
+  border-bottom: 0;
+}
+
+/* Одна высота и отступы строки заголовка в «Проекты» и «Главы» */
+.projects-row.projects-head,
+.chapters-row.chapters-head {
+  font-size: 0.68rem;
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: color-mix(in srgb, var(--color__text-primary) 48%, transparent);
+  font-weight: 800;
+  padding: 14px 26px;
+  min-height: 3rem;
+  box-sizing: border-box;
+  align-items: center;
+}
+
+.projects-row.projects-head > *,
+.chapters-row.chapters-head > * {
+  line-height: 1.25;
+}
+
+/* Типографика ячеек таблиц «Проекты» и «Главы» (данные строк) */
+.projects-name,
+.projects-chapters-num,
+.projects-link-tag,
+.chapters-title strong,
+.chapters-date,
+.chapters-editor-name {
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: normal;
+  color: color-mix(in srgb, var(--color__text-primary) 85%, transparent);
+}
+
+.projects-chapters-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.projects-chapters-wrap,
+.projects-glossary {
+  display: flex;
+  align-items: center;
+}
+
+.projects-chapters-cell,
+.projects-link-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--color__border-subtle);
+  border-radius: var(--radius__sm);
+  background-color: var(--color__surface-primary);
+  cursor: pointer;
+}
+
+.projects-chapters-cell:hover {
+  background-color: color-mix(in srgb, var(--color__surface-muted) 20%, transparent);
+}
+
+.projects-links {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+}
+
+.projects-link-tag {
+  text-decoration: none;
+}
+
+.projects-link-tag:hover,
+.projects-link-tag:focus-visible {
+  background-color: color-mix(in srgb, var(--color__surface-muted) 20%, transparent);
+}
+
 .chapters-row {
   display: grid;
   grid-template-columns: 1.45fr 1.1fr 1.15fr 1.05fr 0.52fr;
-  gap: 12px;
+  gap: 16px;
   padding: 18px 26px;
   border-bottom: 1px solid var(--color__border-subtle);
   align-items: center;
@@ -361,16 +490,6 @@
   border-bottom: 0;
 }
 
-.chapters-head {
-  font-size: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: color-mix(in srgb, var(--color__text-primary) 48%, transparent);
-  font-weight: 700;
-  padding-top: 14px;
-  padding-bottom: 12px;
-}
-
 .chapters-actions-head {
   text-align: right;
   padding-right: 8px;
@@ -378,33 +497,39 @@
 
 .status-badge {
   display: inline-block;
-  min-width: 112px;
+  min-width: 7.5rem;
   text-align: center;
-  padding: 8px 14px;
-  border-radius: 9px;
-  font-size: 0.52rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  padding: 6px 12px;
+  border-radius: var(--radius__sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  background: #fff;
-  border: 1px solid #e0e6ed;
+  /* Те же токены, что и у карточек — тогда смена темы интерполируется как у остального UI */
+  background-color: var(--color__surface-primary);
+  border: 1px solid var(--color__border-subtle);
   font-style: normal;
 }
 
+/*
+ * Только токены (без hex и без отдельных .dark — иначе при смене темы цвет
+ * пересчитывается другим правилом и уходит из синхрона с остальным UI).
+ */
 .status-ready {
-  color: #0f1419;
+  color: var(--color__text-primary);
 }
 
 .status-ai {
-  color: #5a6d82;
+  color: color-mix(in srgb, var(--color__text-primary) 78%, transparent);
 }
 
 .status-edit {
-  color: #8a9aad;
+  color: color-mix(in srgb, var(--color__text-primary) 62%, transparent);
 }
 
 .status-upload {
-  color: #b4becd;
+  color: color-mix(in srgb, var(--color__text-primary) 48%, transparent);
 }
 
 .dashboard-toolbar {
@@ -446,66 +571,42 @@
 .chapters-title {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 .chapters-title small {
-  font-size: 0.5rem;
+  font-size: 0.62rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color__text-primary) 45%, transparent);
+  color: color-mix(in srgb, var(--color__text-primary) 52%, transparent);
   font-weight: 700;
 }
 
-.chapters-title strong {
-  font-size: 1.05rem;
-  line-height: 1.15;
-  color: var(--color__text-primary);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
 .chapters-date {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.69rem;
-  color: color-mix(in srgb, var(--color__text-primary) 88%, transparent);
-  font-weight: 600;
-}
-
-.chapters-date svg {
-  flex-shrink: 0;
-  color: var(--color__accent);
+  display: inline-block;
 }
 
 .chapters-editor {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.69rem;
-  color: var(--color__text-primary);
 }
 
 .chapters-editor b {
   box-sizing: border-box;
-  min-width: 22px;
-  height: 22px;
-  padding: 0 5px;
-  border-radius: var(--radius__xs);
-  display: grid;
-  place-items: center;
-  background: var(--color__surface-muted);
+  min-width: 28px;
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: var(--radius__sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color__surface-primary);
   border: 1px solid var(--color__border-subtle);
-  color: color-mix(in srgb, var(--color__text-primary) 48%, transparent);
-  font-size: 0.52rem;
+  color: color-mix(in srgb, var(--color__text-primary) 85%, transparent);
+  font-size: 0.875rem;
   font-weight: 700;
-}
-
-.chapters-editor-name {
-  font-size: 0.69rem;
-  font-weight: 700;
-  color: var(--color__text-primary);
+  font-variant-numeric: tabular-nums;
 }
 
 .chapters-actions {
@@ -526,8 +627,8 @@
 }
 
 .chapters-actions svg {
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
 }
 
 .chapters-actions button:hover {
@@ -545,71 +646,54 @@
 .dashboard-user-top {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .dashboard-user-avatar {
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
   border-radius: var(--radius__sm);
   background: color-mix(in srgb, var(--color__accent) 18%, #fff);
   border: 1px solid var(--color__border-subtle);
 }
 
 .dashboard-user-name {
-  font-size: 0.62rem;
-  font-weight: 800;
+  font-size: 0.9375rem;
+  line-height: 1.25;
+  font-weight: 700;
   color: var(--color__text-primary);
+}
+
+.dashboard-user-role,
+.dashboard-user-meta-label {
+  font-size: 0.6875rem;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .dashboard-user-role {
-  font-size: 0.56rem;
   color: color-mix(in srgb, var(--color__text-primary) 55%, transparent);
-  font-weight: 700;
+}
+
+.dashboard-user-meta-label {
+  color: color-mix(in srgb, var(--color__text-primary) 45%, transparent);
 }
 
 .dashboard-user-meta {
-  margin-top: 8px;
-  display: grid;
-  gap: 2px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.dashboard-user-meta span:nth-child(1) {
-  font-size: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: color-mix(in srgb, var(--color__text-primary) 48%, transparent);
-  font-weight: 700;
-}
-
-.dashboard-user-meta span:nth-child(2) {
-  font-size: 0.56rem;
+.dashboard-user-meta-value {
+  font-size: 0.9375rem;
+  line-height: 1.3;
   color: var(--color__text-primary);
   font-weight: 700;
-}
-
-.dashboard-user-meta span:nth-child(3) {
-  justify-self: end;
-  font-size: 0.5rem;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--color__text-primary) 55%, transparent);
-  border: 1px solid var(--color__border-subtle);
-  border-radius: var(--radius__xs);
-  padding: 2px 5px;
-  font-weight: 800;
-}
-
-.dashboard-user-plan {
-  display: inline-block;
-  margin-top: 8px;
-  font-size: 0.5rem;
-  letter-spacing: 0.16em;
-  font-weight: 800;
-  text-transform: uppercase;
-  color: var(--color__accent-dark);
-  border: 1px solid color-mix(in srgb, var(--color__accent) 30%, transparent);
-  border-radius: var(--radius__xs);
-  padding: 3px 6px;
 }
 
 @media (max-width: 1024px) {
@@ -655,4 +739,60 @@
     align-items: flex-start;
     min-height: auto;
   }
+}
+
+/* Единая длительность перехода при смене светлой/тёмной темы (без background-шортхенда — иначе рассинхрон с background-color) */
+.dashboard-layout,
+.dashboard-sidebar,
+.dashboard-main,
+.dashboard-header,
+.dashboard-brand,
+.dashboard-nav-item,
+.dashboard-theme-btn,
+.dashboard-content,
+.chapters-panel,
+.chapters-table,
+.projects-table,
+.dashboard-placeholder,
+.dashboard-user-card,
+.dashboard-filter-btn,
+.dashboard-new-btn,
+.dashboard-search,
+.dashboard-dropdown-menu,
+.dashboard-dropdown-item,
+.projects-page-toolbar .dashboard-reset-btn,
+.chapters-row,
+.projects-row,
+.dashboard-toolbar h1,
+.chapters-title,
+.chapters-date,
+.chapters-editor,
+.chapters-actions button,
+.dashboard-user-name,
+.dashboard-user-role,
+.dashboard-user-meta-label,
+.dashboard-user-meta-value {
+  transition-property: background-color, color, border-color, box-shadow, fill, stroke;
+  transition-duration: var(--duration__base);
+  transition-timing-function: var(--ease__standard, ease);
+}
+
+/* Плашки в таблицах: один и тот же transition, что у статусов */
+.status-badge,
+.chapters-editor b,
+.projects-chapters-cell,
+.projects-link-tag {
+  transition: background-color var(--duration__base) var(--ease__standard, ease),
+    border-color var(--duration__base) var(--ease__standard, ease),
+    color var(--duration__base) var(--ease__standard, ease);
+}
+
+/* Текст с цветом из токенов — transition только на самом элементе, иначе цвет «прыгает» при смене темы */
+.projects-name,
+.projects-chapters-num,
+.chapters-title strong,
+.chapters-title small,
+.chapters-date,
+.chapters-editor-name {
+  transition: color var(--duration__base) var(--ease__standard, ease);
 }

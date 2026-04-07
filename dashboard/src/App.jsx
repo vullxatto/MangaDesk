@@ -45,7 +45,7 @@ function App() {
     }
 
     if (page === 'projects') {
-      return <ProjectsPage />
+      return <ProjectsPage title={titleByPage(page)} />
     }
 
     if (page === 'chapters') {
