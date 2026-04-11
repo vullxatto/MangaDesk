@@ -21,8 +21,10 @@ document.querySelectorAll('.faq-item').forEach((item) => {
 
 // Полноэкранный просмотр примера по клику на превью в "Обзоре возможностей" и на examples.html
 document.addEventListener('click', (e) => {
+    if (e.target.closest('a[href]')) return;
+
     const card = e.target.closest(
-        '#features .bento-grid-3 .bento-card, #features .bento-card[data-preview-fullscreen], #examples-page .examples-category-grid .bento-card'
+        '#features .bento-grid-3 .bento-card, #features .bento-card[data-preview-fullscreen], #articles .bento-card[data-preview-fullscreen], #examples-page .examples-category-grid .bento-card'
     );
     if (!card) return;
 

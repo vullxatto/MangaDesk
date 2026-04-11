@@ -1841,7 +1841,8 @@ a.pricing-btn {
   cursor: pointer;
 }
 
-#features .bento-card[data-preview-fullscreen] {
+#features .bento-card[data-preview-fullscreen],
+#articles .bento-card[data-preview-fullscreen] {
   cursor: pointer;
 }
 
@@ -1889,16 +1890,19 @@ a.pricing-btn {
   border-color: var(--color__border-subtle); /* Опционально: можно заменить на var(--color__accent) */
 }
 
-/* «Обзор возможностей»: базовая тень; на карточках при hover — общая фиолетовая */
-#features .bento-card {
+/* «Обзор возможностей» и «Статьи»: базовая тень; на карточках при hover — общая фиолетовая */
+#features .bento-card,
+#articles .bento-card {
   box-shadow: var(--shadow__base);
 }
 
-#features .bento-card:hover {
+#features .bento-card:hover,
+#articles .bento-card:hover {
   box-shadow: var(--shadow__elev-hover);
 }
 
-.dark #features .bento-card:hover {
+.dark #features .bento-card:hover,
+.dark #articles .bento-card:hover {
   box-shadow:
     0 12px 32px -8px rgba(139, 92, 246, 0.15),
     0 4px 20px rgba(0, 0, 0, 0.45);

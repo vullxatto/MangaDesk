@@ -24,88 +24,84 @@
 </head>
 
 <body class="page-auth">
-  <div class="auth-split">
-    <aside class="auth-split-left" aria-hidden="true">
-      <video class="auth-split-video" autoplay muted loop playsinline preload="auto"
-        width="1920" height="1080">
-        <source src="src/assets/auth.mp4" type="video/mp4">
-      </video>
-    </aside>
+  <div class="auth-page-bg" aria-hidden="true">
+    <img src="src/assets/auth.jpg" alt="" class="auth-page-bg-img" width="1920" height="1080"
+      fetchpriority="high" decoding="async">
+  </div>
 
-    <div class="auth-split-right">
-      <button type="button" id="theme-toggle" class="icon-btn auth-theme-btn" aria-label="Сменить тему">
-        <i data-lucide="sun" class="sun-icon"></i>
-        <i data-lucide="moon" class="moon-icon"></i>
-      </button>
+  <div class="auth-shell">
+    <button type="button" id="theme-toggle" class="icon-btn auth-theme-btn" aria-label="Сменить тему">
+      <i data-lucide="sun" class="sun-icon"></i>
+      <i data-lucide="moon" class="moon-icon"></i>
+    </button>
 
-      <div class="auth-panel-wrap">
-        <div class="auth-panel">
-          <a href="index.html" class="logo-group auth-panel-logo" aria-label="MangaDesk — на главную">
-            <div class="logo-icon">
-              <img src="public/favicon.svg" alt="" class="main-logo" width="20" height="20">
-            </div>
-            <span class="logo-text">MangaDesk</span>
-          </a>
-
-          <p class="auth-welcome">Добро пожаловать!</p>
-
-          <div class="auth-tabs" role="tablist" aria-label="Режим входа">
-            <button type="button" class="auth-tab is-active" role="tab" aria-selected="true" aria-controls="auth-panel-login"
-              id="auth-tab-login" data-auth-tab="login">Вход</button>
-            <button type="button" class="auth-tab" role="tab" aria-selected="false" aria-controls="auth-panel-register"
-              id="auth-tab-register" data-auth-tab="register">Регистрация</button>
+    <div class="auth-panel-wrap">
+      <div class="auth-panel">
+        <a href="index.html" class="logo-group auth-panel-logo" aria-label="MangaDesk — на главную">
+          <div class="logo-icon">
+            <img src="public/favicon.svg" alt="" class="main-logo" width="20" height="20">
           </div>
+          <span class="logo-text">MangaDesk</span>
+        </a>
 
-          <div class="auth-tab-panels">
-            <div class="auth-tab-panel is-active" id="auth-panel-login" role="tabpanel" aria-labelledby="auth-tab-login"
-              data-auth-panel="login">
-              <div class="auth-oauth">
-                <a href="dashboard/index.html" class="auth-oauth-btn auth-oauth-btn--google">
-                  <span class="auth-oauth-icon auth-oauth-icon--google" aria-hidden="true">
-                    <img src="src/assets/Google.svg" alt="" width="18" height="18" decoding="async">
-                  </span>
-                  <span>Войти через Google</span>
-                </a>
-                <a href="dashboard/index.html" class="auth-oauth-btn auth-oauth-btn--vk">
-                  <span class="auth-oauth-icon auth-oauth-icon--vk" aria-hidden="true">
-                    <img src="src/assets/VK.svg" alt="" width="18" height="18" decoding="async">
-                  </span>
-                  <span>Войти через VK</span>
-                </a>
-              </div>
-              <p class="auth-switch">
-                Ещё нет аккаунта?
-                <button type="button" class="auth-switch-btn" data-auth-switch="register">Зарегистрируйтесь</button>
-              </p>
-            </div>
+        <p class="auth-welcome">Добро пожаловать!</p>
 
-            <div class="auth-tab-panel" id="auth-panel-register" role="tabpanel" aria-labelledby="auth-tab-register" hidden
-              data-auth-panel="register">
-              <div class="auth-oauth">
-                <a href="dashboard/index.html" class="auth-oauth-btn auth-oauth-btn--google">
-                  <span class="auth-oauth-icon auth-oauth-icon--google" aria-hidden="true">
-                    <img src="src/assets/Google.svg" alt="" width="18" height="18" decoding="async">
-                  </span>
-                  <span>Продолжить с Google</span>
-                </a>
-                <a href="dashboard/index.html" class="auth-oauth-btn auth-oauth-btn--vk">
-                  <span class="auth-oauth-icon auth-oauth-icon--vk" aria-hidden="true">
-                    <img src="src/assets/VK.svg" alt="" width="18" height="18" decoding="async">
-                  </span>
-                  <span>Продолжить с VK</span>
-                </a>
-              </div>
-              <p class="auth-switch">
-                Уже зарегистрированы?
-                <button type="button" class="auth-switch-btn" data-auth-switch="login">Войдите</button>
-              </p>
-            </div>
-          </div>
-
-          <p class="auth-back-wrap">
-            <a href="index.html" class="auth-link-back">На главную</a>
-          </p>
+        <div class="auth-tabs" role="tablist" aria-label="Режим входа">
+          <button type="button" class="auth-tab is-active" role="tab" aria-selected="true" aria-controls="auth-panel-login"
+            id="auth-tab-login" data-auth-tab="login">Вход</button>
+          <button type="button" class="auth-tab" role="tab" aria-selected="false" aria-controls="auth-panel-register"
+            id="auth-tab-register" data-auth-tab="register">Регистрация</button>
         </div>
+
+        <div class="auth-tab-panels">
+          <div class="auth-tab-panel is-active" id="auth-panel-login" role="tabpanel" aria-labelledby="auth-tab-login"
+            data-auth-panel="login">
+            <div class="auth-oauth">
+              <a href="dashboard/index.html" class="auth-oauth-btn auth-oauth-btn--google">
+                <span class="auth-oauth-icon auth-oauth-icon--google" aria-hidden="true">
+                  <img src="src/assets/Google.svg" alt="" width="18" height="18" decoding="async">
+                </span>
+                <span>Войти через Google</span>
+              </a>
+              <a href="dashboard/index.html" class="auth-oauth-btn auth-oauth-btn--vk">
+                <span class="auth-oauth-icon auth-oauth-icon--vk" aria-hidden="true">
+                  <img src="src/assets/VK.svg" alt="" width="18" height="18" decoding="async">
+                </span>
+                <span>Войти через VK</span>
+              </a>
+            </div>
+            <p class="auth-switch">
+              Ещё нет аккаунта?
+              <button type="button" class="auth-switch-btn" data-auth-switch="register">Зарегистрируйтесь</button>
+            </p>
+          </div>
+
+          <div class="auth-tab-panel" id="auth-panel-register" role="tabpanel" aria-labelledby="auth-tab-register" hidden
+            data-auth-panel="register">
+            <div class="auth-oauth">
+              <a href="dashboard/index.html" class="auth-oauth-btn auth-oauth-btn--google">
+                <span class="auth-oauth-icon auth-oauth-icon--google" aria-hidden="true">
+                  <img src="src/assets/Google.svg" alt="" width="18" height="18" decoding="async">
+                </span>
+                <span>Продолжить с Google</span>
+              </a>
+              <a href="dashboard/index.html" class="auth-oauth-btn auth-oauth-btn--vk">
+                <span class="auth-oauth-icon auth-oauth-icon--vk" aria-hidden="true">
+                  <img src="src/assets/VK.svg" alt="" width="18" height="18" decoding="async">
+                </span>
+                <span>Продолжить с VK</span>
+              </a>
+            </div>
+            <p class="auth-switch">
+              Уже зарегистрированы?
+              <button type="button" class="auth-switch-btn" data-auth-switch="login">Войдите</button>
+            </p>
+          </div>
+        </div>
+
+        <p class="auth-back-wrap">
+          <a href="index.html" class="auth-link-back">На главную</a>
+        </p>
       </div>
     </div>
   </div>
@@ -114,16 +110,7 @@
   <script type="module" src="src/js/scripts.js"></script>
   <script>
     (function () {
-      var v = document.querySelector('.auth-split-video');
-      if (v && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        v.removeAttribute('autoplay');
-        v.pause();
-      }
-    })();
-  </script>
-  <script>
-    (function () {
-      var root = document.querySelector('.auth-split');
+      var root = document.querySelector('.auth-shell');
       if (!root) return;
 
       function showTab(name) {
