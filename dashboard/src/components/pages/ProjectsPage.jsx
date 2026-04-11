@@ -4,7 +4,7 @@ import ProjectsTable from '../ProjectsTable'
 const projectsData = [
   {
     id: 1,
-    name: 'Тайтл 1',
+    name: 'Атака титанов',
     chapters: 124,
     glossaryHref: '#',
     glossaryLabel: 'Открыть',
@@ -16,15 +16,15 @@ const projectsData = [
   },
   {
     id: 2,
-    name: 'Тайтл 2',
-    chapters: 45,
+    name: 'Клинок, рассекающий демонов',
+    chapters: 201,
     glossaryHref: '#',
     glossaryLabel: 'Открыть',
     links: [{ label: 'ОРИГИНАЛ (JP)', href: '#' }, { label: 'РЕМАНГА', href: '#' }],
   },
   {
     id: 3,
-    name: 'Тайтл 3',
+    name: 'Человек-бензопила',
     chapters: 8,
     glossaryHref: '#',
     glossaryLabel: 'Открыть',
@@ -32,8 +32,27 @@ const projectsData = [
   },
   {
     id: 4,
-    name: 'Тайтл 4',
-    chapters: 201,
+    name: 'Ванпанчмен',
+    chapters: 45,
+    glossaryHref: '#',
+    glossaryLabel: 'Открыть',
+    links: [
+      { label: 'ОРИГИНАЛ (JP)', href: '#' },
+      { label: 'РЕМАНГА', href: '#' },
+    ],
+  },
+  {
+    id: 5,
+    name: 'Наруто',
+    chapters: 700,
+    glossaryHref: '#',
+    glossaryLabel: 'Открыть',
+    links: [{ label: 'ОРИГИНАЛ (JP)', href: '#' }],
+  },
+  {
+    id: 6,
+    name: 'Тетрадь смерти',
+    chapters: 108,
     glossaryHref: '#',
     glossaryLabel: 'Открыть',
     links: [

@@ -1,28 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ChevronDown, Plus } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
+import { TEAM_MEMBERS } from '../context/pipelineConstants'
+import { usePipeline } from '../context/PipelineContext'
 import ChapterTable from './ChapterTable'
-
-const chaptersData = [
-  { id: 1, title: 'ПРОЕКТ 1', number: 12, status: 'ГОТОВО', statusCode: 'ready', date: '05.03.2025 14:49', editor: 'Редактор 1' },
-  { id: 2, title: 'ПРОЕКТ 1', number: 13, status: 'Обработка', statusCode: 'ai', date: '13.02.2024 14:49', editor: 'Редактор 2' },
-  { id: 3, title: 'ПРОЕКТ 2', number: 105, status: 'РЕДАКТУРА', statusCode: 'edit', date: '05.03.2024 14:49', editor: 'Редактор 3' },
-  { id: 4, title: 'ПРОЕКТ 3', number: 1, status: 'ЗАГРУЗКА', statusCode: 'upload', date: '01.03.2024 14:49', editor: 'Редактор 4' },
-]
-
-const titleOptions = [
-  { value: 'all', label: 'Все' },
-  { value: 'ПРОЕКТ 1', label: 'ПРОЕКТ 1' },
-  { value: 'ПРОЕКТ 2', label: 'ПРОЕКТ 2' },
-  { value: 'ПРОЕКТ 3', label: 'ПРОЕКТ 3' },
-]
-
-const statusOptions = [
-  { value: 'all', label: 'Все' },
-  { value: 'ready', label: 'Готово' },
-  { value: 'ai', label: 'Обработка' },
-  { value: 'edit', label: 'Редактура' },
-  { value: 'upload', label: 'Загружена' },
-]
 
 const DEFAULT_TITLE_FILTER = 'all'
 const DEFAULT_STATUS_FILTER = 'all'
@@ -33,6 +13,15 @@ const sortOptions = [
   { value: 'date-asc', label: 'Дата — старые сверху' },
   { value: 'number-desc', label: 'Номер — по убыванию' },
   { value: 'number-asc', label: 'Номер — по возрастанию' },
+]
+
+const statusOptions = [
+  { value: 'all', label: 'Все' },
+  { value: 'ready', label: 'Готово' },
+  { value: 'waiting_editor', label: 'Ждёт редактора' },
+  { value: 'ai', label: 'Обработка' },
+  { value: 'edit', label: 'Редактура' },
+  { value: 'upload', label: 'Загрузка' },
 ]
 
 /** DD.MM.YYYY HH:mm */
@@ -74,22 +63,43 @@ function FilterDropdown({ label, options, value, onChange, isOpen, onToggle }) {
 }
 
 function ChaptersPage({ title }) {
+  const { chapters, assignEditor, selectedWaitingIds, soloMode } = usePipeline()
   const [titleFilter, setTitleFilter] = useState(DEFAULT_TITLE_FILTER)
   const [statusFilter, setStatusFilter] = useState(DEFAULT_STATUS_FILTER)
   const [sortBy, setSortBy] = useState(DEFAULT_SORT)
   const [openDropdown, setOpenDropdown] = useState(null)
+  const [assignMenuKey, setAssignMenuKey] = useState(null)
   const filtersRef = useRef(null)
+  const pageRootRef = useRef(null)
+
+  const titleOptions = useMemo(() => {
+    const titles = [...new Set(chapters.map((c) => c.title))].sort()
+    return [{ value: 'all', label: 'Все' }, ...titles.map((t) => ({ value: t, label: t }))]
+  }, [chapters])
+
+  const batchWaitingSelectedCount = useMemo(() => {
+    let n = 0
+    for (const id of selectedWaitingIds) {
+      const row = chapters.find((c) => c.id === id)
+      if (row?.statusCode === 'waiting_editor') n += 1
+    }
+    return n
+  }, [chapters, selectedWaitingIds])
 
   useEffect(() => {
     function handleOutsideClick(event) {
       if (!filtersRef.current?.contains(event.target)) {
         setOpenDropdown(null)
       }
+      if (!pageRootRef.current?.contains(event.target)) {
+        setAssignMenuKey(null)
+      }
     }
 
     function handleEscape(event) {
       if (event.key === 'Escape') {
         setOpenDropdown(null)
+        setAssignMenuKey(null)
       }
     }
 
@@ -102,7 +112,7 @@ function ChaptersPage({ title }) {
   }, [])
 
   const filteredChapters = useMemo(() => {
-    const filtered = chaptersData.filter((row) => {
+    const filtered = chapters.filter((row) => {
       const byTitle = titleFilter === 'all' || row.title === titleFilter
       const byStatus = statusFilter === 'all' || row.statusCode === statusFilter
       return byTitle && byStatus
@@ -125,7 +135,7 @@ function ChaptersPage({ title }) {
     })
 
     return sorted
-  }, [sortBy, statusFilter, titleFilter])
+  }, [chapters, sortBy, statusFilter, titleFilter])
 
   function handleResetFilters() {
     setTitleFilter(DEFAULT_TITLE_FILTER)
@@ -134,8 +144,10 @@ function ChaptersPage({ title }) {
     setOpenDropdown(null)
   }
 
+  const batchOpen = assignMenuKey === 'batch'
+
   return (
-    <div className="chapters-page projects-page">
+    <div className="chapters-page projects-page" ref={pageRootRef}>
       <div className="dashboard-toolbar projects-page-toolbar">
         <h1>{title}</h1>
         <div className="dashboard-filters" ref={filtersRef}>
@@ -184,14 +196,53 @@ function ChaptersPage({ title }) {
           <button type="button" className="dashboard-reset-btn" onClick={handleResetFilters}>
             Сбросить
           </button>
-          <button type="button" className="dashboard-new-btn">
-            <Plus className="projects-add-project-plus" size={18} strokeWidth={2.5} aria-hidden />
-            <span>Загрузить главу</span>
-          </button>
         </div>
       </div>
+      {!soloMode && batchWaitingSelectedCount >= 2 ? (
+        <div className="chapters-batch-bar">
+          <span className="chapters-batch-bar-text">Выбрано: {batchWaitingSelectedCount}</span>
+          <div className={`dashboard-dropdown chapters-assign-dropdown ${batchOpen ? 'is-open' : ''}`}>
+            <button
+              type="button"
+              className="dashboard-new-btn chapters-batch-assign-btn"
+              onClick={(e) => {
+                e.stopPropagation()
+                setAssignMenuKey((k) => (k === 'batch' ? null : 'batch'))
+              }}
+              aria-expanded={batchOpen}
+            >
+              <span>Назначить редактора</span>
+            </button>
+            {batchOpen ? (
+              <div className="dashboard-dropdown-menu chapters-assign-menu chapters-assign-menu--batch">
+                {TEAM_MEMBERS.map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    className="dashboard-dropdown-item"
+                    onClick={() => {
+                      const ids = [...selectedWaitingIds].filter((id) => {
+                        const row = chapters.find((c) => c.id === id)
+                        return row?.statusCode === 'waiting_editor'
+                      })
+                      assignEditor(ids, m.id)
+                      setAssignMenuKey(null)
+                    }}
+                  >
+                    {m.name}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
       <div className="chapters-panel">
-        <ChapterTable rows={filteredChapters} />
+        <ChapterTable
+          rows={filteredChapters}
+          assignMenuKey={assignMenuKey}
+          onAssignMenuKey={setAssignMenuKey}
+        />
       </div>
     </div>
   )

@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Moon, Sun } from 'lucide-react'
+import { usePipeline } from './context/PipelineContext'
 import ChaptersPage from './components/ChaptersPage'
 import ProjectsPage from './components/pages/ProjectsPage'
 import ReviewPage from './components/pages/ReviewPage'
@@ -25,10 +26,18 @@ function titleByPage(page) {
 }
 
 function App() {
+  const { soloMode } = usePipeline()
   const [page, setPage] = useState('review')
   const [isDark, setIsDark] = useState(() =>
     window.localStorage.getItem('dashboard-theme') === 'dark',
   )
+
+  const visibleMenuItems = useMemo(
+    () => menuItems.filter((item) => item.key !== 'tasks' || !soloMode),
+    [soloMode],
+  )
+
+  const resolvedPage = soloMode && page === 'tasks' ? 'review' : page
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark)
@@ -36,36 +45,36 @@ function App() {
   }, [isDark])
 
   function renderPage() {
-    if (page === 'review') {
-      return <ReviewPage title={titleByPage(page)} />
+    if (resolvedPage === 'review') {
+      return <ReviewPage title={titleByPage('review')} />
     }
 
-    if (page === 'tasks') {
-      return <TasksPage />
+    if (resolvedPage === 'tasks') {
+      return <TasksPage title={titleByPage('tasks')} />
     }
 
-    if (page === 'projects') {
-      return <ProjectsPage title={titleByPage(page)} />
+    if (resolvedPage === 'projects') {
+      return <ProjectsPage title={titleByPage('projects')} />
     }
 
-    if (page === 'chapters') {
-      return <ChaptersPage title={titleByPage(page)} />
+    if (resolvedPage === 'chapters') {
+      return <ChaptersPage title={titleByPage('chapters')} />
     }
 
-    if (page === 'team') {
-      return <TeamPage title={titleByPage(page)} />
+    if (resolvedPage === 'team') {
+      return <TeamPage title={titleByPage('team')} />
     }
 
-    if (page === 'statistics') {
+    if (resolvedPage === 'statistics') {
       return <StatisticsPage />
     }
 
-    return <SettingsPage />
+    return <SettingsPage title={titleByPage('settings')} />
   }
 
   return (
     <div className="dashboard-layout">
-      <Sidebar menuItems={menuItems} activePage={page} onPageChange={setPage} />
+      <Sidebar menuItems={visibleMenuItems} activePage={resolvedPage} onPageChange={setPage} />
 
       <main className="dashboard-main">
         <header className="dashboard-header">
