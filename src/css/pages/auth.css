@@ -71,16 +71,11 @@ body.page-auth {
     top: var(--space__md);
     right: var(--space__md);
     z-index: 2;
-    background: color-mix(in srgb, var(--color__text-primary) 8%, transparent);
-    border: 1px solid var(--color__border-subtle);
+    background: transparent;
+    border: none;
     border-radius: 50%;
     color: var(--color__text-primary);
     box-shadow: none;
-}
-
-.auth-theme-btn:hover {
-    background: color-mix(in srgb, var(--color__text-primary) 14%, transparent);
-    opacity: 1;
 }
 
 /* Lucide: иконки темы (читаемы в светлой и тёмной теме) */
@@ -388,10 +383,6 @@ body.page-auth {
     .auth-card-aside {
         padding-top: calc(var(--space__2xl) + 8px);
     }
-}
-
-body.page-auth .auth-theme-btn:hover {
-    opacity: 1;
 }
 
 .page-auth main {

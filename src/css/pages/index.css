@@ -775,6 +775,18 @@ a.pricing-btn {
   cursor: pointer;
 }
 
+/* Нет превью (.bento-visual) — только текст, без «поля» под картинку */
+#features .bento-grid-3 .bento-card:not(:has(.bento-visual)) {
+  min-height: 0;
+  height: auto;
+  cursor: default;
+}
+
+#features .bento-grid-3 .bento-card:not(:has(.bento-visual)) .bento-card-content {
+  min-height: 0;
+  flex-grow: 0;
+}
+
 #features .bento-card[data-preview-fullscreen],
 #articles .bento-card[data-preview-fullscreen] {
   cursor: pointer;
