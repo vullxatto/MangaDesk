@@ -319,3 +319,95 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     lucide.createIcons();
 });
+
+// Автоподсветка активного пункта содержания в статье
+document.addEventListener('DOMContentLoaded', () => {
+    const page = document.getElementById('articles-page');
+    if (!page) return;
+
+    const headerActions = document.querySelector('.header-actions');
+    let tocToggle = document.getElementById('articles-toc-toggle');
+    if (!tocToggle && headerActions) {
+        tocToggle = document.createElement('button');
+        tocToggle.type = 'button';
+        tocToggle.id = 'articles-toc-toggle';
+        tocToggle.className = 'icon-btn articles-header-toc-toggle';
+        tocToggle.setAttribute('aria-label', 'Показать или скрыть содержание');
+        tocToggle.setAttribute('aria-controls', 'articles-toc-nav');
+        tocToggle.innerHTML = '<i data-lucide="panel-left-close"></i>';
+
+        const themeBtn = document.getElementById('theme-toggle');
+        if (themeBtn && themeBtn.parentElement === headerActions) {
+            themeBtn.insertAdjacentElement('afterend', tocToggle);
+        } else {
+            headerActions.appendChild(tocToggle);
+        }
+        window.lucide?.createIcons?.();
+    }
+
+    const tocStorageKey = 'articlesTocHidden';
+    const setTocCollapsed = (collapsed) => {
+        document.body.classList.toggle('articles-toc-hidden', collapsed);
+        if (tocToggle) {
+            tocToggle.innerHTML = collapsed
+                ? '<i data-lucide="panel-left-open"></i>'
+                : '<i data-lucide="panel-left-close"></i>';
+            tocToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+            tocToggle.setAttribute('aria-label', collapsed ? 'Показать содержание' : 'Скрыть содержание');
+            window.lucide?.createIcons?.();
+        }
+    };
+
+    const savedTocState = localStorage.getItem(tocStorageKey);
+    setTocCollapsed(savedTocState === 'true');
+
+    tocToggle?.addEventListener('click', () => {
+        const isCollapsed = !document.body.classList.contains('articles-toc-hidden');
+        setTocCollapsed(isCollapsed);
+        localStorage.setItem(tocStorageKey, String(isCollapsed));
+    });
+
+    const tocLinks = Array.from(document.querySelectorAll('.articles-toc a[href^="#"]'));
+    if (!tocLinks.length) return;
+
+    const sections = tocLinks
+        .map((link) => {
+            const id = link.getAttribute('href')?.slice(1);
+            const section = id ? document.getElementById(id) : null;
+            return section ? { link, section } : null;
+        })
+        .filter(Boolean);
+
+    if (!sections.length) return;
+
+    const setActive = (targetId) => {
+        sections.forEach(({ link, section }) => {
+            link.classList.toggle('active', section.id === targetId);
+        });
+    };
+
+    // Плавный апдейт активного якоря при скролле
+    const updateActive = () => {
+        const offset = 140;
+        let current = sections[0].section.id;
+
+        sections.forEach(({ section }) => {
+            if (section.getBoundingClientRect().top <= offset) {
+                current = section.id;
+            }
+        });
+
+        setActive(current);
+    };
+
+    // Сразу выставляем состояние при загрузке (включая переходы по #hash)
+    const hashTarget = window.location.hash?.slice(1);
+    if (hashTarget && sections.some(({ section }) => section.id === hashTarget)) {
+        setActive(hashTarget);
+    } else {
+        updateActive();
+    }
+
+    window.addEventListener('scroll', updateActive, { passive: true });
+    window.addEventListener('resize', updateActive);
+});

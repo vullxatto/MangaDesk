@@ -222,7 +222,7 @@ ul {
     border: none;
     padding: 8px;
     cursor: pointer;
-    border-radius: 50%;
+    border-radius: var(--radius__sm);
     color: var(--color__text-primary);
     display: flex;
     align-items: center;
