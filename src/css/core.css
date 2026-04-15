@@ -461,7 +461,7 @@ dialog p {
     position: relative;
     width: 100%;
     max-width: var(--slider__width, 600px);
-    aspect-ratio: var(--slider__ratio, 3/4);
+    aspect-ratio: var(--slider__ratio, 5/8);
     margin: 0 auto 2.5rem;
     overflow: hidden;
     border-radius: var(--radius__xl);
@@ -558,11 +558,11 @@ dialog p {
 }
 
 /* Полноэкранный просмотр: те же метки и ползунок, что в миниатюре на главной / examples */
-#modal-slider-target .before-after-slider {
+.modal-slider-target .before-after-slider {
     border-radius: var(--radius__lg);
 }
 /* Слайдер полноэкранного просмотра: без transition на transform (иначе дёргается вместе со scale клона) */
-#modal-slider-target .before-after-grip {
+.modal-slider-target .before-after-grip {
     width: 30px;
     height: 30px;
     transition: none;
@@ -570,17 +570,17 @@ dialog p {
     backface-visibility: hidden;
 }
 
-#modal-slider-target .before-after-grip:hover {
+.modal-slider-target .before-after-grip:hover {
     transform: none;
     box-shadow: 0 5px 22px rgba(0, 0, 0, 0.28);
 }
 
-#modal-slider-target .before-after-grip > i {
+.modal-slider-target .before-after-grip > i {
     display: contents;
 }
 
-#modal-slider-target .before-after-grip .icon-20,
-#modal-slider-target .before-after-grip svg {
+.modal-slider-target .before-after-grip .icon-20,
+.modal-slider-target .before-after-grip svg {
     width: 15px;
     height: 15px;
     pointer-events: none;

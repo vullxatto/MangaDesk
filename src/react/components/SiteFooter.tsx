@@ -1,0 +1,74 @@
+import { Mail, Send } from 'lucide-react';
+
+export function SiteFooter() {
+  return (
+    <footer className="main-footer">
+      <div className="container footer-grid">
+        <div className="footer-brand">
+          <div className="logo-group">
+            <div className="logo-icon">
+              <img src="/favicon.svg" alt="Logo" className="main-logo" />
+            </div>
+            <span className="logo-text">MangaDesk</span>
+          </div>
+          <p className="footer-description">
+            Профессиональный инструмент для автоматизации перевода манги, манхвы и вебтунов Создано для тех, кто ценит
+            идеальное качество и своё личное время
+          </p>
+        </div>
+
+        <div className="footer-links">
+          <h4>О нас</h4>
+          <ul>
+            <li>
+              <a href="#">Кто мы?</a>
+            </li>
+            <li>
+              <a href="#">Вакансии</a>
+            </li>
+            <li>
+              <a href="#">Реклама</a>
+            </li>
+          </ul>
+        </div>
+
+        <div className="footer-links">
+          <h4>Общее</h4>
+          <ul>
+            <li>
+              <a href="#">Правообладателям</a>
+            </li>
+            <li>
+              <a href="#">Правила сайта</a>
+            </li>
+            <li>
+              <a href="#">Соглашения</a>
+            </li>
+            <li>
+              <a href="#">Privacy Policy</a>
+            </li>
+          </ul>
+        </div>
+
+        <div className="footer-links">
+          <h4>Связь</h4>
+          <ul className="social-links">
+            <li>
+              <a href="#">
+                <Send className="send-icon" /> Telegram
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <Mail className="mail-icon" /> Gmail
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div className="container footer-bottom">
+        <p>© 2026 MANGADESK — ИИ ДЛЯ СКАНЛЕЙТА ВСЕ ПРАВА ЗАЩИЩЕНЫ</p>
+      </div>
+    </footer>
+  );
+}

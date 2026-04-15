@@ -9,15 +9,6 @@
     overflow: visible;
 }
 
-/* Размер canvas (в т.ч. +40px вниз) задаётся в hero-particles.js */
-.hero-particles-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    pointer-events: none;
-}
-
 .hero-content {
     position: relative;
     z-index: 1;
@@ -234,61 +225,64 @@
 }
 /* Имитация панели слоёв Photoshop */
 .psd-layers-panel {
-  background: var(--color__surface-primary);
-  border: 1px solid var(--color__border-subtle);
-  border-radius: var(--radius__xl);
-  box-shadow: var(--shadow__base);
+  background: linear-gradient(180deg, #1f2025 0%, #1a1b20 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
   overflow: hidden;
-  width: min(100%, 430px);
+  width: min(100%, 390px);
 }
 
 .psd-layers-panel-head {
-  background: var(--color__surface-muted);
-  padding: var(--space__xs) var(--space__md);
-  border-bottom: 1px solid var(--color__border-subtle);
+  background: rgba(17, 18, 22, 0.7);
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.875rem;
-  color: var(--color__text-primary);
-  opacity: 0.7;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .psd-layers-panel-head-icon {
   width: 16px;
   height: 16px;
+  color: #8b5cf6;
 }
 
 .psd-layers-panel-head-label {
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
 .psd-layers-panel-rows {
-  padding: var(--space__sm);
+  padding: 12px 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: var(--space__sm);
+  gap: 9px;
 }
 
 .psd-layers-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space__xs) var(--space__sm);
-  background: var(--color__surface-primary);
-  border: 1px solid var(--color__border-subtle);
-  border-radius: var(--radius__md);
-  transition: background 0.2s ease;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .psd-layers-row:hover {
-  background: var(--color__surface-muted);
+  background: rgba(255, 255, 255, 0.065);
+  border-color: rgba(139, 92, 246, 0.25);
 }
 
 .psd-layers-row--inactive {
-  opacity: 0.55;
+  opacity: 0.48;
 }
 
 .psd-layers-row-main {
@@ -298,96 +292,122 @@
 }
 
 .psd-layers-row-thumb {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius__sm);
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid transparent;
 }
 
-.psd-layers-row-thumb--text     { background: rgba(139, 92, 246, 0.12); color: var(--color__accent); }
-.psd-layers-row-thumb--clean    { background: rgba(226, 232, 240, 0.6);  color: #64748b; }
-.psd-layers-row-thumb--original { background: rgba(226, 232, 240, 0.4);  color: #94a3b8; }
+.psd-layers-row-thumb--text {
+  background: rgba(139, 92, 246, 0.24);
+  border-color: rgba(139, 92, 246, 0.55);
+  color: #c4b5fd;
+}
+
+.psd-layers-row-thumb--clean {
+  background: rgba(148, 163, 184, 0.16);
+  border-color: rgba(148, 163, 184, 0.24);
+  color: #9ca3af;
+}
+
+.psd-layers-row-thumb--original {
+  background: rgba(148, 163, 184, 0.1);
+  border-color: rgba(148, 163, 184, 0.18);
+  color: #6b7280;
+}
+
+.psd-layers-row-thumb-letter {
+  font-size: 0.94rem;
+  font-weight: 700;
+  line-height: 1;
+}
 
 .psd-layers-row-thumb-svg {
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
 }
 
 .psd-layers-row-label {
-  font-weight: 600;
-  font-size: 0.8rem;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  font-size: 0.83rem;
+  letter-spacing: 0.01em;
   text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .psd-layers-row-eye,
 .psd-layers-row-eye-off {
-  width: 20px;
-  height: 20px;
-  color: var(--color__accent);
-  opacity: 0.9;
+  width: 17px;
+  height: 17px;
+  color: #8b5cf6;
+  opacity: 0.94;
 }
 
 /* Тёмная тема: панель как отдельная «подложка» внутри карточки */
 .dark .psd-layers-panel {
-  background: #252525;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  background: linear-gradient(180deg, #1f2025 0%, #1a1b20 100%);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .dark .psd-layers-panel-head {
-  background: #1a1a1a;
-  border-bottom-color: var(--color__border-subtle);
-  opacity: 1;
-  color: var(--color__text-primary);
+  background: rgba(17, 18, 22, 0.7);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .dark .psd-layers-panel-head-icon {
-  color: var(--color__accent);
-  opacity: 0.95;
+  color: #8b5cf6;
 }
 
 .dark .psd-layers-panel-rows {
-  background: #252525;
+  background: transparent;
 }
 
 .dark .psd-layers-row {
-  background: #2e2e2e;
-  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.07);
 }
 
 .dark .psd-layers-row:hover {
-  background: #383838;
+  background: rgba(255, 255, 255, 0.065);
+  border-color: rgba(139, 92, 246, 0.25);
 }
 
 .dark .psd-layers-row-label {
-  color: var(--color__text-primary);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .dark .psd-layers-row--inactive .psd-layers-row-label {
-  opacity: 0.55;
+  opacity: 0.5;
   font-weight: 600;
 }
 
 .dark .psd-layers-row-thumb--text {
-  background: rgba(139, 92, 246, 0.22);
+  background: rgba(139, 92, 246, 0.24);
+  border-color: rgba(139, 92, 246, 0.55);
   color: #c4b5fd;
 }
 
 .dark .psd-layers-row-thumb--clean {
   background: rgba(148, 163, 184, 0.18);
+  border-color: rgba(148, 163, 184, 0.24);
   color: #94a3b8;
 }
 
 .dark .psd-layers-row-thumb--original {
   background: rgba(148, 163, 184, 0.1);
+  border-color: rgba(148, 163, 184, 0.18);
   color: #787f8a;
 }
 
 .dark .psd-layers-row-eye-off {
   color: #787f8a;
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
 /* ─── Тарифы ─────────────────────────────────────────────────────────────── */
@@ -900,28 +920,71 @@ a.pricing-btn {
 
 /* Большая карточка PSD */
 .bento-psd-card {
-  flex-direction: column;
-  background: var(--color__surface-primary);
+  position: relative;
+  display: flex;
+  flex-direction: row !important;
+  flex-wrap: nowrap;
+  background: linear-gradient(145deg, rgba(27, 28, 35, 0.94), rgba(18, 19, 25, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  min-height: 320px;
+  border-radius: 24px;
+  overflow: hidden;
+  align-items: flex-start;
 }
 
-@media (min-width: 900px) {
+@media (max-width: 560px) {
   .bento-psd-card {
-    flex-direction: row;
-    align-items: center;
+    flex-direction: column !important;
   }
 }
 
 .psd-card-content {
-  padding: 40px;
-  flex: 1;
+  padding: 44px 42px 40px;
+  flex: 0 1 58%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .psd-card-visual {
-  padding: 40px;
-  flex: 1;
+  padding: 28px 30px 28px 16px;
+  flex: 0 1 42%;
+  min-width: 0;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.bento-psd-card .bento-title-lg {
+  font-size: clamp(2.05rem, 4vw, 3rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.15rem;
+  color: #ffffff;
+}
+
+.bento-psd-card .bento-text {
+  max-width: 570px;
+  font-size: 1.45rem;
+  line-height: 1.55;
+  color: rgba(231, 231, 235, 0.78);
+  opacity: 1;
+}
+
+@media (max-width: 560px) {
+  .psd-card-content {
+    padding: 30px 24px 18px;
+  }
+
+  .psd-card-visual {
+    padding: 0 16px 24px;
+    justify-content: center;
+  }
+
+  .bento-psd-card .bento-text {
+    font-size: 1.05rem;
+  }
 }
 
 .mock-shadow {
