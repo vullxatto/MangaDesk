@@ -15,15 +15,19 @@ export function SiteHeader({ showNav = false, hideCabinetButton = false, onToggl
           <div className="logo-icon">
             <img src="/favicon.svg" alt="MangaDesk Logo" className="main-logo" />
           </div>
-          <span className="logo-text">MangaDesk</span>
+          <span className="logo-text header-logo-text" aria-label="MangaDesk">
+            <span className="header-logo-initial">M</span>anga
+            <span className="header-logo-initial">D</span>esk
+          </span>
         </Link>
 
         {showNav ? (
           <div className="nav-links">
             <a href="#how-it-works">как это работает</a>
             <a href="#features">возможности</a>
+            <Link to="/articles">статьи</Link>
             <a href="#pricing">тарифы</a>
-            <a href="#faq">faq</a>
+            <a href="#faq">вопросы</a>
           </div>
         ) : null}
 

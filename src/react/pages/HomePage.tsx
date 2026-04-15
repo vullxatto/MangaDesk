@@ -4,6 +4,7 @@ import {
   Check,
   ChevronDown,
   Cpu,
+  Download,
   Eye,
   EyeOff,
   FileArchive,
@@ -14,8 +15,10 @@ import {
   Image,
   Layers2,
   Link2,
+  Settings,
   Ticket,
   Users,
+  X,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
@@ -28,6 +31,7 @@ import { useTheme } from '../hooks/useTheme';
 
 const beforeImage = new URL('../../assets/landing_eng.jpg', import.meta.url).href;
 const afterImage = new URL('../../assets/landing_ru.jpg', import.meta.url).href;
+const heroCharacterImage = new URL('../../assets/character1.png', import.meta.url).href;
 
 export function HomePage() {
   const { toggleTheme } = useTheme();
@@ -41,19 +45,47 @@ export function HomePage() {
       <SiteHeader showNav onToggleTheme={toggleTheme} />
       <main>
         <section className="hero">
-          <div className="page-content hero-content">
-            <div className="hero-badge">
-              <span className="hero-dot" aria-hidden="true" />
-              <span className="hero-badge-text">Новое поколение перевода</span>
+          <div className="page-content hero-content reveal">
+            <div className="hero-media reveal" aria-hidden="true">
+              <img className="hero-video" src={heroCharacterImage} alt="Демонстрационный персонаж MangaDesk" />
             </div>
-            <h1 className="hero-title">
-              Переводите главы за секунды с сохранением <span className="text-gradient">слоёв в PSD</span>
-            </h1>
-            <p className="hero-subtitle">Мы экономим ваше время, чтобы вы занимались творчеством, а не рутиной</p>
-            <div className="hero-actions">
-              <Link className="btn-primary hero-cta" to="/auth" role="button">
-                начать работу
-              </Link>
+
+            <div className="hero-copy">
+              <p className="hero-kicker">новое поколение<br />перевода</p>
+              <div className="hero-panel">
+                <div className="hero-title-shell">
+                  <h1 className="hero-title">
+                    Переводите главы за<br />
+                    <span className="hero-title-line-nowrap">секунды с сохранением</span><br />
+                    <span className="text-gradient">слоёв в PSD</span>
+                  </h1>
+                  <button type="button" className="hero-panel-close hero-panel-close--corner icon-btn" aria-label="Закрыть блок">
+                    <X className="hero-panel-close-icon" />
+                  </button>
+                </div>
+                <p className="hero-subtitle">
+                  <span className="hero-subtitle-line-nowrap">Мы экономим ваше время, чтобы вы занимались</span><br />
+                  творчеством, а не рутиной
+                </p>
+
+                <div className="hero-actions">
+                  <div className="hero-quick-actions" aria-hidden="true">
+                    <button type="button" className="hero-quick-btn icon-btn" tabIndex={-1}>
+                      <Heart />
+                    </button>
+                    <button type="button" className="hero-quick-btn icon-btn" tabIndex={-1}>
+                      <Download />
+                    </button>
+                    <button type="button" className="hero-quick-btn icon-btn" tabIndex={-1}>
+                      <Settings />
+                    </button>
+                  </div>
+
+                  <Link className="btn-primary hero-cta" to="/auth" role="button">
+                    <span>начать работу</span>
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -314,6 +346,10 @@ export function HomePage() {
 
         <section id="pricing" className="pricing-section">
           <div className="page-content">
+            <div className="section-head pricing-section-head">
+              <h2 className="section-title">Тарифы</h2>
+              <p className="section-subtitle pricing-subtitle">Выберите режим работы: попробовать сервис бесплатно или подключить полный объём автоматизации.</p>
+            </div>
             <div className="pricing-grid">
               <div className="pricing-card">
                 <div className="pricing-card-header">

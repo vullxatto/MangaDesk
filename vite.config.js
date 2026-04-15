@@ -7,6 +7,7 @@ export default defineConfig(({ command }) => ({
   // Override via env in CI if needed.
   base: command === 'build' ? (process.env.VITE_BASE ?? '/MangaDesk/') : '/',
   plugins: [react()],
+  assetsInclude: ['**/*.mov', '**/*.MOV'],
   resolve: {
     dedupe: ['react', 'react-dom'],
     alias: {

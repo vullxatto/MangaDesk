@@ -4,81 +4,297 @@
 /* Hero */
 .hero {
     position: relative;
-    padding: 15px 0 25px;
-    text-align: center;
+    padding: 26px 0 38px;
     overflow: visible;
+}
+
+.hero .page-content {
+    position: relative;
+    padding-inline: var(--space__lg);
+}
+
+.hero .page-content::before {
+    content: "";
+    position: absolute;
+    left: var(--space__lg);
+    right: var(--space__lg);
+    top: calc(var(--layout__header-height) * -1 - var(--space__sm));
+    bottom: 0;
+    border: 3px solid var(--fg);
+    border-radius: var(--radius__xs);
+    box-shadow: 4px 4px 0 rgba(var(--fg-rgb), 0.9);
+    pointer-events: none;
+    z-index: 2;
 }
 
 .hero-content {
     position: relative;
     z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(280px, 48%) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(24px, 4vw, 56px);
+    padding: clamp(20px, 3vw, 34px);
+    min-height: 620px;
 }
 
 @media (max-width: 768px) {
     .hero {
         padding: 32px 0 22px;
     }
+
+    .hero .page-content {
+        padding-inline: var(--space__sm);
+    }
+
+    .hero .page-content::before {
+        left: var(--space__sm);
+        right: var(--space__sm);
+        top: calc(var(--layout__header-height) * -1 - var(--space__xs));
+    }
+
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        min-height: 0;
+    }
 }
 
-.hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--color__surface-primary);
-    padding: 10px var(--space__sm);
-    border-radius: var(--radius__pill);
-    border: 1px solid var(--color__border-subtle);
-    box-shadow: var(--shadow__base);
-    margin-bottom: 24px;
+.hero-media {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-self: end;
+    isolation: isolate;
+    background: transparent;
 }
 
-.hero-dot {
-    width: var(--space__xs);
-    height: var(--space__xs);
-    border-radius: var(--radius__pill);
-    background: var(--color__accent);
+.hero-video {
+    width: min(100%, 720px);
+    height: auto;
+    object-fit: contain;
+    display: block;
+    filter: grayscale(1) contrast(1.05);
 }
 
-.hero-badge-text {
-    font-size: 10px;
-    font-weight: 700;
+.hero-video--alpha {
+    background: transparent;
+    pointer-events: none;
+}
+
+.hero-copy {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+    text-align: left;
+}
+
+.hero-kicker {
+    font-family: "Press Start 2P";
+    font-size: 40px;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: var(--color__nav-hover);
-    opacity: 0.95;
+    line-height: 1.25;
+    letter-spacing: 0.04em;
+    color: #f2f2f2;
+    -webkit-text-stroke: 2px var(--fg);
+    margin: 0;
+    max-width: 18ch;
+    text-shadow: 3px 3px 0 var(--fg);
+    text-align: left;
+    margin-bottom: 2px;
+}
+
+.hero-panel {
+    position: relative;
+    width: 100%;
+    max-width: 620px;
+    border: 3px solid var(--fg);
+    border-radius: var(--radius__xs);
+    background: rgba(var(--bg-rgb), 0.86);
+    box-shadow: 4px 4px 0 rgba(var(--fg-rgb), 0.9);
+    padding: clamp(20px, 3vw, 32px);
+    padding-bottom: 96px;
+}
+
+.hero-title-shell {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.hero-panel-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+    color: var(--fg);
+    padding: 6px;
+}
+
+.hero-panel-close:hover {
+    transform: translate(50%, -50%);
+}
+
+.hero-panel-close--corner {
+    top: -215px;
+    right: -565px;
+    left: auto;
+    transform: none;
+    padding: 5px;
+    z-index: 3;
+}
+
+.hero-panel-close--corner:hover {
+    transform: none;
+}
+
+.hero-panel-close-icon {
+    position: relative;
+    z-index: 1;
+    width: var(--icon__size-md);
+    height: var(--icon__size-md);
+    transition: transform 0.12s ease;
 }
 
 .hero-title {
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-family: "Sochinyala";
+    font-size: clamp(32px, 2.2vw, 40px);
     font-weight: 700;
-    margin-bottom: 28px;
-    letter-spacing: -0.02em;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 20px;
-    width: 100%;
+    line-height: 1.02;
+    letter-spacing: 0.02em;
+    margin: 0;
+    text-transform: uppercase;
+    text-align: center;
+    padding-right: 0;
+}
+
+.hero-title-line-nowrap {
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .hero-panel-close--corner {
+        right: 8px;
+    }
 }
 
 .hero-subtitle {
-    font-size: clamp(1.05rem, 2.2vw, 1.25rem);
-    opacity: 0.75;
-    max-width: 780px;
-    margin: 30px auto;
-    line-height: 1.7;
+    font-family: "Shonen Namikus";
+    font-size: clamp(14px, 1.05vw, 17px);
+    opacity: 0.9;
+    margin: 12px 0 0;
+    line-height: 1.28;
+    text-transform: uppercase;
+    max-width: 28ch;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-subtitle-line-nowrap {
+    white-space: nowrap;
 }
 
 .hero-actions {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: -22px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+}
+
+.hero-quick-actions {
+    display: inline-flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.hero-quick-btn {
+    color: var(--fg);
+    padding: 8px;
+}
+
+.hero-quick-btn > * {
+    transition: transform 0.12s ease;
+}
+
+.hero-quick-btn svg {
+    position: relative;
+    z-index: 1;
+    width: var(--icon__size-md);
+    height: var(--icon__size-md);
 }
 
 .hero-cta {
-    padding: 14px 20px;
-    border-radius: var(--radius__lg);
-    font-size: 1rem;
+    margin-left: 0;
+    position: relative;
+    top: 0;
+    font-size: clamp(16px, 1.35vw, 22px);
+    padding: 14px 30px;
+    min-width: 245px;
+    justify-content: center;
+    box-shadow: 4px 4px 0 rgba(var(--fg-rgb), 0.9);
+}
+
+@media (max-width: 1024px) {
+    .hero-panel {
+        padding-bottom: 26px;
+    }
+
+    .hero-actions {
+        position: static;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        flex-direction: column;
+        align-items: flex-start;
+        min-height: 0;
+        margin-top: 18px;
+    }
+
+    .hero-quick-actions {
+        position: static;
+    }
+
+    .hero-cta {
+        margin-left: 0;
+        position: static;
+        top: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-copy {
+        justify-items: center;
+        text-align: center;
+    }
+
+    .hero-kicker {
+        max-width: none;
+    }
+
+    .hero-panel {
+        max-width: 100%;
+    }
+
+    .hero-subtitle {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-actions {
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hero-cta {
+        min-width: 0;
+        width: 100%;
+        max-width: 320px;
+    }
 }
 
 .text-gradient {
@@ -86,6 +302,34 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.hero .text-gradient {
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    -webkit-text-fill-color: currentColor;
+    color: var(--fg);
+}
+
+.how-it-works-section,
+.bento-section,
+.pricing-section,
+.faq-section {
+    position: relative;
+}
+
+.section-kicker {
+    font-family: "Press Start 2P";
+    font-size: clamp(10px, 0.85vw, 12px);
+    line-height: 1.4;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #f2f2f2;
+    -webkit-text-stroke: 1px var(--fg);
+    text-shadow: 2px 2px 0 var(--fg);
+    text-align: center;
+    margin: 0 0 18px;
 }
 
 /*Как это работает?*/
@@ -101,6 +345,9 @@
 /* Заголовок + подзаголовок: без огромного зазора между ними (ширина — от .page-content) */
 .section-head {
     width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    text-align: center;
 }
 
 .section-head .section-title {
@@ -117,11 +364,27 @@
     margin-bottom: 0;
 }
 
+.section-title {
+    font-family: "Sochinyala";
+    font-size: clamp(40px, 3.6vw, 60px);
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.section-subtitle {
+    font-family: "Shonen Namikus";
+    font-size: clamp(15px, 1.3vw, 18px);
+    line-height: 1.5;
+    opacity: 0.82;
+}
+
 
 .steps-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 60px;
+    gap: clamp(28px, 3vw, 44px);
     position: relative;
     z-index: 1;
 }
@@ -130,52 +393,47 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
+    padding-top: 24px;
 }
 
 /* Фоновые цифры */
 .step-number {
     position: absolute;
-    top: -30px;
-    font-size: 7.7rem;
+    top: -2px;
+    left: 0;
+    font-family: "Press Start 2P";
+    font-size: clamp(54px, 5vw, 76px);
     font-weight: 900;
-    color: var(--color__nav-hover);
-    opacity: 0.1;
+    color: rgba(var(--fg-rgb), 0.08);
     z-index: -1;
     user-select: none;
 }
 
 .step-icon-wrapper {
-    width: 80px;
-    height: 80px;
-    background: var(--color__surface-primary);
-    border: 1px solid var(--color__border-subtle);
-    border-radius: var(--radius__xl);
+    width: 68px;
+    height: 68px;
+    background: var(--bg);
+    border: 2px solid var(--fg);
+    border-radius: var(--radius__xs);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 24px;
-    box-shadow: var(--shadow__base);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
-    opacity: 0.8;
-}
-
-.step:hover .step-icon-wrapper {
-    transform: translateY(-5px);
-    border-color: var(--color__nav-hover);
+    margin-bottom: 22px;
+    box-shadow: 3px 3px 0 rgba(var(--fg-rgb), 0.9);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
     opacity: 1;
 }
 
-#how-it-works .step:hover .step-icon-wrapper {
-    transform: none;
-    box-shadow: var(--shadow__elev-hover);
+.step:hover .step-icon-wrapper {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 rgba(var(--fg-rgb), 0.9);
 }
 
-.dark #how-it-works .step:hover .step-icon-wrapper {
-    box-shadow:
-        0 12px 32px -8px rgba(139, 92, 246, 0.15),
-        0 4px 20px rgba(0, 0, 0, 0.45);
+#how-it-works .step:hover .step-icon-wrapper {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 rgba(var(--fg-rgb), 0.9);
 }
 
 .step-icon-svg {
@@ -185,71 +443,79 @@
 }
 
 .step-title {
-    font-size: 1.25rem;
+    font-family: "Sochinyala";
+    font-size: clamp(24px, 2vw, 30px);
     font-weight: 700;
-    margin-bottom: 12px;
+    line-height: 1.02;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
     color: var(--color__text-primary);
 }
 
 .step-description {
-    font-size: 0.95rem;
-    line-height: 1.6;
+    font-family: "Shonen Namikus";
+    font-size: 0.98rem;
+    line-height: 1.55;
     color: var(--color__text-primary);
-    opacity: 0.7;
-    max-width: 300px;
+    opacity: 0.76;
+    max-width: 32ch;
 }
 
 .section-card {
     position: relative;
     overflow: hidden;
-    background-color: var(--color__surface-glass);
-    border: 1px solid var(--color__border-subtle);
-    border-radius: var(--radius__xl);
-    padding: var(--space__3xl) var(--space__xl);
-    box-shadow: var(--shadow__base);
+    background: rgba(var(--bg-rgb), 0.88);
+    border: 3px solid var(--fg);
+    border-radius: var(--radius__xs);
+    padding: clamp(30px, 4vw, 52px);
+    box-shadow: 4px 4px 0 rgba(var(--fg-rgb), 0.9);
+}
+
+.section-card::before {
+    content: "";
+    position: absolute;
+    inset: 14px;
+    border: 1px solid rgba(var(--fg-rgb), 0.14);
+    pointer-events: none;
 }
 
 /* «Как это работает»: те же тени, что в «Обзоре возможностей» (без сдвига при hover) */
 #how-it-works .section-card {
-    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 #how-it-works .section-card:hover {
-    box-shadow: var(--shadow__elev-hover);
-}
-
-.dark #how-it-works .section-card:hover {
-    box-shadow:
-        0 12px 32px -8px rgba(139, 92, 246, 0.15),
-        0 4px 20px rgba(0, 0, 0, 0.45);
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 rgba(var(--fg-rgb), 0.9);
 }
 /* Имитация панели слоёв Photoshop */
 .psd-layers-panel {
-  background: linear-gradient(180deg, #1f2025 0%, #1a1b20 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, #3d3d3d 0%, #3d3d3d 100%);
+  border: 1px solid rgba(242, 242, 242, 0.08);
   border-radius: 20px;
   box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 20px 40px rgba(61, 61, 61, 0.42),
+    inset 0 1px 0 rgba(242, 242, 242, 0.04);
   overflow: hidden;
   width: min(100%, 390px);
 }
 
 .psd-layers-panel-head {
-  background: rgba(17, 18, 22, 0.7);
+  background: rgba(61, 61, 61, 0.7);
   padding: 12px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(242, 242, 242, 0.08);
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(242, 242, 242, 0.92);
 }
 
 .psd-layers-panel-head-icon {
   width: 16px;
   height: 16px;
-  color: #8b5cf6;
+  color: #f2f2f2;
 }
 
 .psd-layers-panel-head-label {
@@ -270,15 +536,15 @@
   align-items: center;
   justify-content: space-between;
   padding: 9px 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(242, 242, 242, 0.04);
+  border: 1px solid rgba(242, 242, 242, 0.07);
   border-radius: 12px;
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .psd-layers-row:hover {
-  background: rgba(255, 255, 255, 0.065);
-  border-color: rgba(139, 92, 246, 0.25);
+  background: rgba(242, 242, 242, 0.065);
+  border-color: rgba(242, 242, 242, 0.18);
 }
 
 .psd-layers-row--inactive {
@@ -302,21 +568,21 @@
 }
 
 .psd-layers-row-thumb--text {
-  background: rgba(139, 92, 246, 0.24);
-  border-color: rgba(139, 92, 246, 0.55);
-  color: #c4b5fd;
+  background: rgba(242, 242, 242, 0.16);
+  border-color: rgba(242, 242, 242, 0.28);
+  color: #f2f2f2;
 }
 
 .psd-layers-row-thumb--clean {
-  background: rgba(148, 163, 184, 0.16);
-  border-color: rgba(148, 163, 184, 0.24);
-  color: #9ca3af;
+  background: rgba(242, 242, 242, 0.16);
+  border-color: rgba(242, 242, 242, 0.24);
+  color: #f2f2f2;
 }
 
 .psd-layers-row-thumb--original {
-  background: rgba(148, 163, 184, 0.1);
-  border-color: rgba(148, 163, 184, 0.18);
-  color: #6b7280;
+  background: rgba(242, 242, 242, 0.1);
+  border-color: rgba(242, 242, 242, 0.18);
+  color: #f2f2f2;
 }
 
 .psd-layers-row-thumb-letter {
@@ -335,33 +601,33 @@
   font-size: 0.83rem;
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(242, 242, 242, 0.9);
 }
 
 .psd-layers-row-eye,
 .psd-layers-row-eye-off {
   width: 17px;
   height: 17px;
-  color: #8b5cf6;
+  color: #f2f2f2;
   opacity: 0.94;
 }
 
 /* Тёмная тема: панель как отдельная «подложка» внутри карточки */
 .dark .psd-layers-panel {
-  background: linear-gradient(180deg, #1f2025 0%, #1a1b20 100%);
+  background: linear-gradient(180deg, #3d3d3d 0%, #3d3d3d 100%);
   box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 20px 40px rgba(61, 61, 61, 0.42),
+    inset 0 1px 0 rgba(242, 242, 242, 0.04);
 }
 
 .dark .psd-layers-panel-head {
-  background: rgba(17, 18, 22, 0.7);
-  border-bottom-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.92);
+  background: rgba(61, 61, 61, 0.7);
+  border-bottom-color: rgba(242, 242, 242, 0.08);
+  color: rgba(242, 242, 242, 0.92);
 }
 
 .dark .psd-layers-panel-head-icon {
-  color: #8b5cf6;
+  color: #f2f2f2;
 }
 
 .dark .psd-layers-panel-rows {
@@ -369,17 +635,17 @@
 }
 
 .dark .psd-layers-row {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.07);
+  background: rgba(242, 242, 242, 0.04);
+  border-color: rgba(242, 242, 242, 0.07);
 }
 
 .dark .psd-layers-row:hover {
-  background: rgba(255, 255, 255, 0.065);
-  border-color: rgba(139, 92, 246, 0.25);
+  background: rgba(242, 242, 242, 0.065);
+  border-color: rgba(242, 242, 242, 0.18);
 }
 
 .dark .psd-layers-row-label {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(242, 242, 242, 0.9);
 }
 
 .dark .psd-layers-row--inactive .psd-layers-row-label {
@@ -388,25 +654,25 @@
 }
 
 .dark .psd-layers-row-thumb--text {
-  background: rgba(139, 92, 246, 0.24);
-  border-color: rgba(139, 92, 246, 0.55);
-  color: #c4b5fd;
+  background: rgba(242, 242, 242, 0.16);
+  border-color: rgba(242, 242, 242, 0.28);
+  color: #f2f2f2;
 }
 
 .dark .psd-layers-row-thumb--clean {
-  background: rgba(148, 163, 184, 0.18);
-  border-color: rgba(148, 163, 184, 0.24);
-  color: #94a3b8;
+  background: rgba(242, 242, 242, 0.18);
+  border-color: rgba(242, 242, 242, 0.24);
+  color: #f2f2f2;
 }
 
 .dark .psd-layers-row-thumb--original {
-  background: rgba(148, 163, 184, 0.1);
-  border-color: rgba(148, 163, 184, 0.18);
-  color: #787f8a;
+  background: rgba(242, 242, 242, 0.1);
+  border-color: rgba(242, 242, 242, 0.18);
+  color: #f2f2f2;
 }
 
 .dark .psd-layers-row-eye-off {
-  color: #787f8a;
+  color: #f2f2f2;
   opacity: 0.8;
 }
 
@@ -415,6 +681,15 @@
 .pricing-section {
   padding: var(--section__padding-y) 0;
   text-align: center;
+}
+
+.pricing-section-head {
+  margin-bottom: 2.5rem;
+}
+
+.pricing-subtitle {
+  max-width: 46rem;
+  margin-bottom: 0;
 }
 
 .pricing-grid {
@@ -442,17 +717,23 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-family: "Shonen Namikus";
+  font-size: 0.92rem;
+  font-weight: 700;
   color: var(--color__text-primary);
-  opacity: 0.55;
+  background: rgba(var(--bg-rgb), 0.88);
+  border: 2px solid var(--fg);
+  border-radius: var(--radius__xs);
+  box-shadow: 3px 3px 0 rgba(var(--fg-rgb), 0.9);
+  padding: 10px 16px;
+  opacity: 1;
   text-decoration: none;
-  transition: color 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .pricing-promo-link:hover {
-  color: var(--color__nav-hover);
-  opacity: 1;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 rgba(var(--fg-rgb), 0.9);
 }
 
 .pricing-promo-link-icon {
@@ -463,48 +744,30 @@
 
 /* Карточка тарифа */
 .pricing-card {
-  background: var(--color__surface-primary);
-  border: 1px solid var(--color__border-subtle);
-  border-radius: var(--radius__xl);
+  background: rgba(var(--bg-rgb), 0.88);
+  border: 3px solid var(--fg);
+  border-radius: var(--radius__xs);
   padding: 2.5rem 1.35rem;
-  box-shadow: var(--shadow__base);
+  box-shadow: 4px 4px 0 rgba(var(--fg-rgb), 0.9);
   display: flex;
   flex-direction: column;
   height: 100%;
-  /* только transform/box-shadow: иначе при смене темы transition: all + spring-bezier
-     даёт overshoot по background-color и фон на мгновение уходит почти в чёрный */
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
   position: relative;
   overflow: hidden;
 }
 
 .pricing-card:hover {
-  transform: translateY(-14px) scale(1.03);   /* основной эффект подпрыгивания + лёгкое увеличение */
-  box-shadow: var(--shadow__elev-hover);
-}
-
-.dark #pricing .pricing-card:hover {
-  box-shadow:
-    0 12px 32px -8px rgba(139, 92, 246, 0.15),
-    0 4px 20px rgba(0, 0, 0, 0.45);
+  transform: translate(-3px, -3px);
+  box-shadow: 7px 7px 0 rgba(var(--fg-rgb), 0.9);
 }
 
 .pricing-card.featured:hover {
-  box-shadow: var(--shadow__elev-hover),
-    0 0 0 3px rgba(139, 92, 246, 0.18);
-}
-
-.dark #pricing .pricing-card.featured:hover {
-  box-shadow:
-    0 12px 32px -8px rgba(139, 92, 246, 0.15),
-    0 4px 20px rgba(0, 0, 0, 0.45),
-    0 0 0 3px rgba(139, 92, 246, 0.18);
+  box-shadow: 7px 7px 0 rgba(var(--fg-rgb), 0.9), inset 0 0 0 2px rgba(139, 92, 246, 0.42);
 }
 
 .pricing-card.featured {
-  border-color: var(--color__accent);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+  box-shadow: 4px 4px 0 rgba(var(--fg-rgb), 0.9), inset 0 0 0 2px rgba(139, 92, 246, 0.42);
 }
 
 /* Добавляем лёгкий "подсвет" снизу при наведении */
@@ -530,10 +793,12 @@
 }
 
 .pricing-plan-name {
-  font-size: 1.35rem;
+  font-family: "Sochinyala";
+  font-size: 2rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
+  line-height: 1;
   color: var(--color__text-primary);
 }
 
@@ -547,23 +812,20 @@
 }
 
 .price {
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1;
+  font-family: "Sochinyala";
+  font-size: clamp(56px, 5vw, 72px);
+  font-weight: 700;
+  line-height: 0.9;
   color: var(--color__text-primary);
 }
 
 .currency,
 .period {
-  font-size: 1.25rem;
-  color: #888;
-  font-weight: 500;
-}
-
-.dark .currency,
-.dark .period {
+  font-family: "Shonen Namikus";
+  font-size: 1rem;
   color: var(--color__text-primary);
-  opacity: 0.45;
+  font-weight: 700;
+  opacity: 0.65;
 }
 
 /* Список возможностей */
@@ -582,10 +844,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.875rem;
-  line-height: 1.3;
+  font-family: "Shonen Namikus";
+  font-size: 0.92rem;
+  line-height: 1.45;
   color: var(--color__text-primary);
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 .check-icon {
@@ -606,67 +869,66 @@
 .pricing-btn {
   width: 100%;
   padding: 14px 24px;
-  border-radius: var(--radius__lg);
+  border-radius: var(--radius__xs);
+  border: 2px solid var(--fg);
+  font-family: "Shonen Namikus";
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
   font-weight: 700;
-  font-size: 1.02rem;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.3s ease, color 0.3s ease;
   margin-top: auto;
   box-sizing: border-box;
   text-align: center;
   text-decoration: none;
+  box-shadow: 3px 3px 0 rgba(var(--fg-rgb), 0.9);
 }
 
 a.pricing-btn {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pricing-btn.primary {
-  background: var(--gradient__accent);
-  color: white;
-  border: none;
+  background: var(--accent);
+  color: #f2f2f2;
 }
 
 .pricing-btn.primary:hover {
-  opacity: 0.92;
-  transform: translateY(-2px);
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 rgba(var(--fg-rgb), 0.9);
 }
 
 .pricing-btn.secondary {
-  background: transparent;
+  background: var(--bg);
   color: var(--color__text-primary);
-  border: 1px solid var(--color__border-subtle);
 }
 
 .pricing-btn.secondary:hover {
-  border-color: var(--color__accent);
-  transform: translateY(-2px);
-}
-
-.dark .pricing-btn.secondary:hover {
-  background: var(--color__surface-muted);
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 rgba(var(--fg-rgb), 0.9);
 }
 
 /* ─── FAQ ─────────────────────────────────────────────────────────────────── */
 
 .faq-section {
-  padding: var(--section__padding-y) var(--space__sm);
-  background: var(--color__surface-primary);
-  border-top: 1px solid var(--color__border-subtle);
+  padding: var(--section__padding-y) 0;
 }
 
 /* Одна колонка; сверху и снизу одинаковый inset — блок с заголовком и вопросами визуально по центру секции */
 .faq-section .page-content {
-  max-width: 48rem;
+  max-width: 56rem;
   margin-left: auto;
   margin-right: auto;
-  padding: 1.5rem 1.5rem;
+  padding: 0 var(--space__sm);
   box-sizing: border-box;
 }
 
 @media (min-width: 640px) {
   .faq-section .page-content {
-    padding: 1.875rem 1.5rem;
+    padding: 0 var(--space__sm);
   }
 }
 
@@ -684,10 +946,19 @@ a.pricing-btn {
   display: flex;
   flex-direction: column;
   gap: 0;
+  padding: clamp(24px, 3vw, 36px);
+  background: rgba(var(--bg-rgb), 0.88);
+  border: 3px solid var(--fg);
+  border-radius: var(--radius__xs);
+  box-shadow: 4px 4px 0 rgba(var(--fg-rgb), 0.9);
 }
 
 .faq-item {
   text-align: left;
+}
+
+.faq-item + .faq-item {
+  border-top: 1px solid rgba(var(--fg-rgb), 0.16);
 }
 
 .faq-item:first-child .faq-question {
@@ -704,9 +975,12 @@ a.pricing-btn {
   border: none;
   background: none;
   cursor: pointer;
-  font: inherit;
-  font-size: 1.125rem;
+  font-family: "Sochinyala";
+  font-size: clamp(24px, 2vw, 32px);
   font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   color: var(--color__text-primary);
   text-align: left;
   transition: color 0.2s ease;
@@ -738,10 +1012,11 @@ a.pricing-btn {
 .faq-answer {
   padding: 0 0 1.125rem;
   margin-top: -0.25rem;
+  font-family: "Shonen Namikus";
   font-size: 1rem;
-  line-height: 1.65;
+  line-height: 1.6;
   color: var(--color__text-primary);
-  opacity: 0.65;
+  opacity: 0.78;
 }
 
 .faq-item:last-child .faq-answer {
@@ -761,14 +1036,13 @@ a.pricing-btn {
 }
 
 .bento-head-margin {
-  margin-bottom: 4rem;
+  margin-bottom: 2.75rem;
 }
 
 .bento-title-main {
-  font-size: clamp(2.2rem, 4vw, 3rem);
+  font-size: clamp(40px, 3.6vw, 60px);
   font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .bento-subtitle {
@@ -840,31 +1114,30 @@ a.pricing-btn {
 /* «Обзор возможностей» и «Статьи»: базовая тень; на карточках при hover — общая фиолетовая */
 #features .bento-card,
 #articles .bento-card {
-  box-shadow: var(--shadow__base);
+  background: rgba(var(--bg-rgb), 0.88);
+  border: 3px solid var(--fg);
+  border-radius: var(--radius__xs);
+  box-shadow: 4px 4px 0 rgba(var(--fg-rgb), 0.9);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 #features .bento-card:hover,
 #articles .bento-card:hover {
-  box-shadow: var(--shadow__elev-hover);
-}
-
-.dark #features .bento-card:hover,
-.dark #articles .bento-card:hover {
-  box-shadow:
-    0 12px 32px -8px rgba(139, 92, 246, 0.15),
-    0 4px 20px rgba(0, 0, 0, 0.45);
+  transform: translate(-3px, -3px);
+  box-shadow: 7px 7px 0 rgba(var(--fg-rgb), 0.9);
 }
 
 #features .mock-shadow {
-  box-shadow: var(--shadow__base);
+  box-shadow: 4px 4px 0 rgba(242, 242, 242, 0.24);
 }
 
 .dark #features .psd-layers-panel {
-  box-shadow: var(--shadow__base);
+  box-shadow: 4px 4px 0 rgba(242, 242, 242, 0.24);
 }
 
 #features .bento-note {
-  box-shadow: var(--shadow__base);
+  box-shadow: 3px 3px 0 rgba(var(--fg-rgb), 0.9);
 }
 
 .bento-link-card {
@@ -904,10 +1177,12 @@ a.pricing-btn {
 }
 
 .bento-title-lg {
+  font-family: "Sochinyala";
   font-size: clamp(1.8rem, 3vw, 2.5rem);
   font-weight: 700;
   margin-bottom: 0.8rem;
-  line-height: 1.2;
+  line-height: 1.04;
+  text-transform: uppercase;
 }
 
 .text-purple { color: var(--color__accent); }
@@ -924,12 +1199,13 @@ a.pricing-btn {
   display: flex;
   flex-direction: row !important;
   flex-wrap: nowrap;
-  background: linear-gradient(145deg, rgba(27, 28, 35, 0.94), rgba(18, 19, 25, 0.96));
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(145deg, rgba(61, 61, 61, 0.94), rgba(61, 61, 61, 0.96));
+  border: 3px solid var(--fg);
   min-height: 320px;
-  border-radius: 24px;
+  border-radius: var(--radius__xs);
   overflow: hidden;
   align-items: flex-start;
+  box-shadow: 4px 4px 0 rgba(var(--fg-rgb), 0.9);
 }
 
 @media (max-width: 560px) {
@@ -961,14 +1237,15 @@ a.pricing-btn {
   line-height: 1.06;
   letter-spacing: -0.02em;
   margin-bottom: 1.15rem;
-  color: #ffffff;
+  color: var(--fg);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.28);
 }
 
 .bento-psd-card .bento-text {
   max-width: 570px;
   font-size: 1.45rem;
   line-height: 1.55;
-  color: rgba(231, 231, 235, 0.78);
+  color: var(--fg);
   opacity: 1;
 }
 
@@ -988,7 +1265,7 @@ a.pricing-btn {
 }
 
 .mock-shadow {
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 40px -10px rgba(61, 61, 61, 0.2);
 }
 
 .bento-img {
@@ -1013,6 +1290,26 @@ a.pricing-btn {
   padding: 20px 24px 22px;
 }
 
+.bento-title {
+  font-family: "Sochinyala";
+  font-size: clamp(26px, 2vw, 34px);
+  line-height: 1.02;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.bento-text {
+  font-family: "Shonen Namikus";
+  font-size: 1rem;
+  line-height: 1.6;
+  opacity: 0.8;
+}
+
+.bento-visual {
+  border-bottom: 2px solid var(--fg);
+  background: rgba(var(--fg-rgb), 0.04);
+}
+
 .bento-visual--cabinet {
   height: 250px;
   border-top: 1px solid var(--color__border-subtle);
@@ -1028,16 +1325,40 @@ a.pricing-btn {
 
 /* Заметка инфраструктуры */
 .bento-note {
+  font-family: "Shonen Namikus";
   font-size: 0.95rem;
   color: var(--color__text-primary);
-  opacity: 0.6;
-  background: var(--color__surface-muted);
+  opacity: 0.78;
+  background: rgba(var(--fg-rgb), 0.04);
   padding: var(--space__xs);
-  border-radius: var(--radius__sm);
-  border: 1px solid var(--color__border-subtle);
+  border-radius: var(--radius__xs);
+  border: 2px solid var(--fg);
 }
 /* Лёгкая задержка в сетках — короче, чтобы не копить кадры при быстром скролле */
 .bento-grid-2 .reveal:nth-child(2) { transition-delay: 0.05s; }
 .bento-grid-3 .reveal:nth-child(2) { transition-delay: 0.05s; }
 .bento-grid-3 .reveal:nth-child(3) { transition-delay: 0.1s; }
 .bento-grid-3 .reveal:nth-child(4) { transition-delay: 0.14s; }
+
+@media (max-width: 768px) {
+  .section-kicker {
+    margin-bottom: 14px;
+  }
+
+  .step {
+    align-items: center;
+    text-align: center;
+  }
+
+  .step-number {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .pricing-card:hover,
+  #features .bento-card:hover,
+  #articles .bento-card:hover,
+  #how-it-works .section-card:hover {
+    transform: translate(-1px, -1px);
+  }
+}

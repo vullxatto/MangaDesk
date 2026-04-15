@@ -55,7 +55,7 @@ body.page-auth {
     min-height: 560px;
     border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.42);
+    box-shadow: 0 20px 60px rgba(61, 61, 61, 0.42);
     background: var(--color__surface-primary);
 }
 
@@ -64,7 +64,7 @@ body.page-auth {
     display: flex;
     flex-direction: column;
     padding: 34px 40px 28px;
-    background: #17191f;
+    background: #3d3d3d;
     position: relative;
     box-sizing: border-box;
 }
