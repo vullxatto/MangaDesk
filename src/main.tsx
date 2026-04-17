@@ -1,20 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import { App } from './react/App';
-import './css/pages/index.css';
-import './css/pages/auth.css';
-import './css/pages/articles.css';
-import './css/pages/examples.css';
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import './index.css'
+import './dashboard/dashboard.css'
+import App from './App.tsx'
 
-// GitHub Pages serves project sites at /<repo>/; routes must match that path (see vite base).
-const routerBasename =
-  import.meta.env.BASE_URL === '/' ? undefined : import.meta.env.BASE_URL.replace(/\/$/, '');
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <BrowserRouter basename={routerBasename}>
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <BrowserRouter>
       <App />
     </BrowserRouter>
-  </React.StrictMode>,
-);
+  </StrictMode>,
+)

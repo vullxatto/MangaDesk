@@ -28,9 +28,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install dashboard dependencies
-        run: npm ci --prefix dashboard
-
       - name: Build
         env:
           VITE_BASE: /MangaDesk/
