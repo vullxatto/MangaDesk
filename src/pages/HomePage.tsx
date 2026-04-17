@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Layout } from '../components/Layout'
+import { LandingScrollSpyProvider } from '../context/LandingScrollSpy'
 import { ArticlesSection } from './ArticlesSection'
 import { Faq } from './Faq'
 import { Features } from './Features'
@@ -22,12 +23,14 @@ function useScrollToHash() {
 export function HomePage() {
   useScrollToHash()
   return (
-    <Layout hero={<Landing />}>
-      <HowItWorks />
-      <Features />
-      <ArticlesSection />
-      <Pricing />
-      <Faq />
-    </Layout>
+    <LandingScrollSpyProvider>
+      <Layout hero={<Landing />}>
+        <HowItWorks />
+        <Features />
+        <ArticlesSection />
+        <Pricing />
+        <Faq />
+      </Layout>
+    </LandingScrollSpyProvider>
   )
 }

@@ -212,7 +212,6 @@ export function BeforeAfterSlider({
         <div className="before-after-fs__stage">
           <div className="before-after__card before-after__card--fullscreen">
             {renderViewport(fullscreenContainerRef, { mode: 'fullscreen' })}
-            {renderCaptionInside('before-after__caption--in-fs')}
           </div>
         </div>
       </div>,

@@ -1,6 +1,8 @@
 import { Cloud, Heart, Maximize2, Send, Settings, type LucideIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { HeroSparkles } from '../components/HeroSparkles'
 import heroArt from '../assets/images/character1.png'
+import pointsSvg from '../assets/svg/Points.svg'
 
 const toolButtons: Array<{ label: string; Icon: LucideIcon }> = [
   { label: 'Избранное', Icon: Heart },
@@ -12,6 +14,10 @@ const toolButtons: Array<{ label: string; Icon: LucideIcon }> = [
 export function Landing() {
   return (
     <section className="landing-hero" id="hero" aria-labelledby="hero-title">
+      <div className="landing-hero__points" aria-hidden>
+        <img src={pointsSvg} alt="" className="landing-hero__points-img" draggable={false} />
+      </div>
+      <HeroSparkles />
       <div className="hero-image-side">
         <div className="hero-art">
           <img src={heroArt} alt="Сцена из манги" width={414} height={558} loading="eager" decoding="async" />
@@ -44,21 +50,22 @@ export function Landing() {
             </p>
           </div>
 
-          <div className="toolbar" aria-label="Панель инструментов">
-            {toolButtons.map(({ label, Icon }) => (
-              <span className="btn-press-wrap btn-press-wrap--design" key={label}>
-                <button className="tool-item btn-press" type="button" aria-label={label}>
-                  <Icon size={13} strokeWidth={2} />
-                </button>
-              </span>
-            ))}
+          <div className="content-window__bar">
+            <div className="toolbar" role="toolbar" aria-label="Панель инструментов">
+              {toolButtons.map(({ label, Icon }) => (
+                <span className="btn-press-wrap btn-press-wrap--design" key={label}>
+                  <button className="tool-item btn-press" type="button" aria-label={label}>
+                    <Icon size={13} strokeWidth={2} />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <span className="btn-press-wrap btn-press-wrap--design btn-cta-wrap">
+              <Link className="btn-cta btn-press" to="/auth">
+                Начать работу
+              </Link>
+            </span>
           </div>
-
-          <span className="btn-press-wrap btn-press-wrap--design btn-cta-wrap">
-            <Link className="btn-cta btn-press" to="/auth">
-              Начать работу
-            </Link>
-          </span>
         </div>
       </div>
     </section>

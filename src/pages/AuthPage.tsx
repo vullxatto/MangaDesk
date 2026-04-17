@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import authVideo from '../assets/video/auth.mp4'
 import googleIcon from '../assets/svg/Google.svg'
 import vkIcon from '../assets/svg/VK.svg'
+import { HeroComicFrameBorder } from '../components/HeroComicFrameBorder'
 
 type AuthTab = 'login' | 'register'
 
@@ -24,6 +25,7 @@ export function AuthPage() {
   return (
     <div className="app-shell">
       <div className="hero-section-frame">
+        <HeroComicFrameBorder />
         <main className="app-main">
           <section className="landing-hero auth-landing" aria-label="Вход и регистрация">
             <div className="hero-image-side">

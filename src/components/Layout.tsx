@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Footer } from './Footer'
 import { Header, type HeaderVariant } from './Header'
+import { HeroComicFrameBorder } from './HeroComicFrameBorder'
 
 type LayoutProps = {
   /** Если не передан — без верхнего hero-блока (только шапка сайта и контент). */
@@ -18,6 +19,7 @@ export function Layout({ hero, children, headerVariant = 'full' }: LayoutProps) 
       </div>
       {hero != null ? (
         <div className="hero-section-frame">
+          <HeroComicFrameBorder />
           <main className="app-main">{hero}</main>
         </div>
       ) : null}
