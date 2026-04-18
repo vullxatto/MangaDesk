@@ -120,10 +120,7 @@ body {
   padding: var(--space-4);
 }
 
-/* Landing/marketing: clip hero art that extends past the viewport — no horizontal page scroll */
-body:not(:has(.dashboard-root)):not(:has(.app-shell--auth)) {
-  overflow-x: hidden;
-}
+/* Horizontal clip lives on .app-shell__body so header backdrop-filter isn’t broken by overflow on body */
 
 body:has(.app-shell--auth) {
   overflow-y: hidden;
@@ -169,6 +166,12 @@ a {
 
 .app-shell {
   width: 100%;
+}
+
+.app-shell__body {
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .app-shell--auth {
@@ -258,7 +261,7 @@ a {
   pointer-events: none;
 }
 
-.site-header-bar + .hero-section-frame .hero-section-frame__comic-stack {
+.site-header-bar + .app-shell__body .hero-section-frame .hero-section-frame__comic-stack {
   top: calc(-1 * var(--site-header-bar-height));
 }
 
@@ -490,7 +493,7 @@ a {
 }
 
 /* Match comic-stack bbox (frame extends under the header) so Points clip-path aligns with border + shadow */
-.site-header-bar + .hero-section-frame .landing-hero {
+.site-header-bar + .app-shell__body .hero-section-frame .landing-hero {
   margin-top: calc(-1 * var(--site-header-bar-height));
   padding-top: var(--site-header-bar-height);
   min-height: calc(100% + var(--site-header-bar-height));
@@ -752,7 +755,7 @@ button[aria-label='Тема'] {
   margin-left: -50vw;
   right: auto;
   top: calc(var(--space-2) + var(--how-step-icon-size) / 2);
-  bottom: 0;
+  bottom: -10px;
   z-index: 0;
   background: color-mix(in srgb, var(--fg) 5%, var(--bg));
   pointer-events: none;

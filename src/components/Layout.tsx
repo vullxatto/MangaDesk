@@ -15,14 +15,16 @@ export function Layout({ hero, children, headerVariant = 'full' }: LayoutProps) 
       <div className="site-header-bar">
         <Header variant={headerVariant} />
       </div>
-      {hero != null ? (
-        <div className="hero-section-frame">
-          <HeroComicFrameBorder />
-          <main className="app-main">{hero}</main>
-        </div>
-      ) : null}
-      {children ? <div className="app-sections">{children}</div> : null}
-      <Footer />
+      <div className="app-shell__body">
+        {hero != null ? (
+          <div className="hero-section-frame">
+            <HeroComicFrameBorder />
+            <main className="app-main">{hero}</main>
+          </div>
+        ) : null}
+        {children ? <div className="app-sections">{children}</div> : null}
+        <Footer />
+      </div>
     </div>
   )
 }
