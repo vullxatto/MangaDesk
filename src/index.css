@@ -265,6 +265,10 @@ a {
   top: calc(-1 * var(--site-header-bar-height));
 }
 
+.app-shell--with-hero .site-header-bar + .app-shell__body .hero-section-frame .hero-section-frame__comic-stack {
+  top: calc(var(--site-header-bar-height) * -0.3);
+}
+
 .hero-section-frame__comic-shadow,
 .hero-section-frame__comic-border {
   position: absolute;
@@ -290,6 +294,16 @@ a {
   z-index: 10;
   width: 100%;
   background: transparent;
+}
+
+.app-shell--with-hero .site-header-bar {
+  position: fixed;
+  left: var(--space-4);
+  right: var(--space-4);
+  top: var(--space-4);
+  width: auto;
+  box-sizing: border-box;
+  z-index: 10;
 }
 
 .site-header {

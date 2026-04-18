@@ -11,7 +11,7 @@ type LayoutProps = {
 
 export function Layout({ hero, children, headerVariant = 'full' }: LayoutProps) {
   return (
-    <div className="app-shell">
+    <div className={`app-shell${hero != null ? ' app-shell--with-hero' : ''}`}>
       <div className="site-header-bar">
         <Header variant={headerVariant} />
       </div>
