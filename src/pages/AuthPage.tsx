@@ -44,7 +44,7 @@ export function AuthPage() {
                 <div className="auth-landing__brand">
                   <Link className="site-logo" to="/">
                     <span className="site-logo-box" aria-hidden>
-                      <img className="site-logo-icon" src="/favicon.svg" alt="" />
+                      <img className="site-logo-icon" src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />
                     </span>
                     <span className="site-logo-word" aria-hidden>
                       <span className="site-logo-char site-logo-char--big">M</span>

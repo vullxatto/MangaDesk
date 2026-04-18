@@ -8,7 +8,7 @@ export function Footer() {
         <div className="site-footer__brand">
           <a className="site-logo site-footer__logo" href="/" onClick={reloadHome} aria-label="MangaDesk">
             <span className="site-logo-box" aria-hidden>
-              <img className="site-logo-icon" src="/favicon.svg" alt="" />
+              <img className="site-logo-icon" src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />
             </span>
             <span className="site-logo-word" aria-hidden>
               <span className="site-logo-char site-logo-char--big">M</span>
