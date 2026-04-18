@@ -8,9 +8,19 @@ const frameSvgProps = {
   preserveAspectRatio: 'none' as const,
 }
 
+/** Same path as frame SVG, scaled to objectBoundingBox for clip-path on Points */
+const CLIP_PATH_SCALE = 'scale(0.004975124378109453 0.0049504950495049505)'
+
 export function HeroComicFrameBorder() {
   return (
     <div className="hero-section-frame__comic-stack" aria-hidden>
+      <svg className="hero-section-frame__clip-defs" width="0" height="0" aria-hidden>
+        <defs>
+          <clipPath id="heroComicFrameClip" clipPathUnits="objectBoundingBox">
+            <path transform={CLIP_PATH_SCALE} d={FRAME_PATH} fill="#000" />
+          </clipPath>
+        </defs>
+      </svg>
       <svg className="hero-section-frame__comic-shadow" {...frameSvgProps}>
         <path
           d={FRAME_PATH}
