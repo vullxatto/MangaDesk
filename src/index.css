@@ -2077,12 +2077,15 @@ button[aria-label='Тема'] {
   margin-top: 0;
 }
 
+/* Bottom edge of the panel = anchor; 50% shifts half the sprite below (scales with img height at any breakpoint) */
 .auth-landing__kitty {
   position: absolute;
   z-index: 2;
-  right: clamp(12px, 3.5vw, 36px);
+  right: clamp(6px, 3.5vw, 36px);
   bottom: 0;
-  transform: translateY(calc(50% + clamp(14px, 3vw, 28px) - 1px));
+  left: auto;
+  transform: translateY(calc(50% + 25px));
+  transform-origin: bottom center;
   line-height: 0;
   pointer-events: none;
 }
@@ -2273,15 +2276,6 @@ button[aria-label='Тема'] {
     max-width: 42%;
   }
 
-  .auth-landing__kitty {
-    transform: translateY(calc(50% + clamp(30px, 5.5vw, 52px) - 6px));
-  }
-
-  .auth-landing__kitty-img {
-    width: min(300px, 58vw);
-    max-width: 74%;
-  }
-
   .auth-tabs {
     gap: clamp(22px, 5vw, 36px);
   }
@@ -2381,19 +2375,28 @@ button[aria-label='Тема'] {
     font-size: 13px;
   }
 
-  .auth-landing__kitty {
-    right: clamp(6px, 2vw, 20px);
-    transform: translateY(calc(50% + clamp(22px, 5.5vw, 44px) - 4px));
-  }
-
-  .auth-landing__kitty-img {
-    width: min(228px, 56vw);
-    max-width: 72%;
-  }
-
   .auth-landing .auth-landing__theme.window-close-wrap {
     top: 16px;
     right: 14px;
+  }
+}
+
+/* Tablet: center auth card in the viewport; tree nudged right so it tucks slightly under the panel */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .app-shell--auth .landing-hero.auth-landing {
+    display: grid;
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    place-content: center;
+    justify-items: center;
+    align-content: center;
+  }
+
+  .auth-landing__bg-tree {
+    right: clamp(4px, 1.5vw, 22px);
+    transform: translateY(-50%) translateX(clamp(100px, 4vw, 52px));
   }
 }
 
