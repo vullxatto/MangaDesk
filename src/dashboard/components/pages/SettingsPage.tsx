@@ -1,4 +1,4 @@
-import { usePipeline } from '../../context/PipelineContext'
+import { usePipeline } from '../../context/usePipeline'
 
 function SettingsPage({ title = 'Настройки' }) {
   const { soloMode, setSoloMode } = usePipeline()

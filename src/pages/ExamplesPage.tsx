@@ -3,7 +3,6 @@ import landingRu from '../assets/images/landing_ru.jpg'
 import { Layout } from '../components/Layout'
 import { BeforeAfterSlider } from '../components/BeforeAfterSlider'
 
-/** До — RU, после — EN (одна пара для всех блоков на странице). */
 const BEFORE_SRC = landingRu
 const AFTER_SRC = landingEng
 

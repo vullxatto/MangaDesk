@@ -4,10 +4,8 @@ import { Header, type HeaderVariant } from './Header'
 import { HeroComicFrameBorder } from './HeroComicFrameBorder'
 
 type LayoutProps = {
-  /** Если не передан — без верхнего hero-блока (только шапка сайта и контент). */
   hero?: ReactNode
   children?: ReactNode
-  /** `minimal` — шапка как на лендинге, но без ссылок на секции (статьи, вопросы и т.д.). */
   headerVariant?: HeaderVariant
 }
 

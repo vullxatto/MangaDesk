@@ -1,4 +1,3 @@
-// @ts-nocheck
 function badgeModifier(statusCode) {
   if (statusCode === 'waiting_editor') return 'waiting'
   return statusCode

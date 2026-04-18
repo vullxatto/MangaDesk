@@ -1,16 +1,7 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { LandingScrollSpyContext } from './landingScrollSpyContext'
 
 const SECTION_IDS = ['how', 'features', 'articles', 'pricing', 'faq'] as const
-
-const LandingScrollSpyContext = createContext<string | null>(null)
 
 function readHeaderAnchorPx(): number {
   const raw = getComputedStyle(document.documentElement)
@@ -40,7 +31,9 @@ export function LandingScrollSpyProvider({ children }: { children: ReactNode }) 
   }, [])
 
   useEffect(() => {
-    update()
+    const initialRaf = requestAnimationFrame(() => {
+      update()
+    })
     let ticking = false
     const onScrollOrResize = () => {
       if (ticking) return
@@ -54,6 +47,7 @@ export function LandingScrollSpyProvider({ children }: { children: ReactNode }) 
     window.addEventListener('resize', onScrollOrResize)
     const t = window.setTimeout(update, 100)
     return () => {
+      cancelAnimationFrame(initialRaf)
       window.removeEventListener('scroll', onScrollOrResize)
       window.removeEventListener('resize', onScrollOrResize)
       window.clearTimeout(t)
@@ -65,8 +59,4 @@ export function LandingScrollSpyProvider({ children }: { children: ReactNode }) 
   return (
     <LandingScrollSpyContext.Provider value={value}>{children}</LandingScrollSpyContext.Provider>
   )
-}
-
-export function useLandingActiveSection(): string | null {
-  return useContext(LandingScrollSpyContext)
 }

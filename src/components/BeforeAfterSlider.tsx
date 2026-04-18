@@ -13,16 +13,10 @@ export type BeforeAfterSliderProps = {
   afterSrc: string
   altBefore?: string
   altAfter?: string
-  /** Подпись внизу внутри карточки со слайдером */
   caption?: string
-  /** Стартовая позиция разделителя, 0–100 (слева «до»). */
   initialPosition?: number
 }
 
-/**
- * Сравнение двух изображений: перетаскивание только за центральную ручку со стрелками.
- * Клик по области слайдера (не по ручке) открывает полноэкранный режим с тем же положением разделителя.
- */
 export function BeforeAfterSlider({
   beforeSrc,
   afterSrc,
@@ -119,7 +113,7 @@ export function BeforeAfterSlider({
         aria-hidden={fullscreen && !isFs ? true : undefined}
         aria-label={
           isFs || !fullscreen
-            ? `${altBefore} и ${altAfter}. Сравнение: ${Math.round(position)} % слева.`
+            ? `${altBefore} и ${altAfter}. Сравнение: ${Math.round(position)} % слева.`
             : undefined
         }
         onClick={!isFs ? onViewportOpenFullscreen : undefined}

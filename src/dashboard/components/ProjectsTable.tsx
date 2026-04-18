@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Pencil } from 'lucide-react'
 
 function ProjectsTable({ rows }) {

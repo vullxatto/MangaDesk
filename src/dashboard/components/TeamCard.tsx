@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { CreditCard, MoreVertical } from 'lucide-react'
 
 const presenceLabel = {

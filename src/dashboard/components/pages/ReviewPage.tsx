@@ -2,7 +2,7 @@ import ReviewActivityFeed from '../review/ReviewActivityFeed'
 import ReviewDropzone from '../review/ReviewDropzone'
 import ReviewOnlineSidebar from '../review/ReviewOnlineSidebar'
 import ReviewProcessingSection from '../review/ReviewProcessingSection'
-import { usePipeline } from '../../context/PipelineContext'
+import { usePipeline } from '../../context/usePipeline'
 
 const onlineMock = [
   { id: 1, name: 'Still Rise', activity: 'Проверяет макет 14-й главы', presence: 'active' },

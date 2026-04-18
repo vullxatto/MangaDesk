@@ -1,8 +1,7 @@
-// @ts-nocheck
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { TEAM_MEMBERS } from '../context/pipelineConstants'
-import { usePipeline } from '../context/PipelineContext'
+import { usePipeline } from '../context/usePipeline'
 import ChapterTable from './ChapterTable'
 
 const DEFAULT_TITLE_FILTER = 'all'
@@ -25,7 +24,6 @@ const statusOptions = [
   { value: 'upload', label: 'Загрузка' },
 ]
 
-/** DD.MM.YYYY HH:mm */
 function parseChapterDate(str) {
   const [datePart, timePart] = str.trim().split(/\s+/)
   const [d, m, y] = datePart.split('.').map(Number)
@@ -68,10 +66,10 @@ function ChaptersPage({ title }) {
   const [titleFilter, setTitleFilter] = useState(DEFAULT_TITLE_FILTER)
   const [statusFilter, setStatusFilter] = useState(DEFAULT_STATUS_FILTER)
   const [sortBy, setSortBy] = useState(DEFAULT_SORT)
-  const [openDropdown, setOpenDropdown] = useState(null)
-  const [assignMenuKey, setAssignMenuKey] = useState(null)
-  const filtersRef = useRef(null)
-  const pageRootRef = useRef(null)
+  const [openDropdown, setOpenDropdown] = useState<'title' | 'status' | 'sort' | null>(null)
+  const [assignMenuKey, setAssignMenuKey] = useState<string | null>(null)
+  const filtersRef = useRef<HTMLDivElement>(null)
+  const pageRootRef = useRef<HTMLDivElement>(null)
 
   const titleOptions = useMemo(() => {
     const titles = [...new Set(chapters.map((c) => c.title))].sort()
@@ -163,7 +161,7 @@ function ChaptersPage({ title }) {
             isOpen={openDropdown === 'title'}
             onToggle={(event) => {
               event.stopPropagation()
-              setOpenDropdown((value) => (value === 'title' ? null : 'title'))
+              setOpenDropdown((prev) => (prev === 'title' ? null : 'title'))
             }}
           />
           <FilterDropdown
@@ -177,7 +175,7 @@ function ChaptersPage({ title }) {
             isOpen={openDropdown === 'status'}
             onToggle={(event) => {
               event.stopPropagation()
-              setOpenDropdown((value) => (value === 'status' ? null : 'status'))
+              setOpenDropdown((prev) => (prev === 'status' ? null : 'status'))
             }}
           />
           <FilterDropdown
@@ -191,7 +189,7 @@ function ChaptersPage({ title }) {
             isOpen={openDropdown === 'sort'}
             onToggle={(event) => {
               event.stopPropagation()
-              setOpenDropdown((value) => (value === 'sort' ? null : 'sort'))
+              setOpenDropdown((prev) => (prev === 'sort' ? null : 'sort'))
             }}
           />
           <button type="button" className="dashboard-reset-btn" onClick={handleResetFilters}>

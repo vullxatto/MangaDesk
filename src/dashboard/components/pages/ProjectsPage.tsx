@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Plus } from 'lucide-react'
 import ProjectsTable from '../ProjectsTable'
 

@@ -1,7 +1,6 @@
-// @ts-nocheck
 import { ChevronDown, CloudDownload, Pencil } from 'lucide-react'
 import { TEAM_MEMBERS } from '../context/pipelineConstants'
-import { usePipeline } from '../context/PipelineContext'
+import { usePipeline } from '../context/usePipeline'
 import StatusBadge from './StatusBadge'
 
 const STATUS_LABEL = {

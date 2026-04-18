@@ -1,4 +1,3 @@
-// @ts-nocheck
 const dotClassByType = {
   achievement: 'review-feed-dot--accent',
   system: 'review-feed-dot--purple',

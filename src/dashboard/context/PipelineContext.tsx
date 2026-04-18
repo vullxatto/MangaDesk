@@ -1,13 +1,4 @@
-/* eslint-disable react-refresh/only-export-components -- провайдер и хук экспортируются вместе */
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type {
   ChapterRow,
   PipelineContextValue,
@@ -24,6 +15,7 @@ import {
   SOLO_KEY,
   TEAM_MEMBERS,
 } from './pipelineConstants'
+import { PipelineReactContext } from './pipelineReactContext'
 
 function formatNowRu() {
   const d = new Date()
@@ -68,8 +60,6 @@ function getInitialChapters(): ChapterRow[] {
 function makeQueueItemId() {
   return `q-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
-
-const PipelineContext = createContext<PipelineContextValue | null>(null)
 
 export function PipelineProvider({ children }: PipelineProviderProps) {
   const [soloMode, setSoloModeState] = useState(
@@ -376,13 +366,5 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
     ],
   )
 
-  return <PipelineContext.Provider value={value}>{children}</PipelineContext.Provider>
-}
-
-export function usePipeline() {
-  const ctx = useContext(PipelineContext)
-  if (!ctx) {
-    throw new Error('usePipeline must be used within PipelineProvider')
-  }
-  return ctx
+  return <PipelineReactContext.Provider value={value}>{children}</PipelineReactContext.Provider>
 }

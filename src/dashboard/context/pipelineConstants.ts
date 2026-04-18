@@ -13,7 +13,6 @@ export const TEAM_MEMBERS = [
 
 export const SOLO_KEY = 'mangadesk-solo-translator'
 
-/** Справочник тайтлов: id для форм, title — как в главах и фильтрах */
 export const MANGA_PROJECTS = [
   { id: 'aot', title: 'Атака титанов' },
   { id: 'knys', title: 'Клинок, рассекающий демонов' },
@@ -23,7 +22,6 @@ export const MANGA_PROJECTS = [
   { id: 'dn', title: 'Тетрадь смерти' },
 ]
 
-/** Учитывает таблицу глав, другие элементы очереди и активные обработки архивов */
 export function getNextFreeChapterNumberForProject(
   chapters: ChapterRow[],
   uploadQueue: { id: string; projectId: string; chapterNumber: string }[],

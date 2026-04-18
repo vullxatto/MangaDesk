@@ -1,4 +1,4 @@
-import { usePipeline } from '../../context/PipelineContext'
+import { usePipeline } from '../../context/usePipeline'
 import StatusBadge from '../StatusBadge'
 
 const STATUS_LABEL = {

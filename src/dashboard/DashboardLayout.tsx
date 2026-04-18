@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { usePipeline } from './context/PipelineContext'
+import { usePipeline } from './context/usePipeline'
 import Sidebar from './components/Sidebar'
 import { DASHBOARD_MENU_ITEMS } from './dashboardMenu'
 

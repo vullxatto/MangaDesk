@@ -1,4 +1,3 @@
-// @ts-nocheck
 function DashboardPlaceholder({ title }) {
   return (
     <div className="dashboard-placeholder">

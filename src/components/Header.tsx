@@ -1,12 +1,11 @@
 import { Sun, User } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
-import { useLandingActiveSection } from '../context/LandingScrollSpy'
+import { useLandingActiveSection } from '../context/useLandingActiveSection'
 import { reloadHome } from '../utils/reloadHome'
 
 export type HeaderVariant = 'full' | 'minimal'
 
 type HeaderProps = {
-  /** `minimal` — только логотип и действия, без ссылок по секциям лендинга. */
   variant?: HeaderVariant
 }
 

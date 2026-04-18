@@ -1,5 +1,61 @@
 import { ChevronRight, Eye, EyeOff, Image, Layers, PenTool, Type } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import landingEng from '../assets/images/landing_eng.jpg'
+import landingRu from '../assets/images/landing_ru.jpg'
+import { BeforeAfterSlider } from '../components/BeforeAfterSlider'
+
+const FEATURE_BEFORE_SRC = landingRu
+const FEATURE_AFTER_SRC = landingEng
+
+const FEATURE_COMPARISON_SLIDERS: Array<{
+  id: string
+  title: string
+  caption: string
+  initialPosition: number
+}> = [
+  {
+    id: 'context',
+    title: 'Контекстный перевод',
+    caption:
+      'Наш сервис запоминает имена героев и названия локаций на протяжении всего проекта. Настраивайте единый глоссарий для неизменной терминологии.',
+    initialPosition: 42,
+  },
+  {
+    id: 'localization',
+    title: 'Умная локализация',
+    caption:
+      'Сервис адаптирует под особенности русского языка метафоры и идиомы, сохраняя культурный контекст и эмоциональный окрас оригинала.',
+    initialPosition: 50,
+  },
+  {
+    id: 'graphics',
+    title: 'Работа со сложной графикой',
+    caption:
+      'Сервис очищает звуковые эффекты и текст на детализированных фонах, сохраняя эстетику и детали оригинала.',
+    initialPosition: 58,
+  },
+  {
+    id: 'quality',
+    title: 'Контроль качества',
+    caption:
+      'Вносите правки в таблице перевода до создания PSD-файла. Вы скачиваете только тот результат, в котором уверены на 100%.',
+    initialPosition: 46,
+  },
+  {
+    id: 'typography',
+    title: 'Настройка типографики',
+    caption:
+      'Загружайте шрифты и настраивайте их в реальном времени. Предпросмотр фразы в баблах разного масштаба поможет найти идеальный баланс.',
+    initialPosition: 54,
+  },
+  {
+    id: 'denoise',
+    title: 'Шумоподавление',
+    caption:
+      'Настраиваемый шумодав позволяет убрать артефакты и мусор с исходников, делая сканы чистыми и красивыми.',
+    initialPosition: 48,
+  },
+]
 
 export function Features() {
   return (
@@ -69,43 +125,20 @@ export function Features() {
       </article>
 
       <div className="features__extras">
-        <div className="features__grid features__grid--three">
-          <article className="features__card">
-            <h3 className="features__card-title">Контекстный перевод</h3>
-            <p className="features__card-text">
-            Наш сервис запоминает имена героев и названия локаций на протяжении всего проекта. Настраивайте единый глоссарий для неизменной терминологии
-            </p>
-          </article>
-          <article className="features__card">
-            <h3 className="features__card-title">Умная локализация</h3>
-            <p className="features__card-text">
-            Сервис адаптирует под особенности русского языка метафоры и идиомы, сохраняя культурный контекст и эмоциональный окрас оригинала
-            </p>
-          </article>
-          <article className="features__card">
-            <h3 className="features__card-title">Работа со сложной графикой</h3>
-            <p className="features__card-text">
-            Сервис очищает звуковые эффекты и текст на детализированных фонах, сохраняя эстетику и детали оригинала
-            </p>
-          </article>
-          <article className="features__card">
-            <h3 className="features__card-title">Контроль качества</h3>
-            <p className="features__card-text">
-            Вносите правки в таблице перевода до создания PSD-файла. Вы скачиваете только тот результат, в котором уверены на 100%
-            </p>
-          </article>
-          <article className="features__card">
-            <h3 className="features__card-title">Настройка типографики</h3>
-            <p className="features__card-text">
-            Загружайте шрифты и настраивайте их в реальном времени. Предпросмотр фразы в баблах разного масштаба поможет найти идеальный баланс
-            </p>
-          </article>
-          <article className="features__card">
-            <h3 className="features__card-title">Шумоподавление</h3>
-            <p className="features__card-text">
-            Настраиваемый шумодав позволяет убрать артефакты и мусор с исходников, делая сканы чистыми и красивыми
-            </p>
-          </article>
+        <div className="features__extras-sliders" aria-label="Примеры сравнения до и после по возможностям сервиса">
+          {FEATURE_COMPARISON_SLIDERS.map((item) => (
+            <section key={item.id} className="features__extras-slider-section">
+              <h3 className="features__extras-slider-title">{item.title}</h3>
+              <BeforeAfterSlider
+                beforeSrc={FEATURE_BEFORE_SRC}
+                afterSrc={FEATURE_AFTER_SRC}
+                altBefore="RU (до)"
+                altAfter="EN (после)"
+                caption={item.caption}
+                initialPosition={item.initialPosition}
+              />
+            </section>
+          ))}
         </div>
 
         <div className="features__grid features__grid--bottom">

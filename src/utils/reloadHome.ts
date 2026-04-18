@@ -1,6 +1,5 @@
 import type { MouseEvent } from 'react'
 
-/** Полная перезагрузка: на главной без якоря — reload, иначе переход на корень приложения (с учётом Vite base / GitHub Pages). */
 export function reloadHome(e: MouseEvent<HTMLAnchorElement>) {
   e.preventDefault()
   const { pathname, search, hash } = window.location

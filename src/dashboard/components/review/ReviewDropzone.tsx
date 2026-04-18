@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useCallback, useRef, useState } from 'react'
 import { Upload } from 'lucide-react'
 import {
@@ -6,7 +5,7 @@ import {
   MANGA_PROJECTS,
   TEAM_MEMBERS,
 } from '../../context/pipelineConstants'
-import { usePipeline } from '../../context/PipelineContext'
+import { usePipeline } from '../../context/usePipeline'
 
 function formatBytes(n) {
   if (n < 1024) return `${n} Б`
@@ -36,7 +35,7 @@ function itemCanSubmit(item, chapters, uploadQueue, processingJobs) {
 }
 
 function ReviewDropzone() {
-  const inputRef = useRef(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const {
     chapters,
@@ -52,7 +51,7 @@ function ReviewDropzone() {
 
   const addFiles = useCallback(
     (fileList) => {
-      const next = Array.from(fileList).filter(isZip)
+      const next = Array.from(fileList).filter(isZip) as File[]
       if (next.length === 0) return
       addZipToUploadQueue(next)
     },

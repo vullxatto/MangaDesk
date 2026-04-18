@@ -14,7 +14,6 @@ type SparkleDef = {
 
 const SPARKLE_KINDS: SparkleKind[] = ['star1', 'star2', 'plus']
 const SPARKLE_COUNT = 15
-/** Extra padding between sparkle collision radii (same units as % left/top within hero). */
 const SPARKLE_GAP_PCT = 2.2
 const PLACE_MAX_ATTEMPTS = 5000
 
@@ -22,12 +21,10 @@ function rand(min: number, max: number): number {
   return min + Math.random() * (max - min)
 }
 
-/** Rough footprint radius in % of hero; widthPx is the rendered icon width. */
 function approxRadiusPct(widthPx: number): number {
   return 2.4 + widthPx * 0.1
 }
 
-/** Offset from top-left toward visual center (stars + plus). */
 function approxCenter(leftPct: number, topPct: number, widthPx: number): [number, number] {
   return [leftPct + widthPx * 0.045, topPct + widthPx * 0.052]
 }
