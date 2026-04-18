@@ -174,6 +174,11 @@ a {
   overflow-x: hidden;
 }
 
+/* Comic frame + shadow live outside .app-main; body overflow-x was clipping them. Keep wide hero art clipped inside main only. */
+.app-shell--with-hero .app-shell__body {
+  overflow-x: visible;
+}
+
 .app-shell--auth {
   box-sizing: border-box;
   width: 100%;
@@ -300,7 +305,7 @@ a {
   position: fixed;
   left: var(--space-4);
   right: var(--space-4);
-  top: var(--space-4);
+  top: calc(var(--space-4) + 8px);
   width: auto;
   box-sizing: border-box;
   z-index: 10;
@@ -338,7 +343,6 @@ a {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px) saturate(150%);
   backdrop-filter: blur(14px) saturate(150%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .site-logo {
@@ -525,6 +529,11 @@ a {
   pointer-events: none;
   clip-path: url(#heroComicFrameClip);
   -webkit-clip-path: url(#heroComicFrameClip);
+}
+
+/* Wide Points SVG: clip here so .app-main stays overflow:visible (avoids y→auto + inner scroll from flex) */
+.app-shell--with-hero .landing-hero__points {
+  overflow: hidden;
 }
 
 .landing-hero__points-img {
