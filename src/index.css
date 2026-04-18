@@ -169,7 +169,8 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  /* stretch = full viewport width; center was shrinking the hero to max-content on tablet Safari/Chrome */
+  align-items: stretch;
   background: transparent;
   background-image: none;
   overflow: visible;
@@ -183,6 +184,7 @@ a {
   display: flex;
   flex-direction: column;
   flex-shrink: 1;
+  align-self: stretch;
   background: transparent;
   background-image: none;
   overflow: visible;
@@ -192,9 +194,12 @@ a {
   flex: 1 1 auto;
   min-height: 0;
   max-height: 100%;
+  width: 100%;
+  min-width: 0;
   overflow: visible;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   background: transparent;
   background-image: none;
 }
@@ -203,6 +208,8 @@ a {
   flex: 1 1 auto;
   min-height: 0;
   max-height: 100%;
+  width: 100%;
+  min-width: 0;
   overflow: visible;
   background: transparent;
   background-image: none;
@@ -1965,6 +1972,8 @@ button[aria-label='Тема'] {
 .auth-landing {
   --auth-landing-stack-gap: 22px;
   position: relative;
+  box-sizing: border-box;
+  width: 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -2107,7 +2116,7 @@ button[aria-label='Тема'] {
 
 .auth-landing__brand .site-logo-word {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   flex-wrap: nowrap;
   white-space: nowrap;
 }
@@ -2265,7 +2274,7 @@ button[aria-label='Тема'] {
   }
 
   .auth-landing__kitty {
-    transform: translateY(calc(50% + clamp(20px, 4.2vw, 38px) - 6px));
+    transform: translateY(calc(50% + clamp(30px, 5.5vw, 52px) - 6px));
   }
 
   .auth-landing__kitty-img {
