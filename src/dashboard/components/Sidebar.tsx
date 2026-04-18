@@ -8,6 +8,7 @@ import {
   Users,
 } from 'lucide-react'
 import { Link, NavLink } from 'react-router-dom'
+import { reloadHome } from '../../utils/reloadHome'
 import { DASHBOARD_MENU_ITEMS } from '../dashboardMenu'
 
 type MenuItem = (typeof DASHBOARD_MENU_ITEMS)[number]
@@ -25,11 +26,16 @@ const icons = {
 function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
   return (
     <aside className="dashboard-sidebar">
-      <Link className="dashboard-brand" to="/">
-        <span className="dashboard-brand-logo">
-          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="MangaDesk logo" className="dashboard-brand-image" />
+      <Link className="site-logo dashboard-sidebar-brand" to="/" onClick={reloadHome} aria-label="MangaDesk">
+        <span className="site-logo-box" aria-hidden>
+          <img className="site-logo-icon" src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />
         </span>
-        <span className="dashboard-brand-text">MangaDesk</span>
+        <span className="site-logo-word" aria-hidden>
+          <span className="site-logo-char site-logo-char--big">M</span>
+          <span className="site-logo-char">anga</span>
+          <span className="site-logo-char site-logo-char--big">D</span>
+          <span className="site-logo-char">esk</span>
+        </span>
       </Link>
 
       <nav className="dashboard-nav">

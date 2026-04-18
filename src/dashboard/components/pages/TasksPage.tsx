@@ -55,7 +55,7 @@ function TasksPage({ title = 'Задачи' }) {
                 </button>
                 <button
                   type="button"
-                  className="dashboard-new-btn tasks-complete-btn"
+                  className="dashboard-new-btn review-queue-submit"
                   onClick={() => completeEditorTask(row.id)}
                 >
                   <span>Завершить</span>

@@ -28,6 +28,8 @@ export interface UploadQueueItem {
 
 export interface ProcessingJob {
   id: string
+  /** id элемента upload-очереди — защита от двойного добавления (Strict Mode / двойной клик) */
+  queueItemId: string
   fileName: string
   current: number
   totalChapters: number

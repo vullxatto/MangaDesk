@@ -1,5 +1,6 @@
-import { useCallback, useRef, useState } from 'react'
-import { Upload } from 'lucide-react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { ChevronDown, Upload } from 'lucide-react'
 import {
   isDuplicateChapterNumber,
   MANGA_PROJECTS,
@@ -16,6 +17,118 @@ function formatBytes(n) {
 function isZip(file) {
   const name = file.name.toLowerCase()
   return name.endsWith('.zip') || file.type === 'application/zip' || file.type === 'application/x-zip-compressed'
+}
+
+type QueueOption = { value: string; label: string }
+
+function QueueDropdown({
+  label,
+  options,
+  value,
+  onChange,
+  ddKey,
+  openKey,
+  onOpenChange,
+}: {
+  label: string
+  options: QueueOption[]
+  value: string
+  onChange: (value: string) => void
+  ddKey: string
+  openKey: string | null
+  onOpenChange: (key: string | null) => void
+}) {
+  const isOpen = openKey === ddKey
+  const selectedLabel = options.find((o) => o.value === value)?.label ?? '—'
+  const triggerRef = useRef<HTMLDivElement>(null)
+  const [menuBox, setMenuBox] = useState<{ top: number; left: number; width: number } | null>(null)
+
+  useLayoutEffect(() => {
+    if (!isOpen) {
+      setMenuBox(null)
+      return
+    }
+    const el = triggerRef.current
+    if (!el) return
+
+    function place() {
+      const r = el!.getBoundingClientRect()
+      setMenuBox({
+        top: r.bottom + 4,
+        left: r.left,
+        width: Math.max(r.width, 170),
+      })
+    }
+
+    place()
+    window.addEventListener('scroll', place, true)
+    window.addEventListener('resize', place)
+    return () => {
+      window.removeEventListener('scroll', place, true)
+      window.removeEventListener('resize', place)
+    }
+  }, [isOpen])
+
+  const menu =
+    isOpen && menuBox
+      ? createPortal(
+          <div
+            className="dashboard-dropdown-menu review-queue-dropdown-portal"
+            data-review-queue-portal={ddKey}
+            style={{
+              position: 'fixed',
+              top: menuBox.top,
+              left: menuBox.left,
+              width: menuBox.width,
+              zIndex: 4000,
+            }}
+            role="listbox"
+          >
+            {options.map((option) => (
+              <button
+                key={option.value === '' ? `${ddKey}-empty` : option.value}
+                type="button"
+                className={`dashboard-dropdown-item ${option.value === value ? 'is-selected' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onChange(option.value)
+                  onOpenChange(null)
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )
+      : null
+
+  return (
+    <>
+      <div
+        ref={triggerRef}
+        className="dashboard-dropdown review-queue-field-dropdown"
+        data-review-queue-dd={ddKey}
+      >
+        <button
+          type="button"
+          className="dashboard-filter-btn"
+          onClick={(e) => {
+            e.stopPropagation()
+            onOpenChange(isOpen ? null : ddKey)
+          }}
+          aria-expanded={isOpen}
+        >
+          <span className="dashboard-filter-btn-text">
+            <span className="dashboard-filter-btn-label">{label}:</span>
+            <span className="dashboard-filter-btn-value">{selectedLabel}</span>
+          </span>
+          <ChevronDown size={12} className="dashboard-filter-chevron" strokeWidth={2.25} aria-hidden />
+        </button>
+      </div>
+      {menu}
+    </>
+  )
 }
 
 function itemCanSubmit(item, chapters, uploadQueue, processingJobs) {
@@ -37,6 +150,7 @@ function itemCanSubmit(item, chapters, uploadQueue, processingJobs) {
 function ReviewDropzone() {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
+  const [openQueueDropdownKey, setOpenQueueDropdownKey] = useState<string | null>(null)
   const {
     chapters,
     uploadQueue,
@@ -48,6 +162,41 @@ function ReviewDropzone() {
     submitUploadQueueItem,
     soloMode,
   } = usePipeline()
+
+  useEffect(() => {
+    if (!openQueueDropdownKey) return
+
+    function handleMouseDown(e: MouseEvent) {
+      const k = openQueueDropdownKey
+      if (!k) return
+      const t = e.target as Node
+      const trigger = document.querySelector(`[data-review-queue-dd="${CSS.escape(k)}"]`)
+      const portalMenu = document.querySelector(`[data-review-queue-portal="${CSS.escape(k)}"]`)
+      if (trigger?.contains(t) || portalMenu?.contains(t)) return
+      setOpenQueueDropdownKey(null)
+    }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpenQueueDropdownKey(null)
+    }
+
+    document.addEventListener('mousedown', handleMouseDown)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handleMouseDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [openQueueDropdownKey])
+
+  const projectOptions: QueueOption[] = [
+    { value: '', label: 'Выберите проект' },
+    ...MANGA_PROJECTS.map((p) => ({ value: p.id, label: p.title })),
+  ]
+
+  const editorOptions: QueueOption[] = [
+    { value: '', label: 'Не назначен' },
+    ...TEAM_MEMBERS.map((m) => ({ value: m.id, label: m.name })),
+  ]
 
   const addFiles = useCallback(
     (fileList) => {
@@ -126,14 +275,17 @@ function ReviewDropzone() {
       </div>
 
       {uploadQueue.length > 0 && (
-        <div className="review-queue">
+        <div className="review-section review-queue-section">
           <div className="review-queue-head">
-            <span className="review-queue-label">В очереди на обработку ({uploadQueue.length})</span>
+            <p className="review-section-title review-queue-section-title">
+              В очереди на обработку ({uploadQueue.length})
+            </p>
             <button type="button" className="review-queue-clear" onClick={clearUploadQueue}>
               Очистить
             </button>
           </div>
-          <ul className="review-queue-list">
+          <div className="review-panel review-queue-group">
+            <ul className="review-queue-group-list">
             {uploadQueue.map((item) => {
               const project = MANGA_PROJECTS.find((p) => p.id === item.projectId)
               const num = parseInt(String(item.chapterNumber).trim(), 10)
@@ -164,25 +316,20 @@ function ReviewDropzone() {
                     </button>
                   </div>
                 </div>
-                <div className="review-queue-fields">
-                  <label className="review-queue-field">
-                    <span className="review-queue-field-label">Проект</span>
-                    <select
-                      className="review-queue-select"
+                <div
+                  className={`review-queue-fields${soloMode ? ' review-queue-fields--solo' : ''}`}
+                >
+                  <div className="review-queue-field">
+                    <QueueDropdown
+                      label="Проект"
+                      options={projectOptions}
                       value={item.projectId}
-                      onChange={(e) =>
-                        updateUploadQueueItem(item.id, { projectId: e.target.value })
-                      }
-                      required
-                    >
-                      <option value="">Выберите проект</option>
-                      {MANGA_PROJECTS.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.title}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                      onChange={(v) => updateUploadQueueItem(item.id, { projectId: v })}
+                      ddKey={`${item.id}|project`}
+                      openKey={openQueueDropdownKey}
+                      onOpenChange={setOpenQueueDropdownKey}
+                    />
+                  </div>
                   <label className="review-queue-field">
                     <span className="review-queue-field-label">Номер главы</span>
                     <input
@@ -204,23 +351,17 @@ function ReviewDropzone() {
                     ) : null}
                   </label>
                   {!soloMode ? (
-                    <label className="review-queue-field">
-                      <span className="review-queue-field-label">Редактор</span>
-                      <select
-                        className="review-queue-select"
+                    <div className="review-queue-field">
+                      <QueueDropdown
+                        label="Редактор"
+                        options={editorOptions}
                         value={item.editorId}
-                        onChange={(e) =>
-                          updateUploadQueueItem(item.id, { editorId: e.target.value })
-                        }
-                      >
-                        <option value="">Не назначен</option>
-                        {TEAM_MEMBERS.map((m) => (
-                          <option key={m.id} value={m.id}>
-                            {m.name}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                        onChange={(v) => updateUploadQueueItem(item.id, { editorId: v })}
+                        ddKey={`${item.id}|editor`}
+                        openKey={openQueueDropdownKey}
+                        onOpenChange={setOpenQueueDropdownKey}
+                      />
+                    </div>
                   ) : null}
                   <div className="review-queue-submit-wrap">
                     <button
@@ -236,7 +377,8 @@ function ReviewDropzone() {
               </li>
               )
             })}
-          </ul>
+            </ul>
+          </div>
         </div>
       )}
     </section>

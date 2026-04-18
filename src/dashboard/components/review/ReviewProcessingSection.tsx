@@ -1,3 +1,4 @@
+import { getArchiveStageLabel } from '../../context/pipelineConstants'
 import { usePipeline } from '../../context/usePipeline'
 
 function ReviewProcessingSection() {
@@ -12,37 +13,39 @@ function ReviewProcessingSection() {
       <h2 id="review-processing-heading" className="review-section-title">
         Обработка
       </h2>
-      <ul className="review-processing-list">
-        {processingJobs.map((job) => {
-          const pct =
-            job.totalChapters > 0
-              ? Math.min(100, Math.round((job.current / job.totalChapters) * 100))
-              : 0
-          const n = Math.min(job.current + 1, job.totalChapters)
-          return (
-            <li key={job.id} className="review-panel review-processing-card">
-              <div className="review-processing-card-head">
-                <span className="review-processing-filename">{job.fileName}</span>
-                <time className="review-processing-started" dateTime={new Date(job.startedAt).toISOString()}>
-                  Начато: {formatStartedAt(job.startedAt)}
-                </time>
-              </div>
-              <div
-                className="review-processing-progress-track"
-                role="progressbar"
-                aria-valuenow={pct}
-                aria-valuemin={0}
-                aria-valuemax={100}
-              >
-                <div className="review-processing-progress-fill" style={{ width: `${pct}%` }} />
-              </div>
-              <p className="review-processing-counter">
-                Глава {n} из {job.totalChapters}
-              </p>
-            </li>
-          )
-        })}
-      </ul>
+      <div className="review-panel review-processing-group">
+        <ul className="review-processing-group-list">
+          {processingJobs.map((job) => {
+            const pct =
+              job.totalChapters > 0
+                ? Math.min(100, Math.round((job.current / job.totalChapters) * 100))
+                : 0
+            const stageLabel = getArchiveStageLabel(job)
+            return (
+              <li key={job.id} className="review-processing-row">
+                <div className="review-processing-card-head">
+                  <span className="review-processing-filename">{job.fileName}</span>
+                  <time className="review-processing-started" dateTime={new Date(job.startedAt).toISOString()}>
+                    Начато: {formatStartedAt(job.startedAt)}
+                  </time>
+                </div>
+                <div
+                  className="review-processing-progress-track"
+                  role="progressbar"
+                  aria-valuenow={pct}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                >
+                  <div className="review-processing-progress-fill" style={{ width: `${pct}%` }} />
+                </div>
+                <p className="review-processing-counter" title={stageLabel}>
+                  {stageLabel}
+                </p>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
     </section>
   )
 }

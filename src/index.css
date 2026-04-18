@@ -305,7 +305,7 @@ a {
   position: fixed;
   left: var(--space-4);
   right: var(--space-4);
-  top: calc(var(--space-4) + 8px);
+  top: calc(var(--space-4) + 4px);
   width: auto;
   box-sizing: border-box;
   z-index: 10;
@@ -384,6 +384,14 @@ a {
   width: var(--size-logo-icon);
   height: var(--size-logo-icon);
   display: block;
+}
+
+.dashboard-sidebar-brand.site-logo {
+  margin-left: 2px;
+  margin-bottom: 8px;
+  text-decoration: none;
+  color: var(--fg);
+  flex-shrink: 0;
 }
 
 .site-nav {
@@ -543,7 +551,7 @@ a {
   width: min(320vw, 3600px);
   height: auto;
   max-height: 115%;
-  transform: translate(-50%, 36px);
+  transform: translate(-50%, 75px);
   object-fit: contain;
   object-position: center bottom;
 }

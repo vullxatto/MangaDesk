@@ -216,24 +216,28 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
         ) {
           return prev
         }
-        const jid = jobIdRef.current + 1
-        jobIdRef.current = jid
-        const totalChapters = 4 + Math.floor(Math.random() * 4)
-        const solo = soloMode
-        const preEditorId = solo || !item.editorId ? null : item.editorId
-        const job: ProcessingJob = {
-          id: `job-${jid}`,
-          fileName: item.file.name,
-          current: 0,
-          totalChapters,
-          startedAt: Date.now(),
-          projectTitle: project.title,
-          chapterNumber: num,
-          preEditorId,
-          solo,
-        }
-        queueMicrotask(() => {
-          setProcessingJobs((jobs) => [...jobs, job])
+        setProcessingJobs((jobs) => {
+          if (jobs.some((j) => j.queueItemId === id)) {
+            return jobs
+          }
+          jobIdRef.current += 1
+          const jid = jobIdRef.current
+          const totalChapters = 4 + Math.floor(Math.random() * 4)
+          const solo = soloMode
+          const preEditorId = solo || !item.editorId ? null : item.editorId
+          const job: ProcessingJob = {
+            id: `job-${jid}`,
+            queueItemId: id,
+            fileName: item.file.name,
+            current: 0,
+            totalChapters,
+            startedAt: Date.now(),
+            projectTitle: project.title,
+            chapterNumber: num,
+            preEditorId,
+            solo,
+          }
+          return [...jobs, job]
         })
         return prev.filter((q) => q.id !== id)
       })

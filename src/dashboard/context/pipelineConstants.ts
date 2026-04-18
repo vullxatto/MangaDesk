@@ -130,3 +130,28 @@ export const INITIAL_CHAPTERS: ChapterRow[] = [
     assignedAt: null,
   },
 ]
+
+/** Этапы «обработки архива» (демо), показываются вместо «глава X из Y». */
+export const ARCHIVE_PIPELINE_STAGES = [
+  'Клинка сканов',
+  'Вырезка и сборка',
+  'Перевод',
+  'Редактура',
+  'Улучшение качества',
+  'Верстка',
+  'Экспорт',
+  'Финальная проверка',
+] as const
+
+export function getArchiveStageLabel(job: { current: number; totalChapters: number }): string {
+  const { current, totalChapters } = job
+  const n = ARCHIVE_PIPELINE_STAGES.length
+  if (totalChapters <= 0) return ARCHIVE_PIPELINE_STAGES[0]
+  const cap = Math.max(0, totalChapters - 1)
+  if (cap === 0) return ARCHIVE_PIPELINE_STAGES[0]
+  const idx = Math.min(
+    n - 1,
+    Math.round((current / cap) * (n - 1)),
+  )
+  return ARCHIVE_PIPELINE_STAGES[idx]
+}
