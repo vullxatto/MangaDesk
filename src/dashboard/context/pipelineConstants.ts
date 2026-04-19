@@ -57,11 +57,22 @@ export function isDuplicateChapterNumber(
   uploadQueue: { id: string; projectId: string; chapterNumber: string }[],
   processingJobs: { projectTitle: string; chapterNumber: number }[],
   excludeQueueItemId: string,
+  /** При редактировании существующей главы — не считать дубликатом её саму */
+  excludeChapterId?: number,
 ) {
   const num = typeof rawNum === 'number' ? rawNum : parseInt(String(rawNum).trim(), 10)
   if (!projectTitle || !Number.isFinite(num) || num < 1) return false
 
-  if (chapters.some((c) => c.title === projectTitle && c.number === num)) return true
+  if (
+    chapters.some(
+      (c) =>
+        c.title === projectTitle &&
+        c.number === num &&
+        (excludeChapterId === undefined || c.id !== excludeChapterId),
+    )
+  ) {
+    return true
+  }
 
   for (const q of uploadQueue) {
     if (q.id === excludeQueueItemId) continue

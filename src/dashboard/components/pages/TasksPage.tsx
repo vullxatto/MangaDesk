@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { usePipeline } from '../../context/usePipeline'
 import StatusBadge from '../StatusBadge'
 
@@ -10,6 +11,7 @@ const STATUS_LABEL = {
 }
 
 function TasksPage({ title = 'Задачи' }) {
+  const navigate = useNavigate()
   const { editorTasks, completeEditorTask } = usePipeline()
 
   if (editorTasks.length === 0) {
@@ -50,7 +52,11 @@ function TasksPage({ title = 'Задачи' }) {
               </span>
               <span className="chapters-date">{row.assignedAt ?? row.date}</span>
               <span className="tasks-actions-cell">
-                <button type="button" className="projects-link-tag tasks-open-btn">
+                <button
+                  type="button"
+                  className="projects-link-tag tasks-open-btn"
+                  onClick={() => navigate(`/dashboard/chapters/${row.id}/edit`)}
+                >
                   Открыть
                 </button>
                 <button

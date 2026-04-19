@@ -103,6 +103,32 @@
   justify-content: center;
 }
 
+.dashboard-layout:has(.chapter-editor-page) {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+.dashboard-layout:has(.chapter-editor-page) .dashboard-main {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-content:has(.chapter-editor-page) {
+  flex: 1;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .dashboard-placeholder {
   margin: 0;
   width: min(100%, 640px);
@@ -113,6 +139,177 @@
   display: grid;
   place-items: center;
   text-align: center;
+}
+
+.chapter-editor-page {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.chapter-editor-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.chapter-editor-back {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fg) 48%, transparent);
+  text-decoration: none;
+  align-self: flex-start;
+}
+
+.chapter-editor-back:hover {
+  color: var(--fg);
+}
+
+.chapter-editor-title {
+  margin: 0;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+  color: var(--fg);
+}
+
+.chapter-editor-split {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
+  align-items: stretch;
+  border: 1px solid rgba(var(--fg-rgb), 0.14);
+  border-radius: calc(var(--radius) + 8px);
+  background: var(--bg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.chapter-editor-divider {
+  background: rgba(var(--fg-rgb), 0.2);
+  width: 1px;
+  min-height: 100%;
+}
+
+.chapter-editor-pane {
+  min-height: 0;
+  min-width: 0;
+}
+
+.chapter-editor-pane--left {
+  padding: 10px 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chapter-editor-pane--right {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.chapter-editor-scan-viewport {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: color-mix(in srgb, var(--fg) 5%, var(--bg));
+  -webkit-overflow-scrolling: touch;
+}
+
+.chapter-editor-scan-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: top;
+}
+
+.chapter-editor-table-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radius);
+}
+
+.chapter-editor-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--fg);
+}
+
+.chapter-editor-table th,
+.chapter-editor-table td {
+  border: 1px solid var(--fg);
+  padding: 10px 12px;
+  vertical-align: top;
+  text-align: left;
+}
+
+.chapter-editor-table th {
+  font-weight: 800;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.68rem;
+  background: color-mix(in srgb, var(--fg) 6%, var(--bg));
+}
+
+.chapter-editor-meta-modal .team-modal-header {
+  align-items: flex-start;
+}
+
+.chapter-editor-meta-modal-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.chapter-editor-meta-modal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 18px 18px;
+  border-top: 1px solid rgba(var(--fg-rgb), 0.14);
+}
+
+.chapter-editor-meta-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+}
+
+.chapter-editor-meta-select {
+  box-sizing: border-box;
+  width: 100%;
+  height: 34px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(var(--fg-rgb), 0.14);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0 10px;
 }
 
 .chapters-page {
@@ -404,7 +601,7 @@
 
 .chapters-row {
   display: grid;
-  grid-template-columns: 1.45fr 1.1fr 1.15fr 1.05fr 0.52fr;
+  grid-template-columns: 1.45fr 1.1fr 1.15fr 1.05fr minmax(200px, 0.95fr);
   gap: 16px;
   padding: 18px 26px;
   border-bottom: 1px solid rgba(var(--fg-rgb), 0.14);
@@ -416,11 +613,11 @@
 }
 
 .chapters-row.chapters-row--with-select {
-  grid-template-columns: 28px 1.45fr 1.1fr 1.15fr 1.05fr 0.52fr;
+  grid-template-columns: 28px 1.45fr 1.1fr 1.15fr 1.05fr minmax(200px, 0.95fr);
 }
 
 .chapters-row.chapters-row--solo {
-  grid-template-columns: 1.45fr 1.1fr 1.15fr 0.52fr;
+  grid-template-columns: 1.45fr 1.1fr 1.15fr minmax(200px, 0.95fr);
 }
 
 .chapters-select-head {
@@ -470,10 +667,6 @@
 .chapters-assign-menu--batch {
   right: 0;
   left: auto;
-}
-
-.chapters-row-download {
-  flex-shrink: 0;
 }
 
 .chapters-actions-head {
@@ -597,7 +790,51 @@
 .chapters-actions {
   display: inline-flex;
   justify-content: flex-end;
-  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chapters-actions button.dashboard-reset-btn.chapters-row-translate {
+  flex-shrink: 0;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(var(--fg-rgb), 0.14);
+  background-color: var(--bg);
+  color: color-mix(in srgb, var(--fg) 62%, transparent);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.chapters-actions button.dashboard-reset-btn.chapters-row-translate:hover {
+  background-color: color-mix(in srgb, color-mix(in srgb, var(--fg) 6%, var(--bg)) 20%, var(--bg));
+}
+
+.chapters-actions button.chapters-row-icon-btn {
+  box-sizing: border-box;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: 1px solid rgba(var(--fg-rgb), 0.14);
+  border-radius: var(--radius);
+  background-color: var(--bg);
+  color: color-mix(in srgb, var(--fg) 48%, transparent);
+  padding: 0;
+}
+
+.chapters-actions button.chapters-row-icon-btn:hover {
+  color: var(--fg);
+  background-color: color-mix(in srgb, color-mix(in srgb, var(--fg) 6%, var(--bg)) 20%, var(--bg));
+}
+
+.chapters-actions button.chapters-row-icon-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 .chapters-actions button {
@@ -1030,6 +1267,88 @@
 .team-modal-card-num {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.06em;
+}
+
+.review-submit-modal-backdrop {
+  z-index: 4500;
+}
+
+.review-submit-modal.team-modal {
+  width: min(100%, 460px);
+}
+
+.review-submit-modal-sub {
+  margin: 6px 0 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--fg) 52%, transparent);
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.review-submit-modal-body {
+  padding: 16px 18px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.review-submit-modal-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--fg);
+  margin: 0;
+}
+
+.review-submit-modal-checkbox {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: var(--fg);
+}
+
+.review-submit-modal-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.review-submit-modal-row-tokens {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fg) 48%, transparent);
+}
+
+.review-submit-modal-footer {
+  padding: 16px 18px 18px;
+  border-top: 1px solid rgba(var(--fg-rgb), 0.14);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.review-submit-modal-total {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fg) 52%, transparent);
+}
+
+.review-submit-modal-total strong {
+  font-size: 0.85rem;
+  color: var(--fg);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
 }
 
 .review-page {

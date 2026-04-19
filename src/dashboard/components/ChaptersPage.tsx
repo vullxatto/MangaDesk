@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { TEAM_MEMBERS } from '../context/pipelineConstants'
 import { usePipeline } from '../context/usePipeline'
+import ChapterMetadataModal from './ChapterMetadataModal'
 import ChapterTable from './ChapterTable'
 
 const DEFAULT_TITLE_FILTER = 'all'
@@ -62,12 +63,14 @@ function FilterDropdown({ label, options, value, onChange, isOpen, onToggle }) {
 }
 
 function ChaptersPage({ title }) {
-  const { chapters, assignEditor, selectedWaitingIds, soloMode } = usePipeline()
+  const { chapters, assignEditor, selectedWaitingIds, soloMode, updateChapterMetadata, uploadQueue, processingJobs } =
+    usePipeline()
   const [titleFilter, setTitleFilter] = useState(DEFAULT_TITLE_FILTER)
   const [statusFilter, setStatusFilter] = useState(DEFAULT_STATUS_FILTER)
   const [sortBy, setSortBy] = useState(DEFAULT_SORT)
   const [openDropdown, setOpenDropdown] = useState<'title' | 'status' | 'sort' | null>(null)
   const [assignMenuKey, setAssignMenuKey] = useState<string | null>(null)
+  const [metadataChapterId, setMetadataChapterId] = useState<number | null>(null)
   const filtersRef = useRef<HTMLDivElement>(null)
   const pageRootRef = useRef<HTMLDivElement>(null)
 
@@ -144,6 +147,9 @@ function ChaptersPage({ title }) {
   }
 
   const batchOpen = assignMenuKey === 'batch'
+
+  const metadataChapter =
+    metadataChapterId != null ? chapters.find((c) => c.id === metadataChapterId) : undefined
 
   return (
     <div className="chapters-page projects-page" ref={pageRootRef}>
@@ -241,8 +247,22 @@ function ChaptersPage({ title }) {
           rows={filteredChapters}
           assignMenuKey={assignMenuKey}
           onAssignMenuKey={setAssignMenuKey}
+          onOpenMetadataModal={setMetadataChapterId}
         />
       </div>
+      {metadataChapter ? (
+        <ChapterMetadataModal
+          key={metadataChapter.id}
+          initialTitle={metadataChapter.title}
+          initialNumber={metadataChapter.number}
+          chapterId={metadataChapter.id}
+          chapters={chapters}
+          uploadQueue={uploadQueue}
+          processingJobs={processingJobs}
+          onClose={() => setMetadataChapterId(null)}
+          onConfirm={(chapterTitle, number) => updateChapterMetadata(metadataChapter.id, chapterTitle, number)}
+        />
+      ) : null}
     </div>
   )
 }

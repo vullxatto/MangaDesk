@@ -53,6 +53,7 @@ export interface PipelineContextValue {
   processingJobs: ProcessingJob[]
   stats: { queue: number; inEdit: number; ready: number }
   assignEditor: (chapterIds: number[], editorId: string) => void
+  updateChapterMetadata: (chapterId: number, title: string, number: number) => void
   completeEditorTask: (chapterId: number) => void
   editorTasks: ChapterRow[]
   selectedWaitingIds: Set<number>

@@ -212,6 +212,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
             prev,
             processingJobs,
             id,
+            undefined,
           )
         ) {
           return prev
@@ -281,6 +282,33 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
     return { queue: uploadQueue.length, inEdit, ready }
   }, [chapters, uploadQueue.length])
 
+  const updateChapterMetadata = useCallback(
+    (chapterId: number, nextTitle: string, nextNumber: number) => {
+      const trimmed = nextTitle.trim()
+      if (!trimmed || !Number.isFinite(nextNumber) || nextNumber < 1) return
+      const now = formatNowRu()
+      setChapters((prev) => {
+        if (
+          isDuplicateChapterNumber(
+            trimmed,
+            nextNumber,
+            prev,
+            uploadQueue,
+            processingJobs,
+            '',
+            chapterId,
+          )
+        ) {
+          return prev
+        }
+        return prev.map((c) =>
+          c.id === chapterId ? { ...c, title: trimmed, number: nextNumber, date: now } : c,
+        )
+      })
+    },
+    [uploadQueue, processingJobs],
+  )
+
   const assignEditor = useCallback((chapterIds: number[], editorId: string) => {
     const member = TEAM_MEMBERS.find((m) => m.id === editorId)
     if (!member) return
@@ -344,6 +372,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       processingJobs,
       stats,
       assignEditor,
+      updateChapterMetadata,
       completeEditorTask,
       editorTasks,
       selectedWaitingIds,
@@ -363,6 +392,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       processingJobs,
       stats,
       assignEditor,
+      updateChapterMetadata,
       completeEditorTask,
       editorTasks,
       selectedWaitingIds,

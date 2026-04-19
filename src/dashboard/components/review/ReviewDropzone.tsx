@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { ChevronDown, Upload } from 'lucide-react'
+import { ChevronDown, Upload, X } from 'lucide-react'
 import {
   isDuplicateChapterNumber,
   MANGA_PROJECTS,
@@ -20,6 +20,110 @@ function isZip(file) {
 }
 
 type QueueOption = { value: string; label: string }
+
+/** Моковые цены в токенах; позже заменятся ответом бэка */
+const MOCK_PROCESSING_TOKEN_PRICES = {
+  /** Перевод по умолчанию */
+  baseTranslation: 840,
+  /** Клин звуков */
+  cleanSounds: 120,
+} as const
+
+/** Тайп звуков бесплатен — не входит в итог токенов */
+function processingTokenTotal(cleanSounds: boolean) {
+  return (
+    MOCK_PROCESSING_TOKEN_PRICES.baseTranslation +
+    (cleanSounds ? MOCK_PROCESSING_TOKEN_PRICES.cleanSounds : 0)
+  )
+}
+
+function ProcessingSubmitModal({
+  fileName,
+  cleanSounds,
+  typeSounds,
+  onCleanSoundsChange,
+  onTypeSoundsChange,
+  onClose,
+  onConfirm,
+}: {
+  fileName: string
+  cleanSounds: boolean
+  typeSounds: boolean
+  onCleanSoundsChange: (v: boolean) => void
+  onTypeSoundsChange: (v: boolean) => void
+  onClose: () => void
+  onConfirm: () => void
+}) {
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  const total = processingTokenTotal(cleanSounds)
+
+  return createPortal(
+    <div
+      className="team-modal-backdrop review-submit-modal-backdrop"
+      role="presentation"
+      onClick={onClose}
+    >
+      <div
+        className="team-modal review-submit-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="review-submit-modal-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="team-modal-header">
+          <div>
+            <h2 id="review-submit-modal-title" className="team-modal-title">
+              Параметры обработки
+            </h2>
+            <p className="review-submit-modal-sub">{fileName}</p>
+          </div>
+          <button type="button" className="team-modal-close" aria-label="Закрыть" onClick={onClose}>
+            <X size={20} strokeWidth={2} />
+          </button>
+        </div>
+        <div className="review-submit-modal-body">
+          <label className="review-submit-modal-row">
+            <input
+              type="checkbox"
+              className="review-submit-modal-checkbox"
+              checked={cleanSounds}
+              onChange={(e) => onCleanSoundsChange(e.target.checked)}
+            />
+            <span className="review-submit-modal-label">Клинить звуки?</span>
+            <span className="review-submit-modal-row-tokens" aria-live="polite">
+              {MOCK_PROCESSING_TOKEN_PRICES.cleanSounds} ток.
+            </span>
+          </label>
+          <label className="review-submit-modal-row">
+            <input
+              type="checkbox"
+              className="review-submit-modal-checkbox"
+              checked={typeSounds}
+              onChange={(e) => onTypeSoundsChange(e.target.checked)}
+            />
+            <span className="review-submit-modal-label">Тайпить звуки?</span>
+          </label>
+        </div>
+        <div className="review-submit-modal-footer">
+          <p className="review-submit-modal-total">
+            Всего: <strong>{total}</strong> ток.
+          </p>
+          <button type="button" className="dashboard-new-btn review-queue-submit" onClick={onConfirm}>
+            <span>Отправить в обработку</span>
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
 
 function QueueDropdown({
   label,
@@ -151,6 +255,9 @@ function ReviewDropzone() {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [openQueueDropdownKey, setOpenQueueDropdownKey] = useState<string | null>(null)
+  const [submitModalItemId, setSubmitModalItemId] = useState<string | null>(null)
+  const [modalCleanSounds, setModalCleanSounds] = useState(false)
+  const [modalTypeSounds, setModalTypeSounds] = useState(false)
   const {
     chapters,
     uploadQueue,
@@ -162,6 +269,13 @@ function ReviewDropzone() {
     submitUploadQueueItem,
     soloMode,
   } = usePipeline()
+
+  useEffect(() => {
+    if (!submitModalItemId) return
+    if (!uploadQueue.some((q) => q.id === submitModalItemId)) {
+      setSubmitModalItemId(null)
+    }
+  }, [submitModalItemId, uploadQueue])
 
   useEffect(() => {
     if (!openQueueDropdownKey) return
@@ -234,6 +348,26 @@ function ReviewDropzone() {
   function handleInputChange(e) {
     addFiles(e.target.files)
     e.target.value = ''
+  }
+
+  const submitModalItem = submitModalItemId
+    ? uploadQueue.find((q) => q.id === submitModalItemId) ?? null
+    : null
+
+  function openSubmitModal(itemId: string) {
+    setModalCleanSounds(false)
+    setModalTypeSounds(false)
+    setSubmitModalItemId(itemId)
+  }
+
+  function closeSubmitModal() {
+    setSubmitModalItemId(null)
+  }
+
+  function confirmSubmitFromModal() {
+    if (!submitModalItemId) return
+    submitUploadQueueItem(submitModalItemId)
+    setSubmitModalItemId(null)
   }
 
   return (
@@ -368,7 +502,7 @@ function ReviewDropzone() {
                       type="button"
                       className="dashboard-new-btn review-queue-submit"
                       disabled={!itemCanSubmit(item, chapters, uploadQueue, processingJobs)}
-                      onClick={() => submitUploadQueueItem(item.id)}
+                      onClick={() => openSubmitModal(item.id)}
                     >
                       <span>Отправить в обработку</span>
                     </button>
@@ -381,6 +515,17 @@ function ReviewDropzone() {
           </div>
         </div>
       )}
+      {submitModalItem ? (
+        <ProcessingSubmitModal
+          fileName={submitModalItem.file.name}
+          cleanSounds={modalCleanSounds}
+          typeSounds={modalTypeSounds}
+          onCleanSoundsChange={setModalCleanSounds}
+          onTypeSoundsChange={setModalTypeSounds}
+          onClose={closeSubmitModal}
+          onConfirm={confirmSubmitFromModal}
+        />
+      ) : null}
     </section>
   )
 }

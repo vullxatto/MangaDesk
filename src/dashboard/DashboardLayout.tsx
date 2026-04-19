@@ -5,7 +5,9 @@ import Sidebar from './components/Sidebar'
 import { DASHBOARD_MENU_ITEMS } from './dashboardMenu'
 
 function segmentFromPath(pathname: string): string {
-  const parts = pathname.replace(/\/+$/, '').split('/')
+  const normalized = pathname.replace(/\/+$/, '')
+  if (/\/chapters\/[^/]+\/edit$/.test(normalized)) return 'chapters'
+  const parts = normalized.split('/')
   const last = parts[parts.length - 1] ?? 'review'
   return last === 'dashboard' ? 'review' : last
 }

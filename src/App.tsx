@@ -4,6 +4,7 @@ import { AuthPage } from './pages/AuthPage'
 import { ExamplesPage } from './pages/ExamplesPage'
 import { HomePage } from './pages/HomePage'
 import ChaptersPage from './dashboard/components/ChaptersPage'
+import ChapterEditorPage from './dashboard/components/pages/ChapterEditorPage'
 import ProjectsPage from './dashboard/components/pages/ProjectsPage'
 import ReviewPage from './dashboard/components/pages/ReviewPage'
 import SettingsPage from './dashboard/components/pages/SettingsPage'
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="tasks" element={<TasksPage title={dashboardTitleByPage('tasks')} />} />
         <Route path="projects" element={<ProjectsPage title={dashboardTitleByPage('projects')} />} />
         <Route path="chapters" element={<ChaptersPage title={dashboardTitleByPage('chapters')} />} />
+        <Route path="chapters/:chapterId/edit" element={<ChapterEditorPage />} />
         <Route path="team" element={<TeamPage title={dashboardTitleByPage('team')} />} />
         <Route path="statistics" element={<StatisticsPage />} />
         <Route path="settings" element={<SettingsPage title={dashboardTitleByPage('settings')} />} />

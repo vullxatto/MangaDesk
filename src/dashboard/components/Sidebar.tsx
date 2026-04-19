@@ -7,7 +7,7 @@ import {
   Settings,
   Users,
 } from 'lucide-react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { reloadHome } from '../../utils/reloadHome'
 import { DASHBOARD_MENU_ITEMS } from '../dashboardMenu'
 
@@ -24,6 +24,8 @@ const icons = {
 }
 
 function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
+  const location = useLocation()
+
   return (
     <aside className="dashboard-sidebar">
       <Link className="site-logo dashboard-sidebar-brand" to="/" onClick={reloadHome} aria-label="MangaDesk">
@@ -45,9 +47,12 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
             <NavLink
               key={item.key}
               to={`/dashboard/${item.key}`}
-              className={({ isActive }) =>
-                `dashboard-nav-item${isActive ? ' is-active' : ''}`
-              }
+              className={({ isActive }) => {
+                const chaptersNested =
+                  item.key === 'chapters' && location.pathname.startsWith('/dashboard/chapters/')
+                const active = isActive || chaptersNested
+                return `dashboard-nav-item${active ? ' is-active' : ''}`
+              }}
             >
               <Icon size={14} />
               {item.label}

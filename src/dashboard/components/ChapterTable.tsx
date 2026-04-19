@@ -1,6 +1,8 @@
 import { ChevronDown, CloudDownload, Pencil } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { TEAM_MEMBERS } from '../context/pipelineConstants'
 import { usePipeline } from '../context/usePipeline'
+import type { ChapterRow } from '../pipelineTypes'
 import StatusBadge from './StatusBadge'
 
 const STATUS_LABEL = {
@@ -55,7 +57,18 @@ function AssignEditorControl({ assignMenuKey, rowId, onAssignMenuKey, onPick }) 
   )
 }
 
-function ChapterTable({ rows, assignMenuKey, onAssignMenuKey: setAssignMenuKey }) {
+function ChapterTable({
+  rows,
+  assignMenuKey,
+  onAssignMenuKey: setAssignMenuKey,
+  onOpenMetadataModal,
+}: {
+  rows: ChapterRow[]
+  assignMenuKey: string | null
+  onAssignMenuKey: (key: string | null | ((prev: string | null) => string | null)) => void
+  onOpenMetadataModal: (chapterId: number) => void
+}) {
+  const navigate = useNavigate()
   const { soloMode, assignEditor, selectedWaitingIds, toggleWaitingSelected } = usePipeline()
 
   return (
@@ -72,7 +85,7 @@ function ChapterTable({ rows, assignMenuKey, onAssignMenuKey: setAssignMenuKey }
       </div>
 
       {rows.map((row) => {
-        const label = STATUS_LABEL[row.statusCode] ?? row.status
+        const label = STATUS_LABEL[row.statusCode] ?? row.statusCode
         const showCheckbox = !soloMode && row.statusCode === 'waiting_editor'
         const checked = selectedWaitingIds.has(row.id)
 
@@ -123,15 +136,32 @@ function ChapterTable({ rows, assignMenuKey, onAssignMenuKey: setAssignMenuKey }
               {row.statusCode === 'ready' ? (
                 <button
                   type="button"
-                  className="team-card-details-btn chapters-row-download"
+                  className="chapters-row-icon-btn chapters-row-download-icon"
                   aria-label={`Скачать главу ${row.title}, № ${row.number}`}
                 >
                   <CloudDownload size={16} strokeWidth={2} aria-hidden />
-                  <span>Скачать</span>
                 </button>
               ) : null}
-              <button type="button" aria-label="Редактировать">
-                <Pencil size={15} strokeWidth={1.8} />
+              <button
+                type="button"
+                className="dashboard-reset-btn chapters-row-translate"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  navigate(`/dashboard/chapters/${row.id}/edit`)
+                }}
+              >
+                Перевод
+              </button>
+              <button
+                type="button"
+                className="chapters-row-icon-btn chapters-row-edit-icon"
+                aria-label={`Изменить проект и номер: ${row.title}, № ${row.number}`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onOpenMetadataModal(row.id)
+                }}
+              >
+                <Pencil size={16} strokeWidth={1.8} aria-hidden />
               </button>
             </span>
           </div>
