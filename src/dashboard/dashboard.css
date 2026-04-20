@@ -231,11 +231,96 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.chapter-editor-scan-stack {
+  position: relative;
+  display: block;
+  width: 100%;
+  line-height: 0;
+}
+
 .chapter-editor-scan-img {
   display: block;
   width: 100%;
   height: auto;
   vertical-align: top;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+.chapter-editor-glass {
+  position: absolute;
+  z-index: 2;
+  margin: 0;
+  padding: 4px 6px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(10px) saturate(1.2);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  cursor: default;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  color: var(--fg);
+  container-type: size;
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.chapter-editor-glass:hover {
+  background: rgba(255, 255, 255, 0.38);
+  border-color: rgba(255, 255, 255, 0.65);
+}
+
+.chapter-editor-glass--selected {
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--fg) 55%, transparent),
+    0 4px 14px rgba(0, 0, 0, 0.18);
+  border-color: color-mix(in srgb, var(--fg) 40%, rgba(255, 255, 255, 0.5));
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.chapter-editor-glass-textarea {
+  box-sizing: border-box;
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  margin: 0;
+  padding: 2px 0;
+  resize: none;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: clamp(5px, 14cqmin, 13px);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  overflow-y: auto;
+  cursor: text;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chapter-editor-glass-textarea:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 35%, transparent);
+}
+
+.chapter-editor-glass-textarea::placeholder {
+  color: color-mix(in srgb, var(--fg) 45%, transparent);
 }
 
 .chapter-editor-table-wrap {
@@ -248,6 +333,7 @@
 
 .chapter-editor-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 0.78rem;
   line-height: 1.45;
@@ -256,10 +342,13 @@
 
 .chapter-editor-table th,
 .chapter-editor-table td {
+  width: 50%;
   border: 1px solid var(--fg);
   padding: 10px 12px;
   vertical-align: top;
   text-align: left;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .chapter-editor-table th {
@@ -269,6 +358,63 @@
   letter-spacing: 0.06em;
   font-size: 0.68rem;
   background: color-mix(in srgb, var(--fg) 6%, var(--bg));
+}
+
+.chapter-editor-table-row {
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.chapter-editor-table-row:hover {
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
+}
+
+.chapter-editor-table-row--selected {
+  background: color-mix(in srgb, var(--fg) 10%, transparent);
+}
+
+.chapter-editor-table-cell--original {
+  user-select: text;
+  cursor: text;
+}
+
+.chapter-editor-original-text {
+  display: block;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.chapter-editor-table-cell--translation {
+  cursor: default;
+  padding: 6px 8px;
+}
+
+.chapter-editor-translation-input {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-height: calc(1.4em + 16px);
+  margin: 0;
+  padding: 8px 10px;
+  resize: none;
+  overflow-y: hidden;
+  border-radius: var(--radius);
+  border: 1px solid rgba(var(--fg-rgb), 0.18);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.chapter-editor-translation-input:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--fg) 35%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--fg) 12%, transparent);
 }
 
 .chapter-editor-meta-modal .team-modal-header {
