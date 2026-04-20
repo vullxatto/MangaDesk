@@ -13,6 +13,8 @@ export type BeforeAfterSliderProps = {
   afterSrc: string
   altBefore?: string
   altAfter?: string
+  /** Заголовок под превью, над подписью (например стиль карточки «Экономия времени»). */
+  heading?: string
   caption?: string
   initialPosition?: number
 }
@@ -22,6 +24,7 @@ export function BeforeAfterSlider({
   afterSrc,
   altBefore = 'До обработки',
   altAfter = 'После обработки',
+  heading,
   caption,
   initialPosition = 50,
 }: BeforeAfterSliderProps) {
@@ -212,14 +215,21 @@ export function BeforeAfterSlider({
       document.body,
     )
 
+  const labelId = heading ? `${id}-heading` : caption ? `${id}-cap` : undefined
+
   return (
-    <figure
-      className="before-after"
-      aria-labelledby={caption ? `${id}-cap` : undefined}
-    >
+    <figure className="before-after" aria-labelledby={labelId}>
       <div className="before-after__card">
         {renderViewport(containerRef, { mode: 'inline' })}
-        {renderCaptionInside(undefined, `${id}-cap`)}
+        {heading ? (
+          <h3 className="before-after__heading features__card-title" id={`${id}-heading`}>
+            {heading}
+          </h3>
+        ) : null}
+        {renderCaptionInside(
+          heading ? 'before-after__caption--below-heading' : undefined,
+          caption ? `${id}-cap` : undefined,
+        )}
       </div>
       {portal}
     </figure>

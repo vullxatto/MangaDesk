@@ -17,7 +17,7 @@ export function Faq() {
   return (
     <section className="faq" id="faq" aria-labelledby="faq-title">
       <h2 className="faq__title" id="faq-title">
-        ЧАСТЫЕ ВОПРОСЫ
+        ВОПРОСЫ
       </h2>
       <div className="faq__list">
         {FAQ_ITEMS.map((item) => {

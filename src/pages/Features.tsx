@@ -1,4 +1,14 @@
-import { ChevronRight, Eye, EyeOff, Image, Layers, PenTool, Type } from 'lucide-react'
+import {
+  ChevronRight,
+  Eye,
+  EyeOff,
+  Image,
+  Layers,
+  PenTool,
+  Type,
+  X,
+} from 'lucide-react'
+import { useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 import landingEng from '../assets/images/landing_eng.jpg'
 import landingRu from '../assets/images/landing_ru.jpg'
@@ -7,18 +17,54 @@ import { BeforeAfterSlider } from '../components/BeforeAfterSlider'
 const FEATURE_BEFORE_SRC = landingRu
 const FEATURE_AFTER_SRC = landingEng
 
+/** Горизонтальная заглушка для «Контроль качества». */
+const PLACEHOLDER_IMG_QUALITY_WIDE =
+  'https://picsum.photos/seed/mangadesk-quality-wide/1200/675'
+
+/** Горизонтальная заглушка для «Единый личный кабинет». */
+const PLACEHOLDER_IMG_CABINET =
+  'https://picsum.photos/seed/mangadesk-cabinet/1200/675'
+
+/** Заглушка для блока «Для личного чтения». */
+const PLACEHOLDER_IMG_READER =
+  'https://picsum.photos/seed/mangadesk-reader/1200/675'
+
 const FEATURE_COMPARISON_SLIDERS: Array<{
   id: string
   title: string
   caption: string
-  initialPosition: number
+  initialPosition?: number
+  /** Одна картинка вместо слайдера «до/после». */
+  staticImageSrc?: string
+  /** Горизонтальное превью (16∶9). */
+  staticImageLandscape?: boolean
+  /** Только заголовок и текст, без превью. */
+  textOnly?: boolean
+  /** Горизонтальное превью на две колонки сетки (рядом с предыдущей карточкой). */
+  wideImageSpan2?: boolean
+  /** Второй текстовый блок под первым (та же колонка сетки). */
+  pairedTextBelow?: { title: string; caption: string }
 }> = [
   {
-    id: 'context',
-    title: 'Контекстный перевод',
+    id: 'reader',
+    title: 'Для личного использования',
     caption:
-      'Наш сервис запоминает имена героев и названия локаций на протяжении всего проекта. Настраивайте единый глоссарий для неизменной терминологии.',
-    initialPosition: 42,
+      'Сервисом может пользоваться и обычный читатель: загрузите ZIP и получите перевод с эффектом glass — без выгрузки в Photoshop и без шагов для публикации главы на сайт. Релиз не обязателен: можно открыть результат только ради того, чтобы самому прочитать мангу.',
+    staticImageSrc: PLACEHOLDER_IMG_READER,
+    staticImageLandscape: true,
+    wideImageSpan2: true,
+  },
+  {
+    id: 'typography',
+    title: 'Настройка типографики',
+    caption:
+      'Загружайте шрифты и настраивайте их в реальном времени. Предпросмотр фразы в баблах разного масштаба поможет найти идеальный баланс.',
+    textOnly: true,
+    pairedTextBelow: {
+      title: 'Контекстный перевод',
+      caption:
+        'Наш сервис запоминает имена героев и названия локаций на протяжении всего проекта. Настраивайте единый глоссарий для неизменной терминологии.',
+    },
   },
   {
     id: 'localization',
@@ -28,25 +74,13 @@ const FEATURE_COMPARISON_SLIDERS: Array<{
     initialPosition: 50,
   },
   {
-    id: 'graphics',
-    title: 'Работа со сложной графикой',
-    caption:
-      'Сервис очищает звуковые эффекты и текст на детализированных фонах, сохраняя эстетику и детали оригинала.',
-    initialPosition: 58,
-  },
-  {
     id: 'quality',
     title: 'Контроль качества',
     caption:
       'Вносите правки в таблице перевода до создания PSD-файла. Вы скачиваете только тот результат, в котором уверены на 100%.',
-    initialPosition: 46,
-  },
-  {
-    id: 'typography',
-    title: 'Настройка типографики',
-    caption:
-      'Загружайте шрифты и настраивайте их в реальном времени. Предпросмотр фразы в баблах разного масштаба поможет найти идеальный баланс.',
-    initialPosition: 54,
+    staticImageSrc: PLACEHOLDER_IMG_QUALITY_WIDE,
+    staticImageLandscape: true,
+    wideImageSpan2: true,
   },
   {
     id: 'denoise',
@@ -55,14 +89,156 @@ const FEATURE_COMPARISON_SLIDERS: Array<{
       'Настраиваемый шумодав позволяет убрать артефакты и мусор с исходников, делая сканы чистыми и красивыми.',
     initialPosition: 48,
   },
+  {
+    id: 'graphics',
+    title: 'Работа со сложной графикой',
+    caption:
+      'Сервис очищает звуковые эффекты и текст на детализированных фонах, сохраняя эстетику и детали оригинала.',
+    initialPosition: 58,
+  },
+  {
+    id: 'zip-raw',
+    title: 'Архивы без подготовки',
+    caption:
+      'Загружайте ZIP с сырыми сканами: обрывы посреди реплик или, наоборот, чрезмерно крупные страницы — сервис сам нарежет кадры и приведёт исходники к виду, удобному для перевода и вёрстки.',
+    textOnly: true,
+    pairedTextBelow: {
+      title: 'Доступность для всех',
+      caption:
+        'Мы максимально снизили стоимость, чтобы автоматизация была доступна как крупным командам, так и соло-переводчикам',
+    },
+  },
 ]
+
+function FeaturesProcessParamsMock() {
+  const [cleanSounds, setCleanSounds] = useState(false)
+  const [typeSounds, setTypeSounds] = useState(false)
+  const base = 600
+  const cleanCost = 120
+  const typeCost = 120
+  const total = base + (cleanSounds ? cleanCost : 0) + (typeSounds ? typeCost : 0)
+
+  return (
+    <div className="features__psd features__process-params">
+      <div className="features__process-params-header">
+        <div className="features__process-params-header-main">
+          <p className="features__process-params-heading">Параметры обработки</p>
+          <p className="features__process-params-file">Bleach_145.zip</p>
+        </div>
+        <span className="features__process-params-close" aria-hidden>
+          <X size={17} strokeWidth={2} />
+        </span>
+      </div>
+      <div className="features__process-params-body">
+        <label className="features__process-params-row">
+          <input
+            type="checkbox"
+            className="features__process-params-checkbox"
+            checked={cleanSounds}
+            onChange={(e) => setCleanSounds(e.target.checked)}
+          />
+          <span className="features__process-params-label">Клинить звуки?</span>
+          <span className="features__process-params-tokens">{cleanCost} ток.</span>
+        </label>
+        <label className="features__process-params-row">
+          <input
+            type="checkbox"
+            className="features__process-params-checkbox"
+            checked={typeSounds}
+            onChange={(e) => setTypeSounds(e.target.checked)}
+          />
+          <span className="features__process-params-label">Тайпить звуки?</span>
+          <span className="features__process-params-tokens">{typeCost} ток.</span>
+        </label>
+      </div>
+      <div className="features__process-params-footer">
+        <span className="features__process-params-total">Всего: {total} ток.</span>
+        <button type="button" className="features__process-params-cta">
+          Отправить в обработку
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function FeatureTextOnlyCard({
+  heading,
+  caption,
+}: {
+  heading: string
+  caption: string
+}) {
+  const id = useId()
+  const headingId = `${id}-heading`
+  return (
+    <figure className="before-after" aria-labelledby={headingId}>
+      <div className="before-after__card before-after__card--text-only">
+        <h3 className="features__extras-text-only-title features__card-title" id={headingId}>
+          {heading}
+        </h3>
+        <p id={`${id}-cap`} className="features__extras-text-only-body">
+          {caption}
+        </p>
+      </div>
+    </figure>
+  )
+}
+
+function FeatureStaticImageCard({
+  heading,
+  caption,
+  src,
+  landscape,
+  note,
+}: {
+  heading: string
+  caption: string
+  src: string
+  landscape?: boolean
+  /** Второй блок текста (как «примечание» в карточках features). */
+  note?: string
+}) {
+  const id = useId()
+  const headingId = `${id}-heading`
+  const viewportClass = [
+    'before-after__viewport',
+    'before-after__viewport--static',
+    landscape ? 'before-after__viewport--landscape' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+  return (
+    <figure className="before-after" aria-labelledby={headingId}>
+      <div className="before-after__card">
+        <div className={viewportClass} aria-hidden>
+          <img
+            className="before-after__img before-after__img--static"
+            src={src}
+            alt=""
+            draggable={false}
+          />
+        </div>
+        <h3 className="before-after__heading features__card-title" id={headingId}>
+          {heading}
+        </h3>
+        <p
+          id={`${id}-cap`}
+          className="before-after__caption before-after__caption--below-heading"
+        >
+          {caption}
+        </p>
+        {note ? <p className="features__card-note">{note}</p> : null}
+      </div>
+    </figure>
+  )
+}
 
 export function Features() {
   return (
     <section className="features" id="features" aria-labelledby="features-title">
       <header className="features__header">
         <h2 className="features__title" id="features-title">
-          ОБЗОР ВОЗМОЖНОСТЕЙ
+          ВОЗМОЖНОСТИ
         </h2>
         <p className="features__subtitle">Зачем мы Вам нужны?</p>
       </header>
@@ -125,58 +301,103 @@ export function Features() {
       </article>
 
       <div className="features__extras">
-        <div className="features__extras-sliders" aria-label="Примеры сравнения до и после по возможностям сервиса">
+        <div className="features__extras-sliders" aria-label="Иллюстрации к возможностям сервиса">
           {FEATURE_COMPARISON_SLIDERS.map((item) => (
-            <section key={item.id} className="features__extras-slider-section">
-              <h3 className="features__extras-slider-title">{item.title}</h3>
-              <BeforeAfterSlider
-                beforeSrc={FEATURE_BEFORE_SRC}
-                afterSrc={FEATURE_AFTER_SRC}
-                altBefore="RU (до)"
-                altAfter="EN (после)"
-                caption={item.caption}
-                initialPosition={item.initialPosition}
-              />
+            <section
+              key={item.id}
+              className={[
+                'features__extras-slider-section',
+                item.wideImageSpan2 ? 'features__extras-slider-section--wide-span' : '',
+                item.pairedTextBelow ? 'features__extras-slider-section--text-pair' : '',
+                !item.textOnly && !item.staticImageSrc
+                  ? 'features__extras-slider-section--slider'
+                  : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              {item.textOnly ? (
+                item.pairedTextBelow ? (
+                  <>
+                    <FeatureTextOnlyCard heading={item.title} caption={item.caption} />
+                    <FeatureTextOnlyCard
+                      heading={item.pairedTextBelow.title}
+                      caption={item.pairedTextBelow.caption}
+                    />
+                  </>
+                ) : (
+                  <FeatureTextOnlyCard heading={item.title} caption={item.caption} />
+                )
+              ) : item.staticImageSrc ? (
+                item.id === 'quality' ? (
+                  <div className="features__extras-static-with-more">
+                    <FeatureStaticImageCard
+                      heading={item.title}
+                      caption={item.caption}
+                      src={item.staticImageSrc}
+                      landscape={item.staticImageLandscape}
+                    />
+                    <div className="features__extras-more-below-quality">
+                      <Link className="features__card features__card--more" to="/examples">
+                        <span className="features__more-row">
+                          <span>Больше примеров</span>
+                          <ChevronRight size={20} strokeWidth={2} aria-hidden />
+                        </span>
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <FeatureStaticImageCard
+                    heading={item.title}
+                    caption={item.caption}
+                    src={item.staticImageSrc}
+                    landscape={item.staticImageLandscape}
+                  />
+                )
+              ) : (
+                <BeforeAfterSlider
+                  beforeSrc={FEATURE_BEFORE_SRC}
+                  afterSrc={FEATURE_AFTER_SRC}
+                  altBefore="RU (до)"
+                  altAfter="EN (после)"
+                  heading={item.title}
+                  caption={item.caption}
+                  initialPosition={item.initialPosition ?? 50}
+                />
+              )}
             </section>
           ))}
         </div>
 
         <div className="features__grid features__grid--bottom">
           <article className="features__card features__card--builder">
-            <h3 className="features__card-title">Гибкий конструктор процессов</h3>
-            <p className="features__card-text">
-            Используйте сервис так, как удобно Вам: делегируйте полный цикл «под ключ» или выбирайте отдельные этапы
-            </p>
-            <p className="features__card-note">
-            Стоимость каждой отдельной главы определяется динамически, в зависимости от выбранного набора функций и процессов
-            </p>
+            <div className="features__wide">
+              <div className="features__wide-col features__wide-col--text">
+                <h3 className="features__wide-title">Гибкий конструктор процессов</h3>
+                <p className="features__wide-text">
+                  Используйте сервис так, как удобно вам: делегируйте полный цикл «под ключ» или выбирайте отдельные этапы
+                </p>
+                <p className="features__card-note">
+                  Стоимость каждой отдельной главы определяется динамически, в зависимости от выбранного набора функций и процессов
+                </p>
+              </div>
+              <div className="features__wide-col features__wide-col--mock">
+                <FeaturesProcessParamsMock />
+              </div>
+            </div>
           </article>
-          <article className="features__card features__card--side-top">
-            <h3 className="features__card-title">Доступность для всех</h3>
-            <p className="features__card-text">
-            Мы максимально снизили стоимость, чтобы автоматизация была доступна как крупным командам, так и соло-переводчикам
-            </p>
-          </article>
-          <div className="features__more-host">
-            <Link className="features__card features__card--more" to="/examples">
-              <span className="features__more-row">
-                <span>Больше примеров</span>
-                <ChevronRight size={20} strokeWidth={2} aria-hidden />
-              </span>
-            </Link>
-          </div>
         </div>
 
         <div className="features__continuation">
-          <article className="features__card features__card--fullwidth">
-            <h3 className="features__card-title">Единый личный кабинет</h3>
-            <p className="features__card-text">
-            Все ваши проекты, главы, статистика, выдачи задач участникам команды и многое другое в одном месте. Мы предоставляем полноценную рабочую среду
-            </p>
-            <p className="features__card-note">
-            Оплату производит только создатель команды. Участники получают доступ бесплатно после приглашения
-            </p>
-          </article>
+          <div className="features__cabinet-block">
+            <FeatureStaticImageCard
+              heading="Единый личный кабинет"
+              caption="Все ваши проекты, главы, статистика, выдачи задач участникам команды и многое другое в одном месте. Мы предоставляем полноценную рабочую среду"
+              note="Оплату производит только создатель команды. Участники получают доступ бесплатно после приглашения"
+              src={PLACEHOLDER_IMG_CABINET}
+              landscape
+            />
+          </div>
           <div className="features__grid features__grid--two">
             <article className="features__card">
               <h3 className="features__card-title">Длина холстов 30к</h3>
