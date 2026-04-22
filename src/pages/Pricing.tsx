@@ -40,8 +40,9 @@ export function Pricing() {
               <span>Водяной знак</span>
             </li>
           </ul>
-          <button type="button" className="pricing__btn pricing__btn--outline">
-            Оформить
+          <button type="button" className="pricing__btn pricing__btn--auth-like">
+            <span className="pricing__btn-label">Оформить</span>
+            <span className="pricing__btn-balance" aria-hidden />
           </button>
         </article>
 
@@ -66,8 +67,9 @@ export function Pricing() {
             </li>
           </ul>
           <p className="pricing__includes">Включает всё из «Стандартного»</p>
-          <button type="button" className="pricing__btn pricing__btn--accent">
-            Оформить
+          <button type="button" className="pricing__btn pricing__btn--auth-like">
+            <span className="pricing__btn-label">Оформить</span>
+            <span className="pricing__btn-balance" aria-hidden />
           </button>
         </article>
 
@@ -92,8 +94,9 @@ export function Pricing() {
             </li>
           </ul>
           <p className="pricing__includes">Включает всё из «Стартового»</p>
-          <button type="button" className="pricing__btn pricing__btn--outline">
-            Оформить
+          <button type="button" className="pricing__btn pricing__btn--auth-like">
+            <span className="pricing__btn-label">Оформить</span>
+            <span className="pricing__btn-balance" aria-hidden />
           </button>
         </article>
       </div>

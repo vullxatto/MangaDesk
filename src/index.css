@@ -1,4 +1,4 @@
-﻿@font-face {
+@font-face {
   font-family: 'Press Start 2P';
   src: url('./assets/fonts/PressStart2P/PressStart2P.ttf') format('truetype');
   font-weight: 400;
@@ -172,6 +172,14 @@ a {
   min-width: 0;
   /* clip breaks backdrop-filter on the fixed header on some engines; hidden clips horizontal bleed the same way */
   overflow-x: hidden;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Sticky TOC (and similar) fails when overflow-x is hidden on an ancestor — common browser quirk */
+.app-shell__body:has(#articles-page) {
+  overflow-x: visible;
 }
 
 /* Comic frame + shadow live outside .app-main; body overflow-x was clipping them. Keep wide hero art clipped inside main only. */
@@ -299,6 +307,11 @@ a {
   z-index: 10;
   width: 100%;
   background: transparent;
+}
+
+html:has(.examples-page) .site-header-bar,
+html:has(.articles-page-main) .site-header-bar {
+  position: static;
 }
 
 .app-shell--with-hero .site-header-bar {
@@ -1553,13 +1566,17 @@ button[aria-label='Тема'] {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-4);
-  align-items: stretch;
+  align-items: center;
+  justify-items: center;
 }
 
 .pricing__card {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 370px;
   gap: var(--space-3);
+  min-height: 430px;
   border: var(--border-main);
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
@@ -1572,7 +1589,7 @@ button[aria-label='Тема'] {
 }
 
 .pricing__card--featured {
-  border: 3px solid var(--purple);
+  min-height: 550px;
   box-shadow: var(--shadow-card);
 }
 
@@ -1613,6 +1630,7 @@ button[aria-label='Тема'] {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  margin-bottom: auto;
 }
 
 .pricing__list li {
@@ -1627,7 +1645,7 @@ button[aria-label='Тема'] {
 
 .pricing__list-icon {
   flex-shrink: 0;
-  color: var(--purple);
+  color: rgba(var(--fg-rgb), 0.78);
   margin-top: 1px;
 }
 
@@ -1636,11 +1654,13 @@ button[aria-label='Тема'] {
   font-size: 13px;
   line-height: 1.3;
   color: rgba(var(--fg-rgb), 0.55);
+  white-space: nowrap;
+  margin-top: 0;
 }
 
 .pricing__btn {
   width: 100%;
-  margin-top: auto;
+  margin-top: 0;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius);
   font-family: var(--font-shonen);
@@ -1666,14 +1686,50 @@ button[aria-label='Тема'] {
   opacity: 0.88;
 }
 
-.pricing__btn--accent {
-  background: var(--purple);
-  border-color: var(--purple);
-  color: var(--bg);
+.pricing__btn--auth-like {
+  display: grid;
+  grid-template-columns: 24px 1fr 24px;
+  align-items: center;
+  column-gap: 12px;
+  background: var(--bg);
+  background-image: var(--wallpaper-layer);
+  background-repeat: repeat, repeat;
+  background-size: var(--paper-size);
+  background-position: 0 0, 0 0;
+  color: var(--fg);
+  border-color: rgba(var(--fg-rgb), 0.38);
+  padding: 13px 18px;
+  text-transform: none;
+  transition:
+    border-color 0.15s ease,
+    opacity 0.15s ease;
 }
 
-.pricing__btn--accent:hover {
-  opacity: 0.92;
+.pricing__btn--auth-like::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.pricing__btn--auth-like:hover {
+  border-color: var(--fg);
+}
+
+.pricing__btn-label {
+  grid-column: 2;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.pricing__btn-balance {
+  grid-column: 3;
+  width: 24px;
+  height: 1px;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .pricing__promo {
@@ -1829,30 +1885,45 @@ button[aria-label='Тема'] {
 }
 
 .articles-page-main {
+  --articles-toc-rail-width: 250px;
+  --articles-toc-rail-gap: var(--space-4);
   width: 100%;
   max-width: var(--container-max);
   margin: 0 auto;
   padding: 0 var(--space-2) var(--space-8);
+  position: relative;
 }
 
 .articles-layout {
   display: grid;
-  grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
-  gap: var(--space-6);
+  grid-template-columns: var(--articles-toc-rail-width) minmax(0, 1fr);
+  gap: var(--articles-toc-rail-gap);
   align-items: start;
 }
 
-.articles-sidebar {
+.articles-layout__toc-rail {
   position: sticky;
-  top: calc(var(--site-header-row-height) + var(--space-2));
-  padding: var(--space-3);
-  border: var(--border-main);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-card);
-  background-color: var(--bg);
-  background-image: var(--wallpaper-layer);
-  background-repeat: repeat, repeat;
-  background-size: var(--paper-size);
+  /* На странице статей хедер в потоке (static), не нужен отступ под fixed-бар */
+  top: var(--space-2);
+  width: var(--articles-toc-rail-width);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-self: start;
+}
+
+.articles-layout__toc {
+  transition: opacity 0.16s ease;
+}
+
+.articles-sidebar {
+  position: static;
+  padding: 0 var(--space-3) var(--space-3) 0;
+  border: none;
+  border-right: 2px solid rgba(var(--fg-rgb), 0.22);
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
 }
 
 .articles-sidebar-title {
@@ -1902,7 +1973,7 @@ button[aria-label='Тема'] {
 }
 
 .articles-toc-main.is-active {
-  background: color-mix(in srgb, var(--purple) 12%, transparent);
+  background: rgba(var(--fg-rgb), 0.08);
   color: var(--fg);
   box-shadow: inset 0 0 0 1px rgba(var(--fg-rgb), 0.12);
 }
@@ -1921,7 +1992,7 @@ button[aria-label='Тема'] {
 }
 
 .articles-toc-sub:hover {
-  color: var(--purple);
+  color: var(--fg);
 }
 
 .articles-toc-children {
@@ -1947,8 +2018,17 @@ button[aria-label='Тема'] {
 }
 
 .articles-content {
+  width: 100%;
+  max-width: none;
+  margin: 0;
   min-width: 0;
   padding-bottom: var(--space-8);
+}
+
+/* Страница статьи: колонка текста на всю ширину справа от содержания внутри центрированного контейнера */
+#articles-page .articles-lead,
+#articles-page .article-block p {
+  max-width: none;
 }
 
 .articles-head {
@@ -2021,8 +2101,8 @@ button[aria-label='Тема'] {
 .article-note {
   margin: var(--space-3) 0 var(--space-4);
   padding: var(--space-3) var(--space-4);
-  border-left: 4px solid var(--purple);
-  background: color-mix(in srgb, var(--purple) 8%, var(--bg));
+  border-left: 4px solid rgba(var(--fg-rgb), 0.35);
+  background: rgba(var(--fg-rgb), 0.06);
   border-radius: 0 var(--radius) var(--radius) 0;
   font-family: var(--font-shonen);
   font-size: 15px;
