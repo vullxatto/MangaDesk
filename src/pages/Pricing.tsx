@@ -2,8 +2,6 @@ import {
   Check,
   FileOutput,
   Flame,
-  Heart,
-  Info,
   Layers,
   Ticket,
   Users,
@@ -35,10 +33,6 @@ export function Pricing() {
               <FileOutput className="pricing__list-icon" size={18} strokeWidth={2} aria-hidden />
               <span>Экспорт в PSD</span>
             </li>
-            <li>
-              <Info className="pricing__list-icon" size={18} strokeWidth={2} aria-hidden />
-              <span>Водяной знак</span>
-            </li>
           </ul>
           <button type="button" className="pricing__btn pricing__btn--auth-like">
             <span className="pricing__btn-label">Оформить</span>
@@ -57,12 +51,8 @@ export function Pricing() {
               <Check className="pricing__list-icon" size={18} strokeWidth={2} aria-hidden />
               <span>300 000 Токенов</span>
             </li>
-            <li>
-              <Heart className="pricing__list-icon" size={18} strokeWidth={2} aria-hidden />
-              <span>Без водяного знака</span>
-            </li>
           </ul>
-          <p className="pricing__includes">Включает всё из «Стартового»</p>
+          <p className="pricing__includes">Без экспорта в PSD, <br/> но больше Токенов</p>
           <button type="button" className="pricing__btn pricing__btn--auth-like">
             <span className="pricing__btn-label">Оформить</span>
             <span className="pricing__btn-balance" aria-hidden />
@@ -89,7 +79,7 @@ export function Pricing() {
               <span>Приоритет в очереди</span>
             </li>
           </ul>
-          <p className="pricing__includes">Включает всё из «Стандартного»</p>
+          <p className="pricing__includes">Включает всё <br/> из «Стандартного»</p>
           <button type="button" className="pricing__btn pricing__btn--auth-like">
             <span className="pricing__btn-label">Оформить</span>
             <span className="pricing__btn-balance" aria-hidden />
@@ -112,7 +102,7 @@ export function Pricing() {
               <span>Создание команд</span>
             </li>
           </ul>
-          <p className="pricing__includes">Включает всё из «Стартового»</p>
+          <p className="pricing__includes">Включает всё <br/>из «Стартового»</p>
           <button type="button" className="pricing__btn pricing__btn--auth-like">
             <span className="pricing__btn-label">Оформить</span>
             <span className="pricing__btn-balance" aria-hidden />
