@@ -1,6 +1,7 @@
 import { Cloud, Heart, Maximize2, Send, Settings, type LucideIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { HeroSparkles } from '../components/HeroSparkles'
+import cornerCatPng from '../assets/images/corner_cat.png'
 import heroArt from '../assets/images/character1.png'
 import pointsSvg from '../assets/svg/Points.svg'
 
@@ -67,6 +68,9 @@ export function Landing() {
             </span>
           </div>
         </div>
+      </div>
+      <div className="landing-hero__corner-cat" aria-hidden>
+        <img src={cornerCatPng} alt="" className="landing-hero__corner-cat-img" draggable={false} />
       </div>
     </section>
   )
