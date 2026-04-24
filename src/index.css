@@ -2549,7 +2549,7 @@ button[aria-label='Тема'] {
   right: 36px;
   bottom: 0;
   left: auto;
-  transform: translateY(calc(50% + 25px));
+  transform: translateY(calc(50% + 34px));
   transform-origin: bottom center;
   line-height: 0;
   pointer-events: none;
@@ -2557,7 +2557,7 @@ button[aria-label='Тема'] {
 
 .auth-landing__kitty-img {
   display: block;
-  width: 280px;
+  width: 270px;
   height: auto;
 }
 
