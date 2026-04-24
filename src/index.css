@@ -96,20 +96,16 @@
 
 html {
   scroll-behavior: smooth;
-  /* Avoid layout shift when the vertical scrollbar appears/disappears */
   scrollbar-gutter: stable;
 }
 
-/* Desktop-only min width: dashboard and auth — not the marketing landing (hero art bleeds past edges; hidden overflow clips it) */
-html:has(.dashboard-root),
-html:has(.app-shell--auth) {
+html:has(.dashboard-root) {
   min-width: 1280px;
 }
 
 html:has(.app-shell--auth) {
-  height: 100%;
   overflow-y: hidden;
-  overflow-x: auto;
+  overflow-x: hidden;
   scrollbar-gutter: auto;
 }
 
@@ -120,14 +116,19 @@ body {
   padding: var(--space-4);
 }
 
-/* Horizontal clip lives on .app-shell__body so header backdrop-filter isn’t broken by overflow on body */
+body:not(:has(.dashboard-root)) {
+  padding-left: 0;
+  padding-right: 0;
+  overflow-x: hidden;
+}
 
 body:has(.app-shell--auth) {
   overflow-y: hidden;
-  overflow-x: auto;
-  height: 100vh;
+  overflow-x: hidden;
+  min-height: 100vh;
   max-height: 100dvh;
   box-sizing: border-box;
+  justify-content: center;
 }
 
 body,
@@ -153,11 +154,11 @@ body,
 }
 
 #root:has(.app-shell--auth) {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  overflow-y: hidden;
+  overflow: hidden;
 }
 
 a {
@@ -170,19 +171,16 @@ a {
 
 .app-shell__body {
   min-width: 0;
-  /* clip breaks backdrop-filter on the fixed header on some engines; hidden clips horizontal bleed the same way */
   overflow-x: hidden;
   overflow-wrap: break-word;
   word-wrap: break-word;
   hyphens: auto;
 }
 
-/* Sticky TOC (and similar) fails when overflow-x is hidden on an ancestor — common browser quirk */
 .app-shell__body:has(#articles-page) {
   overflow-x: visible;
 }
 
-/* Comic frame + shadow live outside .app-main; body overflow-x was clipping them. Keep wide hero art clipped inside main only. */
 .app-shell--with-hero .app-shell__body {
   overflow-x: visible;
 }
@@ -190,13 +188,10 @@ a {
 .app-shell--auth {
   box-sizing: border-box;
   width: 100%;
-  flex: 1 1 auto;
-  min-height: 0;
-  max-height: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /* stretch = full viewport width */
   align-items: stretch;
   background: transparent;
   background-image: none;
@@ -206,6 +201,7 @@ a {
 .app-shell--auth .hero-section-frame {
   flex: 1 1 auto;
   min-height: 0;
+  max-width: none;
   max-height: 100%;
   width: 100%;
   display: flex;
@@ -274,14 +270,6 @@ a {
   pointer-events: none;
 }
 
-.site-header-bar + .app-shell__body .hero-section-frame .hero-section-frame__comic-stack {
-  top: calc(-1 * var(--site-header-bar-height));
-}
-
-.app-shell--with-hero .site-header-bar + .app-shell__body .hero-section-frame .hero-section-frame__comic-stack {
-  top: -10px;
-}
-
 .hero-section-frame__comic-shadow,
 .hero-section-frame__comic-border {
   position: absolute;
@@ -301,27 +289,41 @@ a {
   color: var(--fg);
 }
 
-.site-header-bar {
+.global-page-header {
+  width: 100%;
+  z-index: 1000;
+}
+
+.global-page-header--sticky {
   position: sticky;
   top: 0;
-  z-index: 10;
-  width: 100%;
-  background: transparent;
 }
 
-html:has(.examples-page) .site-header-bar,
-html:has(.articles-page-main) .site-header-bar {
-  position: static;
-}
-
-.app-shell--with-hero .site-header-bar {
+.global-page-header--fixed {
   position: fixed;
-  left: var(--space-4);
-  right: var(--space-4);
-  top: calc(var(--space-4) + 4px);
-  width: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+}
+
+.global-page-header__flow {
+  width: 100%;
+}
+
+.global-page-header__scaled {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1400px;
+  margin-left: -700px;
   box-sizing: border-box;
-  z-index: 10;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+  transform-origin: top center;
+}
+
+.global-page-header__inner {
+  width: 100%;
 }
 
 .site-header {
@@ -351,7 +353,6 @@ html:has(.articles-page-main) .site-header-bar {
   border-radius: var(--radius);
   overflow: hidden;
   background: rgba(var(--bg-rgb), 0.42);
-  /* blur-only first: if saturate() isn’t supported, a single invalid declaration drops the whole -webkit-backdrop-filter */
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px) saturate(150%);
@@ -535,12 +536,10 @@ html:has(.articles-page-main) .site-header-bar {
   flex: 1;
 }
 
-/* Match comic-stack bbox (frame extends under the header) so Points clip-path aligns with border + shadow */
-.site-header-bar + .app-shell__body .hero-section-frame .landing-hero {
-  margin-top: calc(-1 * var(--site-header-bar-height));
-  padding-top: var(--site-header-bar-height);
-  min-height: calc(100% + var(--site-header-bar-height));
-  box-sizing: border-box;
+.hero-header-slot {
+  flex: 0 0 auto;
+  width: 100%;
+  pointer-events: none;
 }
 
 .landing-hero__points {
@@ -552,7 +551,6 @@ html:has(.articles-page-main) .site-header-bar {
   -webkit-clip-path: url(#heroComicFrameClip);
 }
 
-/* Wide Points SVG: clip here so .app-main stays overflow:visible (avoids y→auto + inner scroll from flex) */
 .app-shell--with-hero .landing-hero__points {
   overflow: hidden;
 }
@@ -561,7 +559,7 @@ html:has(.articles-page-main) .site-header-bar {
   position: absolute;
   left: 50%;
   bottom: 0;
-  width: min(320vw, 3600px);
+  width: 3600px;
   height: auto;
   max-height: 115%;
   transform: translate(-50%, 75px);
@@ -969,12 +967,6 @@ button[aria-label='Тема'] {
   align-items: start;
 }
 
-@media (max-width: 900px) {
-  .features__wide {
-    grid-template-columns: 1fr;
-  }
-}
-
 .features__wide-title {
   font-family: var(--font-boltushka);
   font-size: 34px;
@@ -1075,7 +1067,6 @@ button[aria-label='Тема'] {
   opacity: 0.55;
 }
 
-/* Макет модалки «параметры обработки» (как в кабинете), рядом с текстом как PSD-блок */
 .features__process-params-header {
   display: flex;
   align-items: flex-start;
@@ -1227,7 +1218,6 @@ button[aria-label='Тема'] {
   align-items: stretch;
 }
 
-/* Текст и статичные превью — по высоте контента; слайдеры, пара текстов и wide-span тянутся до высоты ряда */
 .features__extras-slider-section:not(.features__extras-slider-section--slider):not(
     .features__extras-slider-section--text-pair
   ):not(.features__extras-slider-section--wide-span) {
@@ -1242,7 +1232,6 @@ button[aria-label='Тема'] {
   gap: 0;
 }
 
-/* Типографика + контекст: в сумме та же высота колонки, что у соседнего слайдера (ряд тянется по max) */
 .features__extras-slider-section--text-pair {
   align-self: stretch;
   height: 100%;
@@ -1250,7 +1239,6 @@ button[aria-label='Тема'] {
   gap: var(--space-8);
 }
 
-/* Верхний блок в паре (чаще длинный текст) получает больше высоты — без скролла */
 .features__extras-slider-section--text-pair > .before-after:first-of-type {
   flex: 1.65 1 0;
   min-height: 0;
@@ -1276,28 +1264,8 @@ button[aria-label='Тема'] {
 .features__extras-slider-section--text-pair .features__extras-text-only-body {
   flex: 1 1 auto;
   min-height: 0;
-  font-size: clamp(11px, 0.95vw, 13px);
+  font-size: 13px;
   line-height: 1.36;
-}
-
-@media (max-width: 900px) {
-  .features__extras-slider-section--text-pair {
-    align-self: start;
-    height: auto;
-  }
-
-  .features__extras-slider-section--text-pair > .before-after:first-of-type,
-  .features__extras-slider-section--text-pair > .before-after:last-of-type {
-    flex: 0 0 auto;
-  }
-
-  .features__extras-slider-section--text-pair > .before-after .before-after__card--text-only {
-    flex: 0 0 auto;
-  }
-
-  .features__extras-slider-section--text-pair .features__extras-text-only-body {
-    flex: 0 0 auto;
-  }
 }
 
 .features__extras-slider-section--slider {
@@ -1339,7 +1307,6 @@ button[aria-label='Тема'] {
   justify-content: flex-start;
 }
 
-/* «Контроль качества» + кнопка: две колонки, низ совпадает с колонкой «Умная локализация» */
 .features__extras-slider-section--wide-span {
   grid-column: span 2;
   align-self: stretch;
@@ -1356,41 +1323,20 @@ button[aria-label='Тема'] {
   max-width: none;
 }
 
-@media (max-width: 900px) {
-  .features__extras-slider-section--wide-span {
-    grid-column: 1 / -1;
-    height: auto;
-  }
-
-  .features__extras-static-with-more {
-    flex: 0 0 auto;
-  }
-
-  .features__extras-more-below-quality {
-    margin-top: 0;
-  }
-
-  .features__extras-sliders
-    .features__extras-slider-section--wide-span
-    .before-after__viewport.before-after__viewport--landscape {
-    max-height: min(44vh, 440px);
-  }
-}
-
 .features__extras-sliders .before-after__card .before-after__viewport {
   max-width: none;
-  max-height: min(52vh, 560px);
+  max-height: 560px;
 }
 
 .features__extras-sliders .before-after__viewport.before-after__viewport--landscape {
   aspect-ratio: 16 / 9;
-  max-height: min(36vh, 380px);
+  max-height: 380px;
 }
 
 .features__extras-sliders
   .features__extras-slider-section--wide-span
   .before-after__viewport.before-after__viewport--landscape {
-  max-height: min(58vh, 640px);
+  max-height: 640px;
 }
 
 .features__extras-static-with-more {
@@ -1436,7 +1382,7 @@ button[aria-label='Тема'] {
 
 .features__extras-text-only-title {
   font-family: var(--font-boltushka);
-  font-size: clamp(16px, 1.65vw, 21px);
+  font-size: 21px;
   line-height: 1.22;
   font-weight: 700;
   margin: 0;
@@ -1530,7 +1476,7 @@ button[aria-label='Тема'] {
 }
 
 .features__cabinet-block .before-after__viewport.before-after__viewport--landscape {
-  max-height: min(40vh, 460px);
+  max-height: 460px;
 }
 
 .pricing {
@@ -1890,7 +1836,7 @@ button[aria-label='Тема'] {
   width: 100%;
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0 var(--space-2) var(--space-8);
+  padding: 15px var(--space-2) var(--space-8);
   position: relative;
 }
 
@@ -1903,8 +1849,7 @@ button[aria-label='Тема'] {
 
 .articles-layout__toc-rail {
   position: sticky;
-  /* На странице статей хедер в потоке (static), не нужен отступ под fixed-бар */
-  top: var(--space-2);
+  top: calc(var(--space-2) + 60px);
   width: var(--articles-toc-rail-width);
   display: flex;
   flex-direction: column;
@@ -2025,7 +1970,6 @@ button[aria-label='Тема'] {
   padding-bottom: var(--space-8);
 }
 
-/* Страница статьи: колонка текста на всю ширину справа от содержания внутри центрированного контейнера */
 #articles-page .articles-lead,
 #articles-page .article-block p {
   max-width: none;
@@ -2046,7 +1990,7 @@ button[aria-label='Тема'] {
 
 .articles-doc-title {
   font-family: var(--font-boltushka);
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1.2;
   color: var(--fg);
@@ -2205,7 +2149,7 @@ button[aria-label='Тема'] {
 
 .examples-page__title {
   font-family: var(--font-pixel);
-  font-size: clamp(22px, 4vw, 36px);
+  font-size: 36px;
   line-height: 1.15;
   font-weight: 400;
   color: var(--bg);
@@ -2238,7 +2182,7 @@ button[aria-label='Тема'] {
 
 .examples-page__grid .before-after__card .before-after__viewport {
   max-width: none;
-  max-height: min(52vh, 560px);
+  max-height: 560px;
 }
 
 .before-after {
@@ -2270,7 +2214,7 @@ button[aria-label='Тема'] {
   max-width: none;
   margin: 0;
   aspect-ratio: 3 / 4;
-  max-height: min(78vh, 900px);
+  max-height: 900px;
   border: none;
   border-radius: 0;
   box-shadow: none;
@@ -2285,7 +2229,7 @@ button[aria-label='Тема'] {
 
 .before-after__viewport.before-after__viewport--landscape {
   aspect-ratio: 16 / 9;
-  max-height: min(42vh, 440px);
+  max-height: 440px;
 }
 
 .before-after__img--static {
@@ -2487,7 +2431,7 @@ button[aria-label='Тема'] {
 }
 
 .features__extras-sliders .before-after__heading.features__card-title {
-  font-size: clamp(16px, 1.65vw, 21px);
+  font-size: 21px;
   line-height: 1.22;
   margin-bottom: 0;
   display: -webkit-box;
@@ -2517,10 +2461,9 @@ button[aria-label='Тема'] {
   position: absolute;
   z-index: 0;
   top: 50%;
-  right: clamp(13px, 3vw, 41px);
+  right: 41px;
   transform: translateY(-50%);
-  width: min(532px, 55vw);
-  max-width: 59%;
+  width: 532px;
   opacity: 0.7;
   pointer-events: none;
 }
@@ -2529,12 +2472,9 @@ button[aria-label='Тема'] {
   position: absolute;
   z-index: 0;
   top: 50%;
-  left: calc(
-    50% - min(266px, calc((100% - 55px) / 2), calc(87vh * 3 / 8)) + clamp(16px, 3vw, 44px)
-  );
+  left: calc(50% - 224px);
   transform: translate(-100%, -50%);
-  width: min(470px, 49vw);
-  max-width: 52%;
+  width: 470px;
   opacity: 0.65;
   pointer-events: none;
 }
@@ -2553,8 +2493,7 @@ button[aria-label='Тема'] {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  width: min(532px, 100%, calc(87vh * 3 / 4));
-  max-width: 100%;
+  width: 532px;
   aspect-ratio: 5 / 6;
   height: auto;
   min-height: 0;
@@ -2604,11 +2543,10 @@ button[aria-label='Тема'] {
   margin-top: 0;
 }
 
-/* Bottom edge of the panel = anchor; 50% shifts half the sprite below (scales with img height at any breakpoint) */
 .auth-landing__kitty {
   position: absolute;
   z-index: 2;
-  right: clamp(6px, 3.5vw, 36px);
+  right: 36px;
   bottom: 0;
   left: auto;
   transform: translateY(calc(50% + 25px));
@@ -2619,9 +2557,8 @@ button[aria-label='Тема'] {
 
 .auth-landing__kitty-img {
   display: block;
-  width: min(280px, 58vw);
+  width: 280px;
   height: auto;
-  max-width: 78%;
 }
 
 .auth-landing__brand {
@@ -2985,4 +2922,37 @@ body:has(.dashboard-root) {
 
 .dashboard-root a.dashboard-nav-item {
   text-decoration: none;
+}
+
+.page-scale-container {
+  position: relative;
+  width: 100%;
+  flex: 0 0 auto;
+  align-self: stretch;
+  overflow: visible;
+}
+
+.page-scale-wrapper {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1400px;
+  margin-left: -700px;
+  box-sizing: border-box;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+  transform-origin: top center;
+  transform: scale(var(--page-scale, 1));
+}
+
+body:has(.app-shell--auth) .page-scale-wrapper {
+  width: 1400px;
+  height: 900px;
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
+}
+
+html.viewport-le-1400 .edge-decor {
+  display: none !important;
 }

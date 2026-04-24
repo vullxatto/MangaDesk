@@ -23,14 +23,16 @@ function useScrollToHash() {
 export function HomePage() {
   useScrollToHash()
   return (
-    <LandingScrollSpyProvider>
-      <Layout hero={<Landing />}>
-        <HowItWorks />
-        <Features />
-        <ArticlesSection />
-        <Pricing />
-        <Faq />
-      </Layout>
-    </LandingScrollSpyProvider>
+    <div className="home-page">
+      <LandingScrollSpyProvider>
+        <Layout hero={<Landing />}>
+          <HowItWorks />
+          <Features />
+          <ArticlesSection />
+          <Pricing />
+          <Faq />
+        </Layout>
+      </LandingScrollSpyProvider>
+    </div>
   )
 }
