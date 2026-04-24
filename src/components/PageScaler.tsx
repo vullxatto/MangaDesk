@@ -7,12 +7,13 @@ type PageScalerProps = {
   children: ReactNode
   className?: string
   style?: CSSProperties
+  designWidth?: number
 }
 
-export function PageScaler({ children, className, style }: PageScalerProps) {
+export function PageScaler({ children, className, style, designWidth = DESIGN_WIDTH }: PageScalerProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const wrapperRef = useRef<HTMLDivElement | null>(null)
-  const { scale, isCompactViewport } = useViewportScale(DESIGN_WIDTH)
+  const { scale, isCompactViewport } = useViewportScale(designWidth)
 
   useLayoutEffect(() => {
     const root = document.documentElement
@@ -56,7 +57,7 @@ export function PageScaler({ children, className, style }: PageScalerProps) {
       className={className ? `page-scale-container ${className}` : 'page-scale-container'}
       style={style}
     >
-      <div ref={wrapperRef} className="page-scale-wrapper">
+      <div ref={wrapperRef} className="page-scale-wrapper" style={{ ['--page-scale-width' as string]: `${designWidth}px` }}>
         {children}
       </div>
     </div>

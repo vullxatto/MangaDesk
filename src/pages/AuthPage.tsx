@@ -24,7 +24,7 @@ export function AuthPage() {
   const linkAccent = { color: 'rgba(var(--fg-rgb), 0.72)' } as const
 
   return (
-    <PageScaler>
+    <PageScaler designWidth={760}>
       <div className="app-shell app-shell--auth">
         <div className="hero-section-frame">
           <main className="app-main">
