@@ -46,6 +46,29 @@ export function Pricing() {
           </button>
         </article>
 
+        <article className="pricing__card">
+          <h3 className="pricing__card-name">ЧИТАТЕЛЬСКИЙ</h3>
+          <div className="pricing__price">
+            <span className="pricing__price-num">500</span>
+            <span className="pricing__price-suffix">₽ / мес</span>
+          </div>
+          <ul className="pricing__list">
+            <li>
+              <Check className="pricing__list-icon" size={18} strokeWidth={2} aria-hidden />
+              <span>300 000 Токенов</span>
+            </li>
+            <li>
+              <Heart className="pricing__list-icon" size={18} strokeWidth={2} aria-hidden />
+              <span>Без водяного знака</span>
+            </li>
+          </ul>
+          <p className="pricing__includes">Включает всё из «Стартового»</p>
+          <button type="button" className="pricing__btn pricing__btn--auth-like">
+            <span className="pricing__btn-label">Оформить</span>
+            <span className="pricing__btn-balance" aria-hidden />
+          </button>
+        </article>
+
         <article className="pricing__card pricing__card--featured">
           <h3 className="pricing__card-name">МАКСИМУМ</h3>
           <div className="pricing__price">
@@ -87,10 +110,6 @@ export function Pricing() {
             <li>
               <Users className="pricing__list-icon" size={18} strokeWidth={2} aria-hidden />
               <span>Создание команд</span>
-            </li>
-            <li>
-              <Heart className="pricing__list-icon" size={18} strokeWidth={2} aria-hidden />
-              <span>Без водяного знака</span>
             </li>
           </ul>
           <p className="pricing__includes">Включает всё из «Стартового»</p>

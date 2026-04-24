@@ -1544,7 +1544,7 @@ html.viewport-le-1400 .how-it-works__panel {
 
 .pricing__grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-4);
   align-items: center;
   justify-items: center;
@@ -1569,17 +1569,19 @@ html.viewport-le-1400 .how-it-works__panel {
 }
 
 .pricing__card--featured {
-  min-height: 550px;
+  min-height: 480px;
   box-shadow: var(--shadow-card);
 }
 
 .pricing__card-name {
   font-family: var(--font-shonen);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   color: var(--fg);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .pricing__price {
@@ -1591,7 +1593,7 @@ html.viewport-le-1400 .how-it-works__panel {
 
 .pricing__price-num {
   font-family: var(--font-boltushka);
-  font-size: 40px;
+  font-size: clamp(30px, 2.2vw, 40px);
   font-weight: 700;
   line-height: 1;
   color: var(--fg);
@@ -1599,7 +1601,7 @@ html.viewport-le-1400 .how-it-works__panel {
 
 .pricing__price-suffix {
   font-family: var(--font-shonen);
-  font-size: 14px;
+  font-size: 12px;
   color: rgba(var(--fg-rgb), 0.55);
 }
 
@@ -1618,9 +1620,10 @@ html.viewport-le-1400 .how-it-works__panel {
   align-items: flex-start;
   gap: var(--space-2);
   font-family: var(--font-shonen);
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.35;
   color: var(--fg);
+  overflow-wrap: anywhere;
 }
 
 .pricing__list-icon {
@@ -1631,10 +1634,11 @@ html.viewport-le-1400 .how-it-works__panel {
 
 .pricing__includes {
   font-family: var(--font-shonen);
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.3;
   color: rgba(var(--fg-rgb), 0.55);
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
   margin-top: 0;
 }
 
