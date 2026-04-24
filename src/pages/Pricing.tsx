@@ -21,7 +21,7 @@ export function Pricing() {
         <article className="pricing__card">
           <h3 className="pricing__card-name">СТАРТОВЫЙ</h3>
           <div className="pricing__price">
-            <span className="pricing__price-num">0</span>
+            <span className="pricing__price-num">100</span>
             <span className="pricing__price-suffix">₽ / мес</span>
           </div>
           <ul className="pricing__list">
@@ -52,7 +52,7 @@ export function Pricing() {
               <span>300 000 Токенов</span>
             </li>
           </ul>
-          <p className="pricing__includes">Без экспорта в PSD, <br/> но больше Токенов</p>
+          <p className="pricing__includes">Без клина и тайпа, <br/> но много Токенов</p>
           <button type="button" className="pricing__btn pricing__btn--auth-like">
             <span className="pricing__btn-label">Оформить</span>
             <span className="pricing__btn-balance" aria-hidden />
