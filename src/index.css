@@ -1277,18 +1277,24 @@ html.viewport-le-1400 .how-it-works__panel {
   flex-shrink: 0;
   margin: 0;
   padding: var(--space-2) var(--space-3);
-  border: var(--border-button);
-  border-radius: var(--radius);
-  background: rgba(var(--fg-rgb), 0.88);
-  color: var(--bg);
+  min-height: 31px;
+  background: var(--bg);
+  background-image: var(--wallpaper-layer);
+  background-repeat: repeat, repeat;
+  background-size: var(--paper-size);
+  background-position: 0 0, 0 0;
+  color: var(--fg);
   font-family: var(--font-shonen);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   line-height: 1.2;
-  cursor: default;
-  box-shadow: var(--shadow-button);
+  cursor: pointer;
+}
+
+.features__process-params-cta-wrap {
+  flex-shrink: 0;
 }
 
 .features__extras {

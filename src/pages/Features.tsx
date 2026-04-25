@@ -156,9 +156,11 @@ function FeaturesProcessParamsMock() {
       </div>
       <div className="features__process-params-footer">
         <span className="features__process-params-total">Всего: {total} ток.</span>
-        <button type="button" className="features__process-params-cta">
-          Отправить в обработку
-        </button>
+        <span className="btn-press-wrap btn-press-wrap--design features__process-params-cta-wrap">
+          <button type="button" className="btn-press features__process-params-cta">
+            Отправить в обработку
+          </button>
+        </span>
       </div>
     </div>
   )
