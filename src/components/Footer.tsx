@@ -1,4 +1,5 @@
 import { Mail, Send } from 'lucide-react'
+import annaImage from '../assets/images/anna.png'
 import { reloadHome } from '../utils/reloadHome'
 
 export function Footer() {
@@ -67,9 +68,12 @@ export function Footer() {
           </ul>
         </div>
       </div>
+      <span className="site-footer__anna" aria-hidden>
+        <img className="site-footer__anna-img" src={annaImage} alt="" draggable={false} />
+      </span>
       <div className="site-footer__bottom">
         <p className="site-footer__copyright">
-          © 2024 MANGADESK — СЕРВИС ДЛЯ ПЕРЕВОДА. ВСЕ ПРАВА ЗАЩИЩЕНЫ.
+          © 2026 MANGADESK — СЕРВИС ДЛЯ ПЕРЕВОДА. ВСЕ ПРАВА ЗАЩИЩЕНЫ.
         </p>
       </div>
     </footer>

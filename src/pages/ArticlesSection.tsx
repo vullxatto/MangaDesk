@@ -12,9 +12,6 @@ export function ArticlesSection() {
           Гайды по сканлейту, советы по работе с PSD и обновления MangaDesk
         </p>
       </header>
-      <p className="articles-section__lead">
-        Собрали материалы для команд и соло-переводчиков: от первых шагов до тонкостей выгрузки слоёв.
-      </p>
       <div className="articles-section__more-host">
         <Link className="features__card features__card--more articles-section__cta" to="/articles">
           <span className="features__more-row">

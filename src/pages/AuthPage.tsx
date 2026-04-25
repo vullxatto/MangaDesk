@@ -21,8 +21,6 @@ export function AuthPage() {
   const googleLabel = tab === 'login' ? 'Войти через Google' : 'Продолжить с Google'
   const vkLabel = tab === 'login' ? 'Войти через VK' : 'Продолжить с VK'
 
-  const linkAccent = { color: 'rgba(var(--fg-rgb), 0.72)' } as const
-
   return (
     <PageScaler designWidth={760}>
       <div className="app-shell app-shell--auth">
@@ -117,7 +115,6 @@ export function AuthPage() {
                             background: 'none',
                             cursor: 'pointer',
                             padding: 0,
-                            ...linkAccent,
                           }}
                           onClick={() => setTab('register')}
                         >
@@ -135,7 +132,6 @@ export function AuthPage() {
                             background: 'none',
                             cursor: 'pointer',
                             padding: 0,
-                            ...linkAccent,
                           }}
                           onClick={() => setTab('login')}
                         >

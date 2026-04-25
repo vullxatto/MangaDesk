@@ -10,6 +10,9 @@ import {
 } from 'lucide-react'
 import { useId, useState } from 'react'
 import { Link } from 'react-router-dom'
+import catImage from '../assets/images/cat.png'
+import cat2Image from '../assets/images/cat2.png'
+import cat3Image from '../assets/images/cat3.png'
 import landingEng from '../assets/images/landing_eng.jpg'
 import landingRu from '../assets/images/landing_ru.jpg'
 import { BeforeAfterSlider } from '../components/BeforeAfterSlider'
@@ -164,21 +167,41 @@ function FeaturesProcessParamsMock() {
 function FeatureTextOnlyCard({
   heading,
   caption,
+  bottomRightDecorSrc,
 }: {
   heading: string
   caption: string
+  bottomRightDecorSrc?: string
 }) {
   const id = useId()
   const headingId = `${id}-heading`
   return (
     <figure className="before-after" aria-labelledby={headingId}>
-      <div className="before-after__card before-after__card--text-only">
+      <div
+        className={[
+          'before-after__card',
+          'before-after__card--text-only',
+          bottomRightDecorSrc ? 'before-after__card--with-bottom-right-decor' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         <h3 className="features__extras-text-only-title features__card-title" id={headingId}>
           {heading}
         </h3>
         <p id={`${id}-cap`} className="features__extras-text-only-body">
           {caption}
         </p>
+        {bottomRightDecorSrc ? (
+          <span className="features__bottom-right-decor" aria-hidden>
+            <img
+              className="features__bottom-right-decor-img"
+              src={bottomRightDecorSrc}
+              alt=""
+              draggable={false}
+            />
+          </span>
+        ) : null}
       </div>
     </figure>
   )
@@ -190,6 +213,8 @@ function FeatureStaticImageCard({
   src,
   landscape,
   note,
+  topDecorSrc,
+  leftDecorSrc,
 }: {
   heading: string
   caption: string
@@ -197,6 +222,10 @@ function FeatureStaticImageCard({
   landscape?: boolean
   /** Второй блок текста (как «примечание» в карточках features). */
   note?: string
+  /** Декоративная картинка, которая крепится над заголовком. */
+  topDecorSrc?: string
+  /** Декоративная картинка слева от карточки. */
+  leftDecorSrc?: string
 }) {
   const id = useId()
   const headingId = `${id}-heading`
@@ -208,7 +237,26 @@ function FeatureStaticImageCard({
     .filter(Boolean)
     .join(' ')
   return (
-    <figure className="before-after" aria-labelledby={headingId}>
+    <figure
+      className={[
+        'before-after',
+        topDecorSrc ? 'before-after--with-top-decor' : '',
+        leftDecorSrc ? 'before-after--with-left-decor' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      aria-labelledby={headingId}
+    >
+      {leftDecorSrc ? (
+        <span className="features__left-decor" aria-hidden>
+          <img className="features__left-decor-img" src={leftDecorSrc} alt="" draggable={false} />
+        </span>
+      ) : null}
+      {topDecorSrc ? (
+        <span className="features__top-decor" aria-hidden>
+          <img className="features__top-decor-img" src={topDecorSrc} alt="" draggable={false} />
+        </span>
+      ) : null}
       <div className="before-after__card">
         <div className={viewportClass} aria-hidden>
           <img
@@ -323,6 +371,7 @@ export function Features() {
                     <FeatureTextOnlyCard
                       heading={item.pairedTextBelow.title}
                       caption={item.pairedTextBelow.caption}
+                      bottomRightDecorSrc={item.id === 'zip-raw' ? cat3Image : undefined}
                     />
                   </>
                 ) : (
@@ -336,6 +385,7 @@ export function Features() {
                       caption={item.caption}
                       src={item.staticImageSrc}
                       landscape={item.staticImageLandscape}
+                      topDecorSrc={catImage}
                     />
                     <div className="features__extras-more-below-quality">
                       <Link className="features__card features__card--more" to="/examples">
@@ -399,11 +449,14 @@ export function Features() {
             />
           </div>
           <div className="features__grid features__grid--two">
-            <article className="features__card">
+            <article className="features__card features__card--with-cat2-under">
               <h3 className="features__card-title">Длина холстов 30к</h3>
               <p className="features__card-text">
               Автоматическая склейка страниц. Работайте с любым форматом вебтунов без ограничений
               </p>
+              <span className="features__cat2-under" aria-hidden>
+                <img className="features__cat2-under-img" src={cat2Image} alt="" draggable={false} />
+              </span>
             </article>
             <article className="features__card">
               <h3 className="features__card-title">Параллельная обработка</h3>

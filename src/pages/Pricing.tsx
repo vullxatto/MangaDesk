@@ -6,6 +6,9 @@ import {
   Ticket,
   Users,
 } from 'lucide-react'
+import girlImage from '../assets/images/girl.png'
+import portal1Image from '../assets/images/portal1.png'
+import portal2Image from '../assets/images/portal2.png'
 
 export function Pricing() {
   return (
@@ -18,7 +21,10 @@ export function Pricing() {
       </header>
 
       <div className="pricing__grid">
-        <article className="pricing__card">
+        <article className="pricing__card pricing__card--with-portal1">
+          <span className="pricing__portal pricing__portal--left" aria-hidden>
+            <img className="pricing__portal-img pricing__portal-img--portal1" src={portal1Image} alt="" draggable={false} />
+          </span>
           <h3 className="pricing__card-name">СТАРТОВЫЙ</h3>
           <div className="pricing__price">
             <span className="pricing__price-num">100</span>
@@ -86,7 +92,13 @@ export function Pricing() {
           </button>
         </article>
 
-        <article className="pricing__card">
+        <article className="pricing__card pricing__card--with-girl">
+          <span className="pricing__girl" aria-hidden>
+            <img className="pricing__girl-img" src={girlImage} alt="" draggable={false} />
+          </span>
+          <span className="pricing__portal pricing__portal--right" aria-hidden>
+            <img className="pricing__portal-img pricing__portal-img--portal2" src={portal2Image} alt="" draggable={false} />
+          </span>
           <h3 className="pricing__card-name">СТАНДАРТНЫЙ</h3>
           <div className="pricing__price">
             <span className="pricing__price-num">1 500</span>
