@@ -1595,6 +1595,15 @@ html.viewport-le-1400 .how-it-works__panel {
   max-height: 460px;
 }
 
+.features__cabinet-block .features__card-note {
+  margin: var(--space-3) var(--space-4) var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: rgba(var(--fg-rgb), 0.08);
+  border: 1px solid rgba(var(--fg-rgb), 0.16);
+  border-radius: var(--radius);
+  color: rgba(var(--fg-rgb), 0.8);
+}
+
 .pricing {
   border-radius: var(--radius);
   padding: var(--space-8) var(--space-6);
