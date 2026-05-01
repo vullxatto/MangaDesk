@@ -2156,6 +2156,11 @@ html.viewport-le-1400 .how-it-works__panel {
   color: var(--fg);
 }
 
+.articles-toc-children a.is-active {
+  color: rgba(var(--fg-rgb), 0.98);
+  background: rgba(var(--fg-rgb), 0.08);
+}
+
 .articles-content {
   width: 100%;
   max-width: none;
@@ -2225,6 +2230,7 @@ html.viewport-le-1400 .how-it-works__panel {
   font-weight: 700;
   margin: var(--space-4) 0 var(--space-2);
   color: var(--fg);
+  scroll-margin-top: calc(var(--site-header-row-height) + var(--space-4));
 }
 
 .article-block p {
