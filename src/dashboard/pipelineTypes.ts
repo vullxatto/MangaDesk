@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import type { GlossaryEntry } from './glossary/glossaryTypes'
 
 export type ChapterStatusCode =
   | 'ready'
@@ -59,6 +60,14 @@ export interface PipelineContextValue {
   selectedWaitingIds: Set<number>
   toggleWaitingSelected: (chapterId: number) => void
   formatStartedAt: (ts: number) => string
+  glossaryByProjectId: Record<string, GlossaryEntry[]>
+  addGlossaryEntry: (projectId: string, entry: Omit<GlossaryEntry, 'id'>) => void
+  updateGlossaryEntry: (
+    projectId: string,
+    entryId: string,
+    next: Omit<GlossaryEntry, 'id'>,
+  ) => void
+  removeGlossaryEntry: (projectId: string, entryId: string) => void
 }
 
 export type PipelineProviderProps = { children: ReactNode }

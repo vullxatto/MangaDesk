@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
+import { useSearchParams } from 'react-router-dom'
 import { TEAM_MEMBERS } from '../context/pipelineConstants'
 import { usePipeline } from '../context/usePipeline'
 import ChapterMetadataModal from './ChapterMetadataModal'
@@ -63,6 +64,7 @@ function FilterDropdown({ label, options, value, onChange, isOpen, onToggle }) {
 }
 
 function ChaptersPage({ title }) {
+  const [searchParams] = useSearchParams()
   const { chapters, assignEditor, selectedWaitingIds, soloMode, updateChapterMetadata, uploadQueue, processingJobs } =
     usePipeline()
   const [titleFilter, setTitleFilter] = useState(DEFAULT_TITLE_FILTER)
@@ -78,6 +80,15 @@ function ChaptersPage({ title }) {
     const titles = [...new Set(chapters.map((c) => c.title))].sort()
     return [{ value: 'all', label: 'Все' }, ...titles.map((t) => ({ value: t, label: t }))]
   }, [chapters])
+
+  useEffect(() => {
+    const projectName = searchParams.get('project')?.trim()
+    if (!projectName) return
+    const exists = titleOptions.some((option) => option.value === projectName)
+    if (exists) {
+      setTitleFilter(projectName)
+    }
+  }, [searchParams, titleOptions])
 
   const batchWaitingSelectedCount = useMemo(() => {
     let n = 0

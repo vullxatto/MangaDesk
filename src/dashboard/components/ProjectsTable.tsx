@@ -1,6 +1,21 @@
-import { Pencil } from 'lucide-react'
+import { ArrowRight, Pencil } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
-function ProjectsTable({ rows }) {
+export type ProjectRow = {
+  projectId: string
+  name: string
+  chapters: number
+  latestChapterId: number | null
+  links: { label: string; href: string }[]
+}
+
+type ProjectsTableProps = {
+  rows: ProjectRow[]
+  onEditProject: (row: ProjectRow) => void
+  onOpenProjectChapters: (row: ProjectRow) => void
+}
+
+function ProjectsTable({ rows, onEditProject, onOpenProjectChapters }: ProjectsTableProps) {
   return (
     <div className="projects-table">
       <div className="projects-row projects-head">
@@ -12,25 +27,28 @@ function ProjectsTable({ rows }) {
       </div>
 
       {rows.map((row) => (
-        <div key={row.id} className="projects-row">
+        <div key={row.projectId} className="projects-row">
           <span className="projects-name">{row.name}</span>
           <span className="projects-chapters-wrap">
-            <span className="projects-chapters-cell">
+            <button
+              type="button"
+              className="projects-chapters-cell projects-chapters-open-btn"
+              onClick={() => onOpenProjectChapters(row)}
+              aria-label={`Перейти к главам проекта ${row.name}`}
+            >
               <span className="projects-chapters-num">{row.chapters}</span>
-            </span>
+              <ArrowRight size={13} strokeWidth={2} />
+            </button>
           </span>
           <span className="projects-glossary">
-            <a
-              className="projects-link-tag"
-              href={row.glossaryHref ?? '#'}
-            >
-              {row.glossaryLabel ?? 'Открыть'}
-            </a>
+            <Link className="projects-link-tag" to={`/dashboard/projects/${row.projectId}/glossary`}>
+              Открыть
+            </Link>
           </span>
           <span className="projects-links">
             {row.links.map((link, index) => (
               <a
-                key={`${row.id}-${index}`}
+                key={`${row.projectId}-${index}`}
                 className="projects-link-tag"
                 href={link.href}
                 target="_blank"
@@ -41,7 +59,7 @@ function ProjectsTable({ rows }) {
             ))}
           </span>
           <span className="chapters-actions">
-            <button type="button" aria-label="Редактировать проект">
+            <button type="button" aria-label="Редактировать проект" onClick={() => onEditProject(row)}>
               <Pencil size={15} strokeWidth={1.8} />
             </button>
           </span>

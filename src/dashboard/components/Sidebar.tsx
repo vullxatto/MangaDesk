@@ -50,7 +50,9 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
               className={({ isActive }) => {
                 const chaptersNested =
                   item.key === 'chapters' && location.pathname.startsWith('/dashboard/chapters/')
-                const active = isActive || chaptersNested
+                const projectsNested =
+                  item.key === 'projects' && location.pathname.startsWith('/dashboard/projects/')
+                const active = isActive || chaptersNested || projectsNested
                 return `dashboard-nav-item${active ? ' is-active' : ''}`
               }}
             >
@@ -61,7 +63,7 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
         })}
       </nav>
 
-      <div className="dashboard-user-card">
+      <Link to="/dashboard/account" className="dashboard-user-card">
         <div className="dashboard-user-top">
           <div className="dashboard-user-avatar-wrap">
             <div className="dashboard-user-avatar">
@@ -84,7 +86,7 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
           <div className="dashboard-user-meta-label">Потрачено токенов</div>
           <div className="dashboard-user-meta-value">4 500 / 20 000 000</div>
         </div>
-      </div>
+      </Link>
     </aside>
   )
 }

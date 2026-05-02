@@ -1,3 +1,4 @@
+import type { MouseEvent as ReactMouseEvent } from 'react'
 import {
   useCallback,
   useEffect,
@@ -8,6 +9,10 @@ import {
 } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { usePipeline } from '../../context/usePipeline'
+import { getSelectionTextInContainer } from '../../glossary/getSelectionInContainer'
+import { projectIdFromTitle } from '../../glossary/projectTitleToProjectId'
+import { AddGlossaryEntryModal } from '../AddGlossaryEntryModal'
+import { GlossaryContextMenu } from '../GlossaryContextMenu'
 import {
   bboxToPercentStyle,
   getMockChapterSlices,
@@ -94,7 +99,7 @@ function ChapterEditorAutosizeTextarea({
 export default function ChapterEditorPage() {
   const { chapterId: chapterIdParam } = useParams<{ chapterId: string }>()
   const chapterId = chapterIdParam ? parseInt(chapterIdParam, 10) : NaN
-  const { chapters } = usePipeline()
+  const { chapters, addGlossaryEntry } = usePipeline()
 
   const chapter = useMemo(() => {
     if (!Number.isFinite(chapterId)) return undefined
@@ -108,6 +113,17 @@ export default function ChapterEditorPage() {
   const tableWrapRef = useRef<HTMLDivElement>(null)
   const rowRefs = useRef<Map<number, HTMLTableRowElement>>(new Map())
   const overlayRefs = useRef<Map<number, HTMLDivElement>>(new Map())
+
+  const [glossaryMenu, setGlossaryMenu] = useState<{
+    x: number
+    y: number
+    source: string
+  } | null>(null)
+  const [glossaryModal, setGlossaryModal] = useState<{ open: boolean; initialSource: string }>({
+    open: false,
+    initialSource: '',
+  })
+  const [glossaryModalInstance, setGlossaryModalInstance] = useState(0)
 
   const setRowRef = useCallback((sliceId: number, el: HTMLTableRowElement | null) => {
     if (el) rowRefs.current.set(sliceId, el)
@@ -187,11 +203,28 @@ export default function ChapterEditorPage() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setSelectedSliceId(null)
+      if (e.key === 'Escape') {
+        setSelectedSliceId(null)
+        setGlossaryMenu(null)
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
+
+  const projectId = chapter ? projectIdFromTitle(chapter.title) : undefined
+
+  const onGlossaryPaneContextMenu = useCallback(
+    (e: ReactMouseEvent<HTMLDivElement>) => {
+      if (!projectId) return
+      const root = e.currentTarget
+      const text = getSelectionTextInContainer(root)
+      if (!text) return
+      e.preventDefault()
+      setGlossaryMenu({ x: e.clientX, y: e.clientY, source: text })
+    },
+    [projectId],
+  )
 
   if (!Number.isFinite(chapterId) || !chapter) {
     return <Navigate to="/dashboard/chapters" replace />
@@ -206,13 +239,27 @@ export default function ChapterEditorPage() {
         <Link to="/dashboard/chapters" className="chapter-editor-back">
           ← К списку глав
         </Link>
-        <h1 className="chapter-editor-title">
-          {chapter.title} № {chapter.number}
-        </h1>
+        <div className="chapter-editor-title-row">
+          <h1 className="chapter-editor-title">
+            {chapter.title} № {chapter.number}
+          </h1>
+          {projectId ? (
+            <Link
+              className="chapter-editor-glossary-btn"
+              to={`/dashboard/projects/${projectId}/glossary`}
+              state={{ returnTo: `/dashboard/chapters/${chapterId}/edit` }}
+            >
+              Глоссарий
+            </Link>
+          ) : null}
+        </div>
       </header>
 
       <div className="chapter-editor-split">
-        <div className="chapter-editor-pane chapter-editor-pane--left">
+        <div
+          className="chapter-editor-pane chapter-editor-pane--left"
+          onContextMenu={onGlossaryPaneContextMenu}
+        >
           <div ref={tableWrapRef} className="chapter-editor-table-wrap">
             <table className="chapter-editor-table">
               <thead>
@@ -253,7 +300,10 @@ export default function ChapterEditorPage() {
           </div>
         </div>
         <div className="chapter-editor-divider" aria-hidden />
-        <div className="chapter-editor-pane chapter-editor-pane--right">
+        <div
+          className="chapter-editor-pane chapter-editor-pane--right"
+          onContextMenu={onGlossaryPaneContextMenu}
+        >
           <div className="chapter-editor-scan-viewport">
             <div className="chapter-editor-scan-stack">
               <img
@@ -262,7 +312,6 @@ export default function ChapterEditorPage() {
                 className="chapter-editor-scan-img"
                 decoding="async"
                 draggable={false}
-                onContextMenu={(e) => e.preventDefault()}
                 onDragStart={(e) => e.preventDefault()}
                 onLoad={(e) => {
                   const im = e.currentTarget
@@ -308,6 +357,31 @@ export default function ChapterEditorPage() {
           </div>
         </div>
       </div>
+
+      {projectId ? (
+        <AddGlossaryEntryModal
+          key={glossaryModalInstance}
+          open={glossaryModal.open}
+          projectLabel={chapter.title}
+          initialSource={glossaryModal.initialSource}
+          onClose={() => setGlossaryModal({ open: false, initialSource: '' })}
+          onSubmit={(source, target) => {
+            addGlossaryEntry(projectId, { source, target })
+          }}
+        />
+      ) : null}
+      {glossaryMenu && projectId ? (
+        <GlossaryContextMenu
+          x={glossaryMenu.x}
+          y={glossaryMenu.y}
+          onClose={() => setGlossaryMenu(null)}
+          onAdd={() => {
+            setGlossaryModalInstance((n) => n + 1)
+            setGlossaryModal({ open: true, initialSource: glossaryMenu.source })
+            setGlossaryMenu(null)
+          }}
+        />
+      ) : null}
     </div>
   )
 }

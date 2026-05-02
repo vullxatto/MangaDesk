@@ -7,6 +7,7 @@ import { DASHBOARD_MENU_ITEMS } from './dashboardMenu'
 function segmentFromPath(pathname: string): string {
   const normalized = pathname.replace(/\/+$/, '')
   if (/\/chapters\/[^/]+\/edit$/.test(normalized)) return 'chapters'
+  if (/\/projects\/[^/]+\/glossary\/?$/.test(normalized)) return 'projects'
   const parts = normalized.split('/')
   const last = parts[parts.length - 1] ?? 'review'
   return last === 'dashboard' ? 'review' : last

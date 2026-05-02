@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { UserPlus } from 'lucide-react'
 import TeamCard from '../TeamCard'
+import TeamInviteModal from '../TeamInviteModal'
 import TeamRequisitesModal from '../TeamRequisitesModal'
 
 const teamMembers = [
@@ -86,12 +87,13 @@ const teamMembers = [
 
 function TeamPage({ title = 'Команда' }) {
   const [detailsMember, setDetailsMember] = useState(null)
+  const [inviteOpen, setInviteOpen] = useState(false)
 
   return (
     <div className="chapters-page projects-page team-page">
       <div className="dashboard-toolbar projects-page-toolbar team-page-toolbar">
         <h1>{title}</h1>
-        <button type="button" className="dashboard-new-btn">
+        <button type="button" className="dashboard-new-btn" onClick={() => setInviteOpen(true)}>
           <UserPlus className="projects-add-project-plus" size={18} strokeWidth={2.5} aria-hidden />
           <span>Пригласить</span>
         </button>
@@ -104,6 +106,11 @@ function TeamPage({ title = 'Команда' }) {
       </div>
 
       <TeamRequisitesModal member={detailsMember} onClose={() => setDetailsMember(null)} />
+      <TeamInviteModal
+        open={inviteOpen}
+        inviteLink="https://mangadesk.local/invite/demo-token-team"
+        onClose={() => setInviteOpen(false)}
+      />
     </div>
   )
 }

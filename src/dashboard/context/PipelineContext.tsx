@@ -6,6 +6,7 @@ import type {
   ProcessingJob,
   UploadQueueItem,
 } from '../pipelineTypes'
+import type { GlossaryEntry } from '../glossary/glossaryTypes'
 import {
   CURRENT_USER,
   getNextFreeChapterNumberForProject,
@@ -61,6 +62,13 @@ function makeQueueItemId() {
   return `q-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
+function newGlossaryEntryId() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  return `g-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+}
+
 export function PipelineProvider({ children }: PipelineProviderProps) {
   const [soloMode, setSoloModeState] = useState(
     () => typeof window !== 'undefined' && window.localStorage.getItem(SOLO_KEY) === '1',
@@ -69,6 +77,9 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
   const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([])
   const [processingJobs, setProcessingJobs] = useState<ProcessingJob[]>([])
   const [selectedWaitingIds, setSelectedWaitingIds] = useState<Set<number>>(() => new Set())
+  const [glossaryByProjectId, setGlossaryByProjectId] = useState<Record<string, GlossaryEntry[]>>(
+    () => ({}),
+  )
   const chapterIdRef = useRef(Math.max(0, ...INITIAL_CHAPTERS.map((c) => c.id)))
   const jobIdRef = useRef(0)
   const finishedJobsRef = useRef<Set<string>>(new Set())
@@ -350,6 +361,44 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
     })
   }, [])
 
+  const addGlossaryEntry = useCallback((projectId: string, entry: Omit<GlossaryEntry, 'id'>) => {
+    const source = entry.source.trim()
+    const target = entry.target.trim()
+    if (!source || !target) return
+    const row: GlossaryEntry = { id: newGlossaryEntryId(), source, target }
+    setGlossaryByProjectId((prev) => ({
+      ...prev,
+      [projectId]: [...(prev[projectId] ?? []), row],
+    }))
+  }, [])
+
+  const updateGlossaryEntry = useCallback(
+    (projectId: string, entryId: string, next: Omit<GlossaryEntry, 'id'>) => {
+      const source = next.source.trim()
+      const target = next.target.trim()
+      if (!source || !target) return
+      setGlossaryByProjectId((prev) => {
+        const list = prev[projectId]
+        if (!list) return prev
+        const idx = list.findIndex((e) => e.id === entryId)
+        if (idx < 0) return prev
+        const copy = [...list]
+        copy[idx] = { ...copy[idx], source, target }
+        return { ...prev, [projectId]: copy }
+      })
+    },
+    [],
+  )
+
+  const removeGlossaryEntry = useCallback((projectId: string, entryId: string) => {
+    setGlossaryByProjectId((prev) => {
+      const list = prev[projectId]
+      if (!list) return prev
+      const nextList = list.filter((e) => e.id !== entryId)
+      return { ...prev, [projectId]: nextList }
+    })
+  }, [])
+
   const editorTasks = useMemo(
     () =>
       chapters.filter(
@@ -378,6 +427,10 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       selectedWaitingIds,
       toggleWaitingSelected,
       formatStartedAt,
+      glossaryByProjectId,
+      addGlossaryEntry,
+      updateGlossaryEntry,
+      removeGlossaryEntry,
     }),
     [
       soloMode,
@@ -397,6 +450,10 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       editorTasks,
       selectedWaitingIds,
       toggleWaitingSelected,
+      glossaryByProjectId,
+      addGlossaryEntry,
+      updateGlossaryEntry,
+      removeGlossaryEntry,
     ],
   )
 
