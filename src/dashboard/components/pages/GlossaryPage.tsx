@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
 import { BookOpen, Pencil, Plus, Trash2 } from 'lucide-react'
-import { MANGA_PROJECTS } from '../../context/pipelineConstants'
 import { usePipeline } from '../../context/usePipeline'
 import type { GlossaryEntry } from '../../glossary/glossaryTypes'
 import { AddGlossaryEntryModal } from '../AddGlossaryEntryModal'
@@ -9,18 +8,29 @@ import { AddGlossaryEntryModal } from '../AddGlossaryEntryModal'
 export default function GlossaryPage() {
   const { projectId: projectIdParam } = useParams<{ projectId: string }>()
   const location = useLocation()
-  const { glossaryByProjectId, addGlossaryEntry, updateGlossaryEntry, removeGlossaryEntry } =
-    usePipeline()
+  const {
+    projects,
+    glossaryByProjectId,
+    loadGlossaryForProject,
+    removeGlossaryEntry,
+    addGlossaryEntry,
+    updateGlossaryEntry,
+  } = usePipeline()
 
   const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
   const project = useMemo(
-    () => (projectIdParam ? MANGA_PROJECTS.find((p) => p.id === projectIdParam) : undefined),
-    [projectIdParam],
+    () => (projectIdParam ? projects.find((p) => p.id === projectIdParam) : undefined),
+    [projectIdParam, projects],
   )
 
   const [addOpen, setAddOpen] = useState(false)
   const [editingEntry, setEditingEntry] = useState<GlossaryEntry | null>(null)
   const [formKey, setFormKey] = useState(0)
+
+  useEffect(() => {
+    if (!projectIdParam) return
+    void loadGlossaryForProject(projectIdParam)
+  }, [projectIdParam, loadGlossaryForProject])
 
   if (!projectIdParam || !project) {
     return <Navigate to="/dashboard/projects" replace />
@@ -80,19 +90,19 @@ export default function GlossaryPage() {
                     aria-label="Редактировать термин"
                     onClick={() => {
                       setFormKey((n) => n + 1)
-                      setAddOpen(false)
                       setEditingEntry(e)
+                      setAddOpen(true)
                     }}
                   >
-                    <Pencil size={16} strokeWidth={1.8} />
+                    <Pencil size={16} strokeWidth={2} aria-hidden />
                   </button>
                   <button
                     type="button"
                     className="glossary-table-delete"
                     aria-label="Удалить термин"
-                    onClick={() => removeGlossaryEntry(projectIdParam, e.id)}
+                    onClick={() => void removeGlossaryEntry(projectIdParam, e.id)}
                   >
-                    <Trash2 size={16} strokeWidth={1.8} />
+                    <Trash2 size={16} strokeWidth={2} aria-hidden />
                   </button>
                 </span>
               </div>
@@ -103,7 +113,7 @@ export default function GlossaryPage() {
 
       <AddGlossaryEntryModal
         key={formKey}
-        open={addOpen || editingEntry !== null}
+        open={addOpen}
         mode={editingEntry ? 'edit' : 'add'}
         projectLabel={project.title}
         initialSource={editingEntry?.source ?? ''}
@@ -114,9 +124,9 @@ export default function GlossaryPage() {
         }}
         onSubmit={(source, target) => {
           if (editingEntry) {
-            updateGlossaryEntry(projectIdParam, editingEntry.id, { source, target })
+            void updateGlossaryEntry(projectIdParam, editingEntry.id, { source, target })
           } else {
-            addGlossaryEntry(projectIdParam, { source, target })
+            void addGlossaryEntry(projectIdParam, { source, target })
           }
         }}
       />

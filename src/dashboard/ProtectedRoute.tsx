@@ -1,9 +1,11 @@
 import type { ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
+import { getAccessToken, skipAuth } from '../lib/auth'
 
 function isDashboardAccessAllowed(): boolean {
   if (typeof window === 'undefined') return true
-  return localStorage.getItem('mangadesk-authed') !== 'false'
+  if (skipAuth()) return true
+  return !!getAccessToken()
 }
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {

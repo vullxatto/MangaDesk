@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
-import { TEAM_MEMBERS } from '../context/pipelineConstants'
 import { usePipeline } from '../context/usePipeline'
 import ChapterMetadataModal from './ChapterMetadataModal'
 import ChapterTable from './ChapterTable'
@@ -65,14 +64,22 @@ function FilterDropdown({ label, options, value, onChange, isOpen, onToggle }) {
 
 function ChaptersPage({ title }) {
   const [searchParams] = useSearchParams()
-  const { chapters, assignEditor, selectedWaitingIds, soloMode, updateChapterMetadata, uploadQueue, processingJobs } =
-    usePipeline()
+  const {
+    chapters,
+    assignEditor,
+    selectedWaitingIds,
+    soloMode,
+    updateChapterMetadata,
+    uploadQueue,
+    teamMembers,
+    projects,
+  } = usePipeline()
   const [titleFilter, setTitleFilter] = useState(DEFAULT_TITLE_FILTER)
   const [statusFilter, setStatusFilter] = useState(DEFAULT_STATUS_FILTER)
   const [sortBy, setSortBy] = useState(DEFAULT_SORT)
   const [openDropdown, setOpenDropdown] = useState<'title' | 'status' | 'sort' | null>(null)
   const [assignMenuKey, setAssignMenuKey] = useState<string | null>(null)
-  const [metadataChapterId, setMetadataChapterId] = useState<number | null>(null)
+  const [metadataChapterId, setMetadataChapterId] = useState<string | null>(null)
   const filtersRef = useRef<HTMLDivElement>(null)
   const pageRootRef = useRef<HTMLDivElement>(null)
 
@@ -231,7 +238,7 @@ function ChaptersPage({ title }) {
             </button>
             {batchOpen ? (
               <div className="dashboard-dropdown-menu chapters-assign-menu chapters-assign-menu--batch">
-                {TEAM_MEMBERS.map((m) => (
+                {teamMembers.map((m) => (
                   <button
                     key={m.id}
                     type="button"
@@ -241,7 +248,7 @@ function ChaptersPage({ title }) {
                         const row = chapters.find((c) => c.id === id)
                         return row?.statusCode === 'waiting_editor'
                       })
-                      assignEditor(ids, m.id)
+                      void assignEditor(ids, m.id)
                       setAssignMenuKey(null)
                     }}
                   >
@@ -264,14 +271,16 @@ function ChaptersPage({ title }) {
       {metadataChapter ? (
         <ChapterMetadataModal
           key={metadataChapter.id}
-          initialTitle={metadataChapter.title}
+          initialProjectId={metadataChapter.projectId}
           initialNumber={metadataChapter.number}
           chapterId={metadataChapter.id}
+          projects={projects}
           chapters={chapters}
           uploadQueue={uploadQueue}
-          processingJobs={processingJobs}
           onClose={() => setMetadataChapterId(null)}
-          onConfirm={(chapterTitle, number) => updateChapterMetadata(metadataChapter.id, chapterTitle, number)}
+          onConfirm={(projectId, number, chapterTitle) =>
+            void updateChapterMetadata(metadataChapter.id, projectId, number, chapterTitle)
+          }
         />
       ) : null}
     </div>

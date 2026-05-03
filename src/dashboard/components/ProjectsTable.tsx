@@ -5,7 +5,7 @@ export type ProjectRow = {
   projectId: string
   name: string
   chapters: number
-  latestChapterId: number | null
+  latestChapterId: string | null
   links: { label: string; href: string }[]
 }
 

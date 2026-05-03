@@ -1,43 +1,22 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
-import { MANGA_PROJECTS } from '../../context/pipelineConstants'
 import { usePipeline } from '../../context/usePipeline'
 import ProjectFormModal from '../ProjectFormModal'
 import ProjectsTable, { type ProjectRow } from '../ProjectsTable'
 
-const PROJECT_LINKS: Record<string, { label: string; href: string }[]> = {
-  aot: [
-    { label: 'ОРИГИНАЛ (JP)', href: '#' },
-    { label: 'РЕМАНГА', href: '#' },
-    { label: 'VK', href: '#' },
-  ],
-  knys: [
-    { label: 'ОРИГИНАЛ (JP)', href: '#' },
-    { label: 'РЕМАНГА', href: '#' },
-  ],
-  csm: [{ label: 'ОРИГИНАЛ (JP)', href: '#' }],
-  opm: [
-    { label: 'ОРИГИНАЛ (JP)', href: '#' },
-    { label: 'РЕМАНГА', href: '#' },
-  ],
-  naruto: [{ label: 'ОРИГИНАЛ (JP)', href: '#' }],
-  dn: [
-    { label: 'ОРИГИНАЛ (JP)', href: '#' },
-    { label: 'РЕМАНГА', href: '#' },
-  ],
-}
+const PROJECT_LINKS: Record<string, { label: string; href: string }[]> = {}
 
 function ProjectsPage({ title }: { title: string }) {
-  const { chapters } = usePipeline()
+  const { chapters, projects } = usePipeline()
   const navigate = useNavigate()
   const [addOpen, setAddOpen] = useState(false)
   const [editingProject, setEditingProject] = useState<ProjectRow | null>(null)
 
   const projectsData = useMemo(
     () =>
-      MANGA_PROJECTS.map((p) => {
-        const chapterRows = chapters.filter((c) => c.title === p.title)
+      projects.map((p) => {
+        const chapterRows = chapters.filter((c) => c.projectId === p.id)
         const latestChapter = chapterRows.reduce(
           (acc, row) => (acc == null || row.number > acc.number ? row : acc),
           null as (typeof chapterRows)[number] | null,
@@ -50,7 +29,7 @@ function ProjectsPage({ title }: { title: string }) {
           links: PROJECT_LINKS[p.id] ?? [{ label: 'ОРИГИНАЛ (JP)', href: '#' }],
         } satisfies ProjectRow
       }),
-    [chapters],
+    [chapters, projects],
   )
 
   return (
@@ -77,6 +56,7 @@ function ProjectsPage({ title }: { title: string }) {
       <ProjectFormModal
         open={editingProject !== null}
         mode="edit"
+        projectId={editingProject?.projectId}
         initialName={editingProject?.name}
         onClose={() => setEditingProject(null)}
       />

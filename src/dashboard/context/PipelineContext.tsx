@@ -1,154 +1,193 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type {
   ChapterRow,
+  DashboardProject,
   PipelineContextValue,
   PipelineProviderProps,
-  ProcessingJob,
+  TeamMember,
   UploadQueueItem,
 } from '../pipelineTypes'
 import type { GlossaryEntry } from '../glossary/glossaryTypes'
-import {
-  CURRENT_USER,
-  getNextFreeChapterNumberForProject,
-  INITIAL_CHAPTERS,
-  isDuplicateChapterNumber,
-  MANGA_PROJECTS,
-  SOLO_KEY,
-  TEAM_MEMBERS,
-} from './pipelineConstants'
+import { CURRENT_USER, getNextFreeChapterNumberForProject, isDuplicateChapterNumber, SOLO_KEY } from './pipelineConstants'
+import { useAuth } from '../../context/AuthContext'
 import { PipelineReactContext } from './pipelineReactContext'
+import {
+  apiDelete,
+  apiGet,
+  apiPatchJson,
+  apiPostJson,
+  apiPostMultipart,
+} from '../../lib/api'
 
-function formatNowRu() {
-  const d = new Date()
+type ChapterApi = {
+  id: string
+  project_id: string
+  project_title: string
+  chapter_number: number
+  chapter_title: string | null
+  status_code: string
+  editor_id: string | null
+  editor_name: string | null
+  updated_at: string
+}
+
+type ProjectApi = {
+  id: string
+  team_id: string
+  slug: string
+  title: string
+  description: string | null
+  source_language: string | null
+  target_language: string | null
+  cover_storage_key: string | null
+}
+
+type TeamMemberApi = {
+  id: string
+  username: string
+  email: string | null
+  role: string
+}
+
+type GlossaryApi = {
+  id: number
+  project_id: string
+  term_source: string
+  term_target: string
+  notes: string | null
+}
+
+function formatNowRuFromIso(iso: string) {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
-function formatStartedAt(ts: number) {
-  return new Date(ts).toLocaleString('ru-RU', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
-
-function migrateWaitingToSolo(prev: ChapterRow[]): ChapterRow[] {
-  const now = formatNowRu()
-  return prev.map((c) =>
-    c.statusCode === 'waiting_editor'
-      ? ({
-          ...c,
-          statusCode: 'edit',
-          editorId: CURRENT_USER.id,
-          editorName: CURRENT_USER.name,
-          assignedAt: now,
-          date: now,
-        } satisfies ChapterRow)
-      : c,
-  )
-}
-
-function getInitialChapters(): ChapterRow[] {
-  const rows = INITIAL_CHAPTERS.map((c) => ({ ...c }))
-  if (typeof window !== 'undefined' && window.localStorage.getItem(SOLO_KEY) === '1') {
-    return migrateWaitingToSolo(rows)
+function mapChapter(c: ChapterApi): ChapterRow {
+  const st = c.status_code as ChapterRow['statusCode']
+  return {
+    id: c.id,
+    projectId: c.project_id,
+    title: c.project_title,
+    number: c.chapter_number,
+    statusCode: st,
+    date: formatNowRuFromIso(c.updated_at),
+    editorId: c.editor_id,
+    editorName: c.editor_name,
+    assignedAt: c.editor_id ? formatNowRuFromIso(c.updated_at) : null,
   }
-  return rows
 }
 
 function makeQueueItemId() {
   return `q-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
-function newGlossaryEntryId() {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID()
-  }
-  return `g-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
-}
-
 export function PipelineProvider({ children }: PipelineProviderProps) {
+  const { ready: authReady, currentTeamId } = useAuth()
   const [soloMode, setSoloModeState] = useState(
     () => typeof window !== 'undefined' && window.localStorage.getItem(SOLO_KEY) === '1',
   )
-  const [chapters, setChapters] = useState<ChapterRow[]>(getInitialChapters)
+  const [projects, setProjects] = useState<DashboardProject[]>([])
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
+  const [chapters, setChapters] = useState<ChapterRow[]>([])
   const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([])
-  const [processingJobs, setProcessingJobs] = useState<ProcessingJob[]>([])
-  const [selectedWaitingIds, setSelectedWaitingIds] = useState<Set<number>>(() => new Set())
+  const [selectedWaitingIds, setSelectedWaitingIds] = useState<Set<string>>(() => new Set())
   const [glossaryByProjectId, setGlossaryByProjectId] = useState<Record<string, GlossaryEntry[]>>(
     () => ({}),
   )
-  const chapterIdRef = useRef(Math.max(0, ...INITIAL_CHAPTERS.map((c) => c.id)))
-  const jobIdRef = useRef(0)
-  const finishedJobsRef = useRef<Set<string>>(new Set())
+  const [dashboardLoading, setDashboardLoading] = useState(true)
+  const [dashboardError, setDashboardError] = useState<string | null>(null)
 
-  const setSoloMode = useCallback((value: boolean) => {
-    const on = !!value
-    setSoloModeState(on)
-    if (on) {
-      setChapters((prev) => migrateWaitingToSolo(prev))
-      setSelectedWaitingIds(new Set())
+  const refreshDashboard = useCallback(async () => {
+    setDashboardError(null)
+    setDashboardLoading(true)
+    try {
+      const [pj, tm, ch] = await Promise.all([
+        apiGet<ProjectApi[]>('/projects'),
+        apiGet<TeamMemberApi[]>('/team/members'),
+        apiGet<ChapterApi[]>('/chapters'),
+      ])
+      setProjects(pj.map((p) => ({ id: p.id, title: p.title, slug: p.slug })))
+      setTeamMembers(tm.map((m) => ({ id: m.id, name: m.username })))
+      setChapters(ch.map(mapChapter))
+    } catch (e) {
+      setDashboardError(e instanceof Error ? e.message : 'Ошибка загрузки')
+    } finally {
+      setDashboardLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    if (!authReady) return
+    void refreshDashboard()
+  }, [authReady, currentTeamId, refreshDashboard])
+
+  const setSoloMode = useCallback(
+    (value: boolean) => {
+      const on = !!value
+      setSoloModeState(on)
+      if (on) {
+        void (async () => {
+          try {
+            const waiting = chapters.filter((c) => c.statusCode === 'waiting_editor')
+            for (const c of waiting) {
+              await apiPatchJson(`/chapters/${c.id}`, {
+                assigned_editor_id: CURRENT_USER.id,
+                status_code: 'edit',
+              })
+            }
+            await refreshDashboard()
+            setSelectedWaitingIds(new Set())
+          } catch (e) {
+            console.error(e)
+            setDashboardError(e instanceof Error ? e.message : 'Ошибка solo-режима')
+          }
+        })()
+      }
+    },
+    [chapters, refreshDashboard],
+  )
 
   useEffect(() => {
     window.localStorage.setItem(SOLO_KEY, soloMode ? '1' : '0')
   }, [soloMode])
 
-  const finishArchive = useCallback((job: ProcessingJob) => {
-    const now = formatNowRu()
-    setChapters((prev) => {
-      const id = chapterIdRef.current + 1
-      chapterIdRef.current = id
-      const title = job.projectTitle
-      const number = job.chapterNumber
-      const solo = job.solo === true
-      const preEditor = job.preEditorId
-        ? TEAM_MEMBERS.find((m) => m.id === job.preEditorId)
-        : null
+  const createProject = useCallback(
+    async (payload: {
+      title: string
+      description?: string | null
+      source_language?: string | null
+      target_language?: string | null
+    }) => {
+      await apiPostJson<ProjectApi>('/projects', {
+        title: payload.title,
+        description: payload.description ?? null,
+        source_language: payload.source_language ?? null,
+        target_language: payload.target_language ?? null,
+      })
+      await refreshDashboard()
+    },
+    [refreshDashboard],
+  )
 
-      let row: ChapterRow
-      if (solo) {
-        row = {
-          id,
-          title,
-          number,
-          statusCode: 'edit',
-          date: now,
-          editorId: CURRENT_USER.id,
-          editorName: CURRENT_USER.name,
-          assignedAt: now,
-        }
-      } else if (preEditor) {
-        row = {
-          id,
-          title,
-          number,
-          statusCode: 'edit',
-          date: now,
-          editorId: preEditor.id,
-          editorName: preEditor.name,
-          assignedAt: now,
-        }
-      } else {
-        row = {
-          id,
-          title,
-          number,
-          statusCode: 'waiting_editor',
-          date: now,
-          editorId: null,
-          editorName: null,
-          assignedAt: null,
-        }
-      }
-      return [...prev, row]
-    })
-  }, [])
+  const updateProject = useCallback(
+    async (
+      projectId: string,
+      payload: {
+        title?: string
+        description?: string | null
+        source_language?: string | null
+        target_language?: string | null
+      },
+    ) => {
+      await apiPatchJson<ProjectApi>(`/projects/${projectId}`, payload)
+      await refreshDashboard()
+    },
+    [refreshDashboard],
+  )
 
-  const addZipToUploadQueue = useCallback((fileList: FileList | File[]) => {
+  const addFilesToUploadQueue = useCallback((fileList: FileList | File[]) => {
     const files = Array.from(fileList)
     if (files.length === 0) return
     setUploadQueue((prev) => {
@@ -177,26 +216,21 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
           if (item.id !== id) return item
           const merged: UploadQueueItem = { ...item, ...partial }
           if (partial.projectId !== undefined && partial.projectId !== item.projectId) {
-            const p = MANGA_PROJECTS.find((x) => x.id === partial.projectId)
-            if (p) {
-              merged.chapterNumber = String(
-                getNextFreeChapterNumberForProject(
-                  chapters,
-                  prev,
-                  processingJobs,
-                  p.title,
-                  id,
-                ),
-              )
-            } else {
-              merged.chapterNumber = ''
-            }
+            merged.chapterNumber = String(
+              getNextFreeChapterNumberForProject(
+                chapters,
+                prev,
+                projects,
+                partial.projectId,
+                id,
+              ),
+            )
           }
           return merged
         }),
       )
     },
-    [chapters, processingJobs],
+    [chapters, projects],
   )
 
   const removeUploadQueueItem = useCallback((id: string) => {
@@ -208,84 +242,55 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
   }, [])
 
   const submitUploadQueueItem = useCallback(
-    (id: string) => {
-      setUploadQueue((prev) => {
-        const item = prev.find((q) => q.id === id)
-        if (!item) return prev
-        const project = MANGA_PROJECTS.find((p) => p.id === item.projectId)
-        const num = parseInt(String(item.chapterNumber).trim(), 10)
-        if (!project || !Number.isFinite(num) || num < 1) return prev
-        if (
-          isDuplicateChapterNumber(
-            project.title,
-            num,
-            chapters,
-            prev,
-            processingJobs,
-            id,
-            undefined,
-          )
-        ) {
-          return prev
-        }
-        setProcessingJobs((jobs) => {
-          if (jobs.some((j) => j.queueItemId === id)) {
-            return jobs
-          }
-          jobIdRef.current += 1
-          const jid = jobIdRef.current
-          const totalChapters = 4 + Math.floor(Math.random() * 4)
-          const solo = soloMode
-          const preEditorId = solo || !item.editorId ? null : item.editorId
-          const job: ProcessingJob = {
-            id: `job-${jid}`,
-            queueItemId: id,
-            fileName: item.file.name,
-            current: 0,
-            totalChapters,
-            startedAt: Date.now(),
-            projectTitle: project.title,
-            chapterNumber: num,
-            preEditorId,
-            solo,
-          }
-          return [...jobs, job]
+    async (id: string) => {
+      const item = uploadQueue.find((q) => q.id === id)
+      if (!item) return
+      const project = projects.find((p) => p.id === item.projectId)
+      const num = parseInt(String(item.chapterNumber).trim(), 10)
+      if (!project || !Number.isFinite(num) || num < 1) return
+      if (
+        isDuplicateChapterNumber(item.projectId, num, chapters, uploadQueue, id, undefined)
+      ) {
+        return
+      }
+      setDashboardError(null)
+      try {
+        const created = await apiPostJson<ChapterApi>('/chapters', {
+          project_id: item.projectId,
+          chapter_number: num,
+          chapter_title: null,
         })
-        return prev.filter((q) => q.id !== id)
-      })
-    },
-    [soloMode, chapters, processingJobs],
-  )
-
-  useEffect(() => {
-    const tick = window.setInterval(() => {
-      setProcessingJobs((jobs) => {
-        if (jobs.length === 0) return jobs
-        const done: ProcessingJob[] = []
-        const next: ProcessingJob[] = []
-        for (const j of jobs) {
-          if (j.current >= j.totalChapters) continue
-          const nc = j.current + 1
-          if (nc >= j.totalChapters) {
-            done.push({ ...j, current: nc })
-          } else {
-            next.push({ ...j, current: nc })
-          }
+        const chapterId = created.id
+        const lower = item.file.name.toLowerCase()
+        if (lower.endsWith('.zip') || lower.endsWith('.rar')) {
+          const fd = new FormData()
+          fd.append('file', item.file)
+          await apiPostMultipart(`/chapters/${chapterId}/archive`, fd)
+        } else {
+          const fd = new FormData()
+          fd.append('files', item.file)
+          await apiPostMultipart(`/chapters/${chapterId}/upload`, fd)
         }
-        if (done.length) {
-          window.queueMicrotask(() => {
-            for (const job of done) {
-              if (finishedJobsRef.current.has(job.id)) continue
-              finishedJobsRef.current.add(job.id)
-              finishArchive(job)
-            }
+        if (soloMode) {
+          await apiPatchJson(`/chapters/${chapterId}`, {
+            assigned_editor_id: CURRENT_USER.id,
+            status_code: 'edit',
+          })
+        } else if (item.editorId) {
+          await apiPatchJson(`/chapters/${chapterId}`, {
+            assigned_editor_id: item.editorId,
+            status_code: 'edit',
           })
         }
-        return next
-      })
-    }, 700)
-    return () => window.clearInterval(tick)
-  }, [finishArchive])
+        await refreshDashboard()
+        setUploadQueue((prev) => prev.filter((q) => q.id !== id))
+      } catch (e) {
+        console.error(e)
+        setDashboardError(e instanceof Error ? e.message : 'Ошибка загрузки')
+      }
+    },
+    [uploadQueue, projects, chapters, soloMode, refreshDashboard],
+  )
 
   const stats = useMemo(() => {
     const inEdit = chapters.filter((c) => c.statusCode === 'edit').length
@@ -294,65 +299,58 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
   }, [chapters, uploadQueue.length])
 
   const updateChapterMetadata = useCallback(
-    (chapterId: number, nextTitle: string, nextNumber: number) => {
-      const trimmed = nextTitle.trim()
-      if (!trimmed || !Number.isFinite(nextNumber) || nextNumber < 1) return
-      const now = formatNowRu()
-      setChapters((prev) => {
-        if (
-          isDuplicateChapterNumber(
-            trimmed,
-            nextNumber,
-            prev,
-            uploadQueue,
-            processingJobs,
-            '',
-            chapterId,
-          )
-        ) {
-          return prev
-        }
-        return prev.map((c) =>
-          c.id === chapterId ? { ...c, title: trimmed, number: nextNumber, date: now } : c,
-        )
-      })
+    async (chapterId: string, projectId: string, chapterNumber: number, chapterTitle?: string | null) => {
+      if (!Number.isFinite(chapterNumber) || chapterNumber < 1) return
+      try {
+        await apiPatchJson(`/chapters/${chapterId}`, {
+          project_id: projectId,
+          chapter_number: chapterNumber,
+          chapter_title: chapterTitle ?? null,
+        })
+        await refreshDashboard()
+      } catch (e) {
+        console.error(e)
+        setDashboardError(e instanceof Error ? e.message : 'Ошибка сохранения')
+      }
     },
-    [uploadQueue, processingJobs],
+    [refreshDashboard],
   )
 
-  const assignEditor = useCallback((chapterIds: number[], editorId: string) => {
-    const member = TEAM_MEMBERS.find((m) => m.id === editorId)
-    if (!member) return
-    const now = formatNowRu()
-    setChapters((prev) =>
-      prev.map((c) =>
-        chapterIds.includes(c.id) && c.statusCode === 'waiting_editor'
-          ? {
-              ...c,
-              statusCode: 'edit',
-              editorId: member.id,
-              editorName: member.name,
-              assignedAt: now,
-              date: now,
-            }
-          : c,
-      ),
-    )
-    setSelectedWaitingIds(new Set())
-  }, [])
+  const assignEditor = useCallback(
+    async (chapterIds: string[], editorId: string) => {
+      const member = teamMembers.find((m) => m.id === editorId)
+      if (!member) return
+      try {
+        for (const cid of chapterIds) {
+          await apiPatchJson(`/chapters/${cid}`, {
+            assigned_editor_id: editorId,
+            status_code: 'edit',
+          })
+        }
+        await refreshDashboard()
+        setSelectedWaitingIds(new Set())
+      } catch (e) {
+        console.error(e)
+        setDashboardError(e instanceof Error ? e.message : 'Ошибка назначения')
+      }
+    },
+    [teamMembers, refreshDashboard],
+  )
 
-  const completeEditorTask = useCallback((chapterId: number) => {
-    const now = formatNowRu()
-    setChapters((prev) =>
-      prev.map((c) =>
-        c.id === chapterId && c.statusCode === 'edit' && c.editorId === CURRENT_USER.id
-          ? { ...c, statusCode: 'ready', date: now }
-          : c,
-      ),
-    )
-  }, [])
+  const completeEditorTask = useCallback(
+    async (chapterId: string) => {
+      try {
+        await apiPatchJson(`/chapters/${chapterId}`, { status_code: 'ready' })
+        await refreshDashboard()
+      } catch (e) {
+        console.error(e)
+        setDashboardError(e instanceof Error ? e.message : 'Ошибка')
+      }
+    },
+    [refreshDashboard],
+  )
 
-  const toggleWaitingSelected = useCallback((chapterId: number) => {
+  const toggleWaitingSelected = useCallback((chapterId: string) => {
     setSelectedWaitingIds((prev) => {
       const next = new Set(prev)
       if (next.has(chapterId)) next.delete(chapterId)
@@ -361,43 +359,53 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
     })
   }, [])
 
-  const addGlossaryEntry = useCallback((projectId: string, entry: Omit<GlossaryEntry, 'id'>) => {
-    const source = entry.source.trim()
-    const target = entry.target.trim()
-    if (!source || !target) return
-    const row: GlossaryEntry = { id: newGlossaryEntryId(), source, target }
-    setGlossaryByProjectId((prev) => ({
-      ...prev,
-      [projectId]: [...(prev[projectId] ?? []), row],
+  const loadGlossaryForProject = useCallback(async (projectId: string) => {
+    const rows = await apiGet<GlossaryApi[]>(`/glossary/${projectId}`)
+    const mapped: GlossaryEntry[] = rows.map((r) => ({
+      id: String(r.id),
+      source: r.term_source,
+      target: r.term_target,
     }))
+    setGlossaryByProjectId((prev) => ({ ...prev, [projectId]: mapped }))
   }, [])
 
+  const addGlossaryEntry = useCallback(
+    async (projectId: string, entry: Omit<GlossaryEntry, 'id'>) => {
+      const source = entry.source.trim()
+      const target = entry.target.trim()
+      if (!source || !target) return
+      await apiPostJson(`/glossary/${projectId}`, {
+        term_source: source,
+        term_target: target,
+        notes: null,
+      })
+      await loadGlossaryForProject(projectId)
+    },
+    [loadGlossaryForProject],
+  )
+
   const updateGlossaryEntry = useCallback(
-    (projectId: string, entryId: string, next: Omit<GlossaryEntry, 'id'>) => {
+    async (projectId: string, entryId: string, next: Omit<GlossaryEntry, 'id'>) => {
       const source = next.source.trim()
       const target = next.target.trim()
       if (!source || !target) return
-      setGlossaryByProjectId((prev) => {
-        const list = prev[projectId]
-        if (!list) return prev
-        const idx = list.findIndex((e) => e.id === entryId)
-        if (idx < 0) return prev
-        const copy = [...list]
-        copy[idx] = { ...copy[idx], source, target }
-        return { ...prev, [projectId]: copy }
+      await apiPatchJson(`/glossary/${projectId}/entries/${entryId}`, {
+        term_source: source,
+        term_target: target,
+        notes: null,
       })
+      await loadGlossaryForProject(projectId)
     },
-    [],
+    [loadGlossaryForProject],
   )
 
-  const removeGlossaryEntry = useCallback((projectId: string, entryId: string) => {
-    setGlossaryByProjectId((prev) => {
-      const list = prev[projectId]
-      if (!list) return prev
-      const nextList = list.filter((e) => e.id !== entryId)
-      return { ...prev, [projectId]: nextList }
-    })
-  }, [])
+  const removeGlossaryEntry = useCallback(
+    async (projectId: string, entryId: string) => {
+      await apiDelete(`/glossary/${projectId}/entries/${entryId}`)
+      await loadGlossaryForProject(projectId)
+    },
+    [loadGlossaryForProject],
+  )
 
   const editorTasks = useMemo(
     () =>
@@ -407,18 +415,34 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
     [chapters],
   )
 
+  const formatStartedAt = useCallback((ts: number) => {
+    return new Date(ts).toLocaleString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }, [])
+
   const value = useMemo<PipelineContextValue>(
     () => ({
       soloMode,
       setSoloMode,
+      projects,
+      teamMembers,
+      dashboardLoading,
+      dashboardError,
+      refreshDashboard,
+      createProject,
+      updateProject,
       chapters,
       uploadQueue,
-      addZipToUploadQueue,
+      addFilesToUploadQueue,
       updateUploadQueueItem,
       removeUploadQueueItem,
       clearUploadQueue,
       submitUploadQueueItem,
-      processingJobs,
       stats,
       assignEditor,
       updateChapterMetadata,
@@ -428,6 +452,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       toggleWaitingSelected,
       formatStartedAt,
       glossaryByProjectId,
+      loadGlossaryForProject,
       addGlossaryEntry,
       updateGlossaryEntry,
       removeGlossaryEntry,
@@ -435,14 +460,20 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
     [
       soloMode,
       setSoloMode,
+      projects,
+      teamMembers,
+      dashboardLoading,
+      dashboardError,
+      refreshDashboard,
+      createProject,
+      updateProject,
       chapters,
       uploadQueue,
-      addZipToUploadQueue,
+      addFilesToUploadQueue,
       updateUploadQueueItem,
       removeUploadQueueItem,
       clearUploadQueue,
       submitUploadQueueItem,
-      processingJobs,
       stats,
       assignEditor,
       updateChapterMetadata,
@@ -450,7 +481,9 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       editorTasks,
       selectedWaitingIds,
       toggleWaitingSelected,
+      formatStartedAt,
       glossaryByProjectId,
+      loadGlossaryForProject,
       addGlossaryEntry,
       updateGlossaryEntry,
       removeGlossaryEntry,

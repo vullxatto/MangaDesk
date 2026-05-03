@@ -1,30 +1,31 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
-import { MANGA_PROJECTS, isDuplicateChapterNumber } from '../context/pipelineConstants'
-import type { ChapterRow, ProcessingJob, UploadQueueItem } from '../pipelineTypes'
+import type { DashboardProject } from '../pipelineTypes'
+import { isDuplicateChapterNumber } from '../context/pipelineConstants'
+import type { ChapterRow, UploadQueueItem } from '../pipelineTypes'
 
 export default function ChapterMetadataModal({
-  initialTitle,
+  initialProjectId,
   initialNumber,
   chapterId,
+  projects,
   chapters,
   uploadQueue,
-  processingJobs,
   onClose,
   onConfirm,
 }: {
-  initialTitle: string
+  initialProjectId: string
   initialNumber: number
-  chapterId: number
+  chapterId: string
+  projects: DashboardProject[]
   chapters: ChapterRow[]
   uploadQueue: UploadQueueItem[]
-  processingJobs: ProcessingJob[]
   onClose: () => void
-  onConfirm: (title: string, number: number) => void
+  onConfirm: (projectId: string, number: number, chapterTitle?: string | null) => void
 }) {
   const [projectId, setProjectId] = useState(
-    () => MANGA_PROJECTS.find((p) => p.title === initialTitle)?.id ?? MANGA_PROJECTS[0].id,
+    () => projects.find((p) => p.id === initialProjectId)?.id ?? projects[0]?.id ?? '',
   )
   const [chapterNum, setChapterNum] = useState(String(initialNumber))
   const [error, setError] = useState<string | null>(null)
@@ -38,9 +39,8 @@ export default function ChapterMetadataModal({
   }, [onClose])
 
   function handleConfirm() {
-    const project = MANGA_PROJECTS.find((p) => p.id === projectId)
     const num = parseInt(String(chapterNum).trim(), 10)
-    if (!project) {
+    if (!projectId) {
       setError('Выберите проект')
       return
     }
@@ -48,22 +48,12 @@ export default function ChapterMetadataModal({
       setError('Укажите номер главы не меньше 1')
       return
     }
-    if (
-      isDuplicateChapterNumber(
-        project.title,
-        num,
-        chapters,
-        uploadQueue,
-        processingJobs,
-        '',
-        chapterId,
-      )
-    ) {
+    if (isDuplicateChapterNumber(projectId, num, chapters, uploadQueue, '', chapterId)) {
       setError('Такой номер для этого проекта уже занят')
       return
     }
     setError(null)
-    onConfirm(project.title, num)
+    onConfirm(projectId, num, null)
     onClose()
   }
 
@@ -99,7 +89,7 @@ export default function ChapterMetadataModal({
                 setError(null)
               }}
             >
-              {MANGA_PROJECTS.map((p) => (
+              {projects.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.title}
                 </option>

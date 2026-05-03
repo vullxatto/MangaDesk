@@ -1,10 +1,12 @@
-import { useEffect, useId } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
+import { usePipeline } from '../context/usePipeline'
 
 type ProjectFormModalProps = {
   open: boolean
   mode: 'add' | 'edit'
+  projectId?: string
   initialName?: string
   onClose: () => void
 }
@@ -12,10 +14,24 @@ type ProjectFormModalProps = {
 export default function ProjectFormModal({
   open,
   mode,
+  projectId,
   initialName = '',
   onClose,
 }: ProjectFormModalProps) {
+  const { createProject, updateProject } = usePipeline()
   const titleId = useId()
+  const [name, setName] = useState(initialName)
+  const [sourceLang, setSourceLang] = useState('jp')
+  const [targetLang, setTargetLang] = useState('ru')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (open) {
+      setName(initialName)
+      setError(null)
+    }
+  }, [open, initialName])
 
   useEffect(() => {
     if (!open) return undefined
@@ -27,6 +43,37 @@ export default function ProjectFormModal({
   }, [open, onClose])
 
   if (!open) return null
+
+  async function handleSave() {
+    const trimmed = name.trim()
+    if (!trimmed) {
+      setError('Введите название')
+      return
+    }
+    setSaving(true)
+    setError(null)
+    try {
+      if (mode === 'add') {
+        await createProject({
+          title: trimmed,
+          description: null,
+          source_language: sourceLang,
+          target_language: targetLang,
+        })
+      } else if (projectId) {
+        await updateProject(projectId, {
+          title: trimmed,
+          source_language: sourceLang,
+          target_language: targetLang,
+        })
+      }
+      onClose()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Ошибка сохранения')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return createPortal(
     <div className="team-modal-backdrop" role="presentation" onClick={onClose}>
@@ -48,11 +95,20 @@ export default function ProjectFormModal({
         <div className="project-form-body">
           <label className="project-form-field">
             <span>Название проекта</span>
-            <input defaultValue={initialName} className="project-form-input" placeholder="Введите название" />
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="project-form-input"
+              placeholder="Введите название"
+            />
           </label>
           <label className="project-form-field">
             <span>Язык оригинала</span>
-            <select defaultValue="jp" className="project-form-input">
+            <select
+              value={sourceLang}
+              onChange={(e) => setSourceLang(e.target.value)}
+              className="project-form-input"
+            >
               <option value="jp">Японский</option>
               <option value="en">Английский</option>
               <option value="kr">Корейский</option>
@@ -61,18 +117,27 @@ export default function ProjectFormModal({
           </label>
           <label className="project-form-field">
             <span>Язык перевода</span>
-            <select defaultValue="ru" className="project-form-input">
+            <select
+              value={targetLang}
+              onChange={(e) => setTargetLang(e.target.value)}
+              className="project-form-input"
+            >
               <option value="ru">Русский</option>
               <option value="en">Английский</option>
             </select>
           </label>
+          {error ? (
+            <p className="review-queue-field-error" role="alert">
+              {error}
+            </p>
+          ) : null}
         </div>
         <div className="project-form-footer">
-          <button type="button" className="dashboard-reset-btn" onClick={onClose}>
+          <button type="button" className="dashboard-reset-btn" onClick={onClose} disabled={saving}>
             Отмена
           </button>
-          <button type="button" className="dashboard-new-btn" onClick={onClose}>
-            Сохранить
+          <button type="button" className="dashboard-new-btn" onClick={() => void handleSave()} disabled={saving}>
+            {saving ? 'Сохранение…' : 'Сохранить'}
           </button>
         </div>
       </div>

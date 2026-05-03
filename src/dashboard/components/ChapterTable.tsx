@@ -1,6 +1,5 @@
 import { ChevronDown, CloudDownload, Pencil } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { TEAM_MEMBERS } from '../context/pipelineConstants'
 import { usePipeline } from '../context/usePipeline'
 import type { ChapterRow } from '../pipelineTypes'
 import StatusBadge from './StatusBadge'
@@ -13,12 +12,24 @@ const STATUS_LABEL = {
   waiting_editor: 'ЖДЁТ РЕДАКТОРА',
 }
 
-function editorInitial(name) {
+function editorInitial(name: string | null | undefined) {
   if (!name || !name.trim()) return '—'
   return name.trim().charAt(0).toUpperCase()
 }
 
-function AssignEditorControl({ assignMenuKey, rowId, onAssignMenuKey, onPick }) {
+function AssignEditorControl({
+  assignMenuKey,
+  rowId,
+  onAssignMenuKey,
+  onPick,
+  teamMembers,
+}: {
+  assignMenuKey: string | null
+  rowId: string
+  onAssignMenuKey: (key: string | null | ((prev: string | null) => string | null)) => void
+  onPick: (editorId: string) => void
+  teamMembers: { id: string; name: string }[]
+}) {
   const open = assignMenuKey === rowId
   return (
     <div className={`dashboard-dropdown chapters-assign-dropdown ${open ? 'is-open' : ''}`}>
@@ -38,13 +49,13 @@ function AssignEditorControl({ assignMenuKey, rowId, onAssignMenuKey, onPick }) 
       </button>
       {open ? (
         <div className="dashboard-dropdown-menu chapters-assign-menu">
-          {TEAM_MEMBERS.map((m) => (
+          {teamMembers.map((m) => (
             <button
               key={m.id}
               type="button"
               className="dashboard-dropdown-item"
               onClick={() => {
-                onPick(m.id)
+                void onPick(m.id)
                 onAssignMenuKey(null)
               }}
             >
@@ -66,10 +77,10 @@ function ChapterTable({
   rows: ChapterRow[]
   assignMenuKey: string | null
   onAssignMenuKey: (key: string | null | ((prev: string | null) => string | null)) => void
-  onOpenMetadataModal: (chapterId: number) => void
+  onOpenMetadataModal: (chapterId: string) => void
 }) {
   const navigate = useNavigate()
-  const { soloMode, assignEditor, selectedWaitingIds, toggleWaitingSelected } = usePipeline()
+  const { soloMode, assignEditor, selectedWaitingIds, toggleWaitingSelected, teamMembers } = usePipeline()
 
   return (
     <div className="chapters-table">
@@ -122,7 +133,8 @@ function ChapterTable({
                     assignMenuKey={assignMenuKey}
                     rowId={row.id}
                     onAssignMenuKey={setAssignMenuKey}
-                    onPick={(editorId) => assignEditor([row.id], editorId)}
+                    onPick={(editorId) => void assignEditor([row.id], editorId)}
+                    teamMembers={teamMembers}
                   />
                 ) : (
                   <>

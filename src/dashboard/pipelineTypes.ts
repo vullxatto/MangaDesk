@@ -8,8 +8,20 @@ export type ChapterStatusCode =
   | 'upload'
   | 'waiting_editor'
 
+export interface DashboardProject {
+  id: string
+  title: string
+  slug: string
+}
+
+export interface TeamMember {
+  id: string
+  name: string
+}
+
 export interface ChapterRow {
-  id: number
+  id: string
+  projectId: string
   title: string
   number: number
   statusCode: ChapterStatusCode
@@ -27,47 +39,58 @@ export interface UploadQueueItem {
   editorId: string
 }
 
-export interface ProcessingJob {
-  id: string
-  /** id элемента upload-очереди — защита от двойного добавления (Strict Mode / двойной клик) */
-  queueItemId: string
-  fileName: string
-  current: number
-  totalChapters: number
-  startedAt: number
-  projectTitle: string
-  chapterNumber: number
-  preEditorId: string | null
-  solo: boolean
-}
-
 export interface PipelineContextValue {
   soloMode: boolean
   setSoloMode: (value: boolean) => void
+  projects: DashboardProject[]
+  teamMembers: TeamMember[]
+  dashboardLoading: boolean
+  dashboardError: string | null
+  refreshDashboard: () => Promise<void>
+  createProject: (payload: {
+    title: string
+    description?: string | null
+    source_language?: string | null
+    target_language?: string | null
+  }) => Promise<void>
+  updateProject: (
+    projectId: string,
+    payload: {
+      title?: string
+      description?: string | null
+      source_language?: string | null
+      target_language?: string | null
+    },
+  ) => Promise<void>
   chapters: ChapterRow[]
   uploadQueue: UploadQueueItem[]
-  addZipToUploadQueue: (fileList: FileList | File[]) => void
+  addFilesToUploadQueue: (fileList: FileList | File[]) => void
   updateUploadQueueItem: (id: string, partial: Partial<UploadQueueItem>) => void
   removeUploadQueueItem: (id: string) => void
   clearUploadQueue: () => void
-  submitUploadQueueItem: (id: string) => void
-  processingJobs: ProcessingJob[]
+  submitUploadQueueItem: (id: string) => Promise<void>
   stats: { queue: number; inEdit: number; ready: number }
-  assignEditor: (chapterIds: number[], editorId: string) => void
-  updateChapterMetadata: (chapterId: number, title: string, number: number) => void
-  completeEditorTask: (chapterId: number) => void
+  assignEditor: (chapterIds: string[], editorId: string) => Promise<void>
+  updateChapterMetadata: (
+    chapterId: string,
+    projectId: string,
+    chapterNumber: number,
+    chapterTitle?: string | null,
+  ) => Promise<void>
+  completeEditorTask: (chapterId: string) => Promise<void>
   editorTasks: ChapterRow[]
-  selectedWaitingIds: Set<number>
-  toggleWaitingSelected: (chapterId: number) => void
+  selectedWaitingIds: Set<string>
+  toggleWaitingSelected: (chapterId: string) => void
   formatStartedAt: (ts: number) => string
   glossaryByProjectId: Record<string, GlossaryEntry[]>
-  addGlossaryEntry: (projectId: string, entry: Omit<GlossaryEntry, 'id'>) => void
+  loadGlossaryForProject: (projectId: string) => Promise<void>
+  addGlossaryEntry: (projectId: string, entry: Omit<GlossaryEntry, 'id'>) => Promise<void>
   updateGlossaryEntry: (
     projectId: string,
     entryId: string,
     next: Omit<GlossaryEntry, 'id'>,
-  ) => void
-  removeGlossaryEntry: (projectId: string, entryId: string) => void
+  ) => Promise<void>
+  removeGlossaryEntry: (projectId: string, entryId: string) => Promise<void>
 }
 
 export type PipelineProviderProps = { children: ReactNode }

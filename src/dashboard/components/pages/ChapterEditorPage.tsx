@@ -10,7 +10,6 @@ import {
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { usePipeline } from '../../context/usePipeline'
 import { getSelectionTextInContainer } from '../../glossary/getSelectionInContainer'
-import { projectIdFromTitle } from '../../glossary/projectTitleToProjectId'
 import { AddGlossaryEntryModal } from '../AddGlossaryEntryModal'
 import { GlossaryContextMenu } from '../GlossaryContextMenu'
 import {
@@ -98,11 +97,11 @@ function ChapterEditorAutosizeTextarea({
 
 export default function ChapterEditorPage() {
   const { chapterId: chapterIdParam } = useParams<{ chapterId: string }>()
-  const chapterId = chapterIdParam ? parseInt(chapterIdParam, 10) : NaN
+  const chapterId = chapterIdParam?.trim() ?? ''
   const { chapters, addGlossaryEntry } = usePipeline()
 
   const chapter = useMemo(() => {
-    if (!Number.isFinite(chapterId)) return undefined
+    if (!chapterId) return undefined
     return chapters.find((c) => c.id === chapterId)
   }, [chapters, chapterId])
 
@@ -212,7 +211,7 @@ export default function ChapterEditorPage() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  const projectId = chapter ? projectIdFromTitle(chapter.title) : undefined
+  const projectId = chapter?.projectId
 
   const onGlossaryPaneContextMenu = useCallback(
     (e: ReactMouseEvent<HTMLDivElement>) => {
@@ -226,7 +225,7 @@ export default function ChapterEditorPage() {
     [projectId],
   )
 
-  if (!Number.isFinite(chapterId) || !chapter) {
+  if (!chapterId || !chapter) {
     return <Navigate to="/dashboard/chapters" replace />
   }
 
@@ -366,7 +365,7 @@ export default function ChapterEditorPage() {
           initialSource={glossaryModal.initialSource}
           onClose={() => setGlossaryModal({ open: false, initialSource: '' })}
           onSubmit={(source, target) => {
-            addGlossaryEntry(projectId, { source, target })
+            void addGlossaryEntry(projectId, { source, target })
           }}
         />
       ) : null}

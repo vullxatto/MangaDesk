@@ -1,5 +1,5 @@
 import { Sun } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import housePng from '../assets/images/house.png'
 import kittyPng from '../assets/images/kitty.png'
@@ -7,16 +7,34 @@ import treePng from '../assets/images/tree.png'
 import googleIcon from '../assets/svg/Google.svg'
 import vkIcon from '../assets/svg/VK.svg'
 import { PageScaler } from '../components/PageScaler'
+import { getApiBaseUrl } from '../lib/api'
+import { getAccessToken, skipAuth } from '../lib/auth'
+
 type AuthTab = 'login' | 'register'
+
+function oauthStart(provider: 'google' | 'vk', intent: AuthTab) {
+  const api = getApiBaseUrl()
+  if (!api) {
+    window.alert('Задайте VITE_API_URL в .env для входа через OAuth.')
+    return
+  }
+  const rawBase = import.meta.env.BASE_URL || '/'
+  const normalized = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase
+  const path = normalized ? `${normalized}/auth/callback` : '/auth/callback'
+  const redirect = `${window.location.origin}${path}`
+  const enc = encodeURIComponent(redirect)
+  window.location.href = `${api}/auth/${provider}/login?intent=${intent}&redirect=${enc}`
+}
 
 export function AuthPage() {
   const navigate = useNavigate()
   const [tab, setTab] = useState<AuthTab>('login')
 
-  function goDashboardStub() {
-    localStorage.setItem('mangadesk-authed', '1')
-    navigate('/dashboard')
-  }
+  useEffect(() => {
+    if (skipAuth() || getAccessToken()) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [navigate])
 
   const googleLabel = tab === 'login' ? 'Войти через Google' : 'Продолжить с Google'
   const vkLabel = tab === 'login' ? 'Войти через VK' : 'Продолжить с VK'
@@ -86,7 +104,7 @@ export function AuthPage() {
                         type="button"
                         className="pricing__btn pricing__btn--outline auth-oauth-btn"
                         style={{ marginTop: 0 }}
-                        onClick={goDashboardStub}
+                        onClick={() => oauthStart('google', tab)}
                       >
                         <img className="auth-oauth-img" src={googleIcon} alt="" width={21} height={21} />
                         <span className="auth-oauth-label">{googleLabel}</span>
@@ -96,7 +114,7 @@ export function AuthPage() {
                         type="button"
                         className="pricing__btn pricing__btn--outline auth-oauth-btn"
                         style={{ marginTop: 0 }}
-                        onClick={goDashboardStub}
+                        onClick={() => oauthStart('vk', tab)}
                       >
                         <img className="auth-oauth-img" src={vkIcon} alt="" width={21} height={21} />
                         <span className="auth-oauth-label">{vkLabel}</span>

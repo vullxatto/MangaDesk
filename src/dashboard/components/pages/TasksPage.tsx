@@ -62,7 +62,7 @@ function TasksPage({ title = 'Задачи' }) {
                 <button
                   type="button"
                   className="dashboard-new-btn review-queue-submit"
-                  onClick={() => completeEditorTask(row.id)}
+                  onClick={() => void completeEditorTask(row.id)}
                 >
                   <span>Завершить</span>
                 </button>

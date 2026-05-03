@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ChevronDown, Upload, X } from 'lucide-react'
-import {
-  isDuplicateChapterNumber,
-  MANGA_PROJECTS,
-  TEAM_MEMBERS,
-} from '../../context/pipelineConstants'
+import { isDuplicateChapterNumber } from '../../context/pipelineConstants'
 import { usePipeline } from '../../context/usePipeline'
 
 function formatBytes(n) {
@@ -14,9 +10,20 @@ function formatBytes(n) {
   return `${(n / (1024 * 1024)).toFixed(1)} МБ`
 }
 
-function isZip(file) {
+function isAllowedUpload(file: File) {
   const name = file.name.toLowerCase()
-  return name.endsWith('.zip') || file.type === 'application/zip' || file.type === 'application/x-zip-compressed'
+  return (
+    name.endsWith('.zip') ||
+    name.endsWith('.rar') ||
+    name.endsWith('.png') ||
+    name.endsWith('.jpg') ||
+    name.endsWith('.jpeg') ||
+    name.endsWith('.webp') ||
+    name.endsWith('.psd') ||
+    file.type === 'application/zip' ||
+    file.type === 'application/x-zip-compressed' ||
+    file.type === 'application/x-rar-compressed'
+  )
 }
 
 type QueueOption = { value: string; label: string }
@@ -235,20 +242,18 @@ function QueueDropdown({
   )
 }
 
-function itemCanSubmit(item, chapters, uploadQueue, processingJobs) {
+function itemCanSubmit(
+  item: { projectId: string; chapterNumber: string; id: string },
+  chapters: import('../../pipelineTypes').ChapterRow[],
+  uploadQueue: { id: string; projectId: string; chapterNumber: string }[],
+  projects: { id: string }[],
+) {
   if (!item.projectId) return false
   const num = parseInt(String(item.chapterNumber).trim(), 10)
   if (!Number.isFinite(num) || num < 1) return false
-  const project = MANGA_PROJECTS.find((p) => p.id === item.projectId)
+  const project = projects.find((p) => p.id === item.projectId)
   if (!project) return false
-  return !isDuplicateChapterNumber(
-    project.title,
-    num,
-    chapters,
-    uploadQueue,
-    processingJobs,
-    item.id,
-  )
+  return !isDuplicateChapterNumber(item.projectId, num, chapters, uploadQueue, item.id)
 }
 
 function ReviewDropzone() {
@@ -261,8 +266,9 @@ function ReviewDropzone() {
   const {
     chapters,
     uploadQueue,
-    processingJobs,
-    addZipToUploadQueue,
+    projects,
+    teamMembers,
+    addFilesToUploadQueue,
     updateUploadQueueItem,
     removeUploadQueueItem,
     clearUploadQueue,
@@ -304,21 +310,21 @@ function ReviewDropzone() {
 
   const projectOptions: QueueOption[] = [
     { value: '', label: 'Выберите проект' },
-    ...MANGA_PROJECTS.map((p) => ({ value: p.id, label: p.title })),
+    ...projects.map((p) => ({ value: p.id, label: p.title })),
   ]
 
   const editorOptions: QueueOption[] = [
     { value: '', label: 'Не назначен' },
-    ...TEAM_MEMBERS.map((m) => ({ value: m.id, label: m.name })),
+    ...teamMembers.map((m) => ({ value: m.id, label: m.name })),
   ]
 
   const addFiles = useCallback(
-    (fileList) => {
-      const next = Array.from(fileList).filter(isZip) as File[]
+    (fileList: FileList | File[]) => {
+      const next = Array.from(fileList).filter(isAllowedUpload)
       if (next.length === 0) return
-      addZipToUploadQueue(next)
+      addFilesToUploadQueue(next)
     },
-    [addZipToUploadQueue],
+    [addFilesToUploadQueue],
   )
 
   function handleDragEnter(e) {
@@ -366,8 +372,9 @@ function ReviewDropzone() {
 
   function confirmSubmitFromModal() {
     if (!submitModalItemId) return
-    submitUploadQueueItem(submitModalItemId)
+    const id = submitModalItemId
     setSubmitModalItemId(null)
+    void submitUploadQueueItem(id)
   }
 
   return (
@@ -383,7 +390,7 @@ function ReviewDropzone() {
         onDrop={handleDrop}
         role="button"
         tabIndex={0}
-        aria-label="Зона загрузки архива ZIP: перетащите файл или нажмите для выбора"
+        aria-label="Зона загрузки: ZIP, RAR, PNG, PSD — перетащите файлы или нажмите для выбора"
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
@@ -396,16 +403,17 @@ function ReviewDropzone() {
           ref={inputRef}
           type="file"
           className="review-dropzone-input"
-          accept=".zip,application/zip,application/x-zip-compressed"
+          accept=".zip,.rar,.png,.jpg,.jpeg,.webp,.psd,application/zip,application/x-zip-compressed,application/x-rar-compressed"
           multiple
           onChange={handleInputChange}
           aria-hidden
         />
         <Upload className="review-dropzone-icon" size={28} strokeWidth={1.8} aria-hidden />
         <p className="review-dropzone-text">
-          Перетащите архив с сканами глав <strong>.zip</strong> сюда или выберите файл
+          Перетащите сюда архив <strong>.zip</strong> / <strong>.rar</strong> или отдельные файлы{' '}
+          <strong>.png</strong> / <strong>.psd</strong> (и др. изображения)
         </p>
-        <p className="review-dropzone-hint">Только ZIP, до 500 МБ на файл (демо, без отправки на сервер)</p>
+        <p className="review-dropzone-hint">Файлы отправляются на API после подтверждения в очереди</p>
       </div>
 
       {uploadQueue.length > 0 && (
@@ -421,20 +429,13 @@ function ReviewDropzone() {
           <div className="review-panel review-queue-group">
             <ul className="review-queue-group-list">
             {uploadQueue.map((item) => {
-              const project = MANGA_PROJECTS.find((p) => p.id === item.projectId)
+              const project = projects.find((p) => p.id === item.projectId)
               const num = parseInt(String(item.chapterNumber).trim(), 10)
               const duplicate =
                 project &&
                 Number.isFinite(num) &&
                 num >= 1 &&
-                isDuplicateChapterNumber(
-                  project.title,
-                  num,
-                  chapters,
-                  uploadQueue,
-                  processingJobs,
-                  item.id,
-                )
+                isDuplicateChapterNumber(item.projectId, num, chapters, uploadQueue, item.id)
               return (
               <li key={item.id} className="review-queue-item review-queue-item--form">
                 <div className="review-queue-item-top">
@@ -501,7 +502,7 @@ function ReviewDropzone() {
                     <button
                       type="button"
                       className="dashboard-new-btn review-queue-submit"
-                      disabled={!itemCanSubmit(item, chapters, uploadQueue, processingJobs)}
+                      disabled={!itemCanSubmit(item, chapters, uploadQueue, projects)}
                       onClick={() => openSubmitModal(item.id)}
                     >
                       <span>Отправить в обработку</span>

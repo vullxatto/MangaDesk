@@ -26,6 +26,12 @@ export function AddGlossaryEntryModal({
   const [target, setTarget] = useState(initialTarget)
 
   useEffect(() => {
+    if (!open) return
+    setSource(initialSource)
+    setTarget(initialTarget)
+  }, [open, initialSource, initialTarget])
+
+  useEffect(() => {
     if (!open) return undefined
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose()

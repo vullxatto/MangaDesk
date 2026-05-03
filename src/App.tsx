@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { ArticlesPage } from './pages/ArticlesPage'
+import { AuthProvider } from './context/AuthContext'
 import { AuthPage } from './pages/AuthPage'
+import { AuthCallbackPage } from './pages/AuthCallbackPage'
 import { ExamplesPage } from './pages/ExamplesPage'
 import { HomePage } from './pages/HomePage'
 import ChaptersPage from './dashboard/components/ChaptersPage'
@@ -25,13 +27,16 @@ export default function App() {
       <Route path="/articles" element={<ArticlesPage />} />
       <Route path="/examples" element={<ExamplesPage />} />
       <Route path="/auth" element={<AuthPage />} />
+      <Route path="/auth/callback" element={<AuthCallbackPage />} />
       <Route
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <PipelineProvider>
-              <DashboardLayout />
-            </PipelineProvider>
+            <AuthProvider>
+              <PipelineProvider>
+                <DashboardLayout />
+              </PipelineProvider>
+            </AuthProvider>
           </ProtectedRoute>
         }
       >
