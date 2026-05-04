@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { ScrollToTop } from './components/ScrollToTop'
 import { ArticlesPage } from './pages/ArticlesPage'
 import { AuthProvider } from './context/AuthContext'
 import { AuthPage } from './pages/AuthPage'
@@ -22,7 +23,9 @@ import { ProtectedRoute } from './dashboard/ProtectedRoute'
 
 export default function App() {
   return (
-    <Routes>
+    <>
+      <ScrollToTop />
+      <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/articles" element={<ArticlesPage />} />
       <Route path="/examples" element={<ExamplesPage />} />
@@ -53,5 +56,6 @@ export default function App() {
         <Route path="settings" element={<SettingsPage title={dashboardTitleByPage('settings')} />} />
       </Route>
     </Routes>
+    </>
   )
 }
