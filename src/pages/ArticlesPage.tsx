@@ -245,11 +245,12 @@ export function ArticlesPage() {
                 нужную часть и не утонуть в деталях.
               </p>
               <div className="article-process" aria-label="Процесс перевода">
-                <h5 className="article-process__title">Процесс перевода</h5>
-                <div className="article-process__grid">
+                <div className="article-process__scale-surface">
+                  <h5 className="article-process__title">Процесс перевода</h5>
+                  <div className="article-process__grid">
                   <article className="article-process__item">
                     <div className="article-process__icon">
-                      <Languages size={44} strokeWidth={2} aria-hidden />
+                      <Languages className="article-process__icon-svg" strokeWidth={2} aria-hidden />
                     </div>
                     <div className="article-process__ribbon">
                       <img src={arrowSvg} alt="" aria-hidden />
@@ -260,7 +261,7 @@ export function ArticlesPage() {
 
                   <article className="article-process__item">
                     <div className="article-process__icon">
-                      <Eraser size={44} strokeWidth={2} aria-hidden />
+                      <Eraser className="article-process__icon-svg" strokeWidth={2} aria-hidden />
                     </div>
                     <div className="article-process__ribbon">
                       <img src={arrowSvg} alt="" aria-hidden />
@@ -271,7 +272,7 @@ export function ArticlesPage() {
 
                   <article className="article-process__item">
                     <div className="article-process__icon">
-                      <Type size={44} strokeWidth={2} aria-hidden />
+                      <Type className="article-process__icon-svg" strokeWidth={2} aria-hidden />
                     </div>
                     <div className="article-process__ribbon">
                       <img src={arrowSvg} alt="" aria-hidden />
@@ -279,6 +280,7 @@ export function ArticlesPage() {
                     </div>
                     <p className="article-process__desc">Размещает переведенный <br/>текст на очищенных сканах</p>
                   </article>
+                  </div>
                 </div>
               </div>
 

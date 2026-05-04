@@ -2345,13 +2345,24 @@ html.viewport-le-1400 .how-it-works__panel {
 .article-process {
   margin: var(--space-3) 0 var(--space-4);
   padding: var(--space-2) 0;
+  container-name: article-process;
+  container-type: inline-size;
+  width: 100%;
+}
+
+/* Один общий кегль — вся схема «Процесс перевода» масштабируется пропорционально, три колонки в ряд. */
+.article-process__scale-surface {
+  width: 100%;
+  max-width: 1000px;
+  margin-inline: auto;
+  font-size: clamp(10px, 5.25cqw, 18px);
 }
 
 .article-process__title {
-  margin: 0 0 var(--space-4);
+  margin: 0 0 1.25em;
   text-align: center;
   font-family: var(--font-boltushka);
-  font-size: clamp(1.4rem, 2.1vw, 2.1rem);
+  font-size: 2.1em;
   line-height: 1;
   color: var(--fg);
 }
@@ -2359,27 +2370,40 @@ html.viewport-le-1400 .how-it-works__panel {
 .article-process__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-2);
+  column-gap: clamp(1em, 5cqw, 1.65em);
+  row-gap: 0;
   align-items: start;
 }
 
 .article-process__item {
   text-align: center;
-  --article-process-stack-gap: var(--space-2);
+  --article-process-stack-gap: 0.68em;
+  min-width: 0;
+  overflow: visible;
 }
 
 .article-process__icon {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 58px;
+  min-height: 3.6em;
   margin-bottom: var(--article-process-stack-gap);
   color: rgba(var(--fg-rgb), 0.95);
 }
 
+.article-process__icon-svg {
+  width: 2.75em;
+  height: 2.75em;
+  flex-shrink: 0;
+}
+
 .article-process__ribbon {
   position: relative;
-  width: 100%;
+  /* Шире колонки — SVG-карандаш крупнее, пропорции сохраняются. */
+  width: 90%;
+  max-width: none;
+  margin-left: 5%;
+  margin-right: 5%;
   margin-bottom: var(--article-process-stack-gap);
 }
 
@@ -2397,7 +2421,7 @@ html.viewport-le-1400 .how-it-works__panel {
   justify-content: center;
   padding: 1% 13% 0 5%;
   font-family: var(--font-boltushka);
-  font-size: clamp(1.8rem, 1.45vw, 1.45rem);
+  font-size: 1.48em;
   line-height: 1;
   text-transform: uppercase;
   white-space: nowrap;
@@ -2409,22 +2433,10 @@ html.viewport-le-1400 .how-it-works__panel {
   margin: 0 auto;
   max-width: 17ch;
   font-family: var(--font-boltushka);
-  font-size: clamp(1.2rem, 2.1vw, 2.1rem);
+  font-size: 1.05em;
   line-height: 1.05;
   text-transform: uppercase;
   color: var(--fg);
-}
-
-@media (max-width: 960px) {
-  .article-process__grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
-  }
-
-  .article-process__item {
-    max-width: 420px;
-    margin: 0 auto;
-  }
 }
 
 .article-checklist {
