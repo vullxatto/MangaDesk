@@ -96,7 +96,15 @@
 
 html {
   scroll-behavior: smooth;
-  scrollbar-gutter: stable;
+  /* Без авто‑масштаба текста на мобильных — иначе после загрузки шрифтов страница «плывёт». */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+@media (min-width: 900px) {
+  html {
+    scrollbar-gutter: stable;
+  }
 }
 
 html:has(.dashboard-root) {
@@ -427,14 +435,18 @@ a {
 .site-nav a {
   color: rgba(var(--fg-rgb), 0.72);
   letter-spacing: 0.1em;
-  transition: color 0.2s;
+  transition: color 0.2s, background-color 0.2s;
   display: inline-flex;
   align-items: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  margin: -6px -10px;
 }
 
 .site-nav a:hover,
 .site-nav a.site-nav__link--active {
   color: color-mix(in srgb, #9872d6 88%, transparent);
+  background: rgba(var(--fg-rgb), 0.04);
 }
 
 .site-nav a.site-nav__link--active {
@@ -1357,8 +1369,9 @@ html.viewport-le-1400 .how-it-works__panel {
 .features__extras-slider-section--text-pair .features__extras-text-only-body {
   flex: 1 1 auto;
   min-height: 0;
-  font-size: 13px;
-  line-height: 1.36;
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(var(--fg-rgb), 0.72);
 }
 
 .features__extras-slider-section--slider {

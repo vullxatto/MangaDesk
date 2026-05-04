@@ -52,7 +52,7 @@ const FEATURE_COMPARISON_SLIDERS: Array<{
     id: 'reader',
     title: 'Читательский режим',
     caption:
-      'Сервисом может пользоваться и обычный читатель: загрузите ZIP и получите перевод с эффектом glass — без выгрузки в Photoshop и без шагов для публикации главы на сайт. Релиз не обязателен: можно открыть результат только ради того, чтобы самому прочитать мангу.',
+      'Сервисом может пользоваться и обычный читатель: загрузите ZIP и получите перевод с эффектом glass — без выгрузки в Photoshop и без шагов для публикации главы на сайт. Релиз не обязателен: можно открыть результат только ради того, чтобы самому прочитать мангу',
     staticImageSrc: PLACEHOLDER_IMG_READER,
     staticImageLandscape: true,
     wideImageSpan2: true,
@@ -61,26 +61,26 @@ const FEATURE_COMPARISON_SLIDERS: Array<{
     id: 'typography',
     title: 'Настройка типографики',
     caption:
-      'Загружайте шрифты и настраивайте их в реальном времени. Предпросмотр фразы в баблах разного масштаба поможет найти идеальный баланс.',
+      'Загружайте шрифты и настраивайте их в реальном времени. Предпросмотр фразы в баблах разного масштаба поможет найти идеальный баланс',
     textOnly: true,
     pairedTextBelow: {
       title: 'Контекстный перевод',
       caption:
-        'Наш сервис запоминает имена героев и названия локаций на протяжении всего проекта. Настраивайте единый глоссарий для неизменной терминологии.',
+        'Наш сервис запоминает имена героев и названия локаций на протяжении всего проекта. Настраивайте единый глоссарий для неизменной терминологии',
     },
   },
   {
     id: 'localization',
     title: 'Умная локализация',
     caption:
-      'Сервис адаптирует под особенности русского языка метафоры и идиомы, сохраняя культурный контекст и эмоциональный окрас оригинала.',
+      'Сервис адаптирует под особенности русского языка метафоры и идиомы, сохраняя культурный контекст и эмоциональный окрас оригинала',
     initialPosition: 50,
   },
   {
     id: 'quality',
     title: 'Контроль качества',
     caption:
-      'Вносите правки в таблице перевода до создания PSD-файла. Вы скачиваете только тот результат, в котором уверены на 100%.',
+      'Вносите правки в таблице перевода до создания PSD-файла. Вы скачиваете только тот результат, в котором уверены на 100%',
     staticImageSrc: PLACEHOLDER_IMG_QUALITY_WIDE,
     staticImageLandscape: true,
     wideImageSpan2: true,
@@ -89,21 +89,21 @@ const FEATURE_COMPARISON_SLIDERS: Array<{
     id: 'denoise',
     title: 'Шумоподавление',
     caption:
-      'Настраиваемый шумодав позволяет убрать артефакты и мусор с исходников, делая сканы чистыми и красивыми.',
+      'Настраиваемый шумодав позволяет убрать артефакты и мусор с исходников, делая сканы чистыми и красивыми',
     initialPosition: 48,
   },
   {
     id: 'graphics',
-    title: 'Работа со сложной графикой',
+    title: 'Сложная графика',
     caption:
-      'Сервис очищает звуковые эффекты и текст на детализированных фонах, сохраняя эстетику и детали оригинала.',
+      'Сервис очищает звуковые эффекты и текст на детализированных фонах, сохраняя эстетику и детали оригинала',
     initialPosition: 58,
   },
   {
     id: 'zip-raw',
     title: 'Архивы без подготовки',
     caption:
-      'Загружайте ZIP с сырыми сканами: обрывы посреди реплик или, наоборот, чрезмерно крупные страницы — сервис сам нарежет кадры и приведёт исходники к виду, удобному для перевода и вёрстки.',
+      'Загружайте ZIP с сырыми сканами: обрывы посреди реплик или, наоборот, чрезмерно крупные страницы — сервис сам нарежет кадры и приведёт исходники к виду, удобному для перевода и вёрстки',
     textOnly: true,
     pairedTextBelow: {
       title: 'Доступность для всех',
@@ -141,7 +141,7 @@ function FeaturesProcessParamsMock() {
             onChange={(e) => setCleanSounds(e.target.checked)}
           />
           <span className="features__process-params-label">Клинить звуки?</span>
-          <span className="features__process-params-tokens">{cleanCost} ток.</span>
+          <span className="features__process-params-tokens">{cleanCost} ток</span>
         </label>
         <label className="features__process-params-row">
           <input
@@ -151,11 +151,11 @@ function FeaturesProcessParamsMock() {
             onChange={(e) => setTypeSounds(e.target.checked)}
           />
           <span className="features__process-params-label">Тайпить звуки?</span>
-          <span className="features__process-params-tokens">{typeCost} ток.</span>
+          <span className="features__process-params-tokens">{typeCost} ток</span>
         </label>
       </div>
       <div className="features__process-params-footer">
-        <span className="features__process-params-total">Всего: {total} ток.</span>
+        <span className="features__process-params-total">Всего: {total} ток</span>
         <span className="btn-press-wrap btn-press-wrap--design features__process-params-cta-wrap">
           <button type="button" className="btn-press features__process-params-cta">
             Отправить в обработку

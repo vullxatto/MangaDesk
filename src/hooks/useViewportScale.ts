@@ -5,27 +5,51 @@ type ViewportScale = {
   isCompactViewport: boolean
 }
 
+/** Ширина layout viewport без типичных скачков `innerWidth` из‑за скроллбара. */
+function readLayoutViewportWidth(): number {
+  if (typeof document === 'undefined') return 0
+  const doc = document.documentElement
+  const w = doc.clientWidth
+  return w > 0 ? w : window.innerWidth
+}
+
+function computeScale(designWidth: number): number {
+  const w = readLayoutViewportWidth()
+  if (w <= 0) return 1
+  const raw = w >= designWidth ? 1 : w / designWidth
+  return Math.round(raw * 10000) / 10000
+}
+
 export function useViewportScale(designWidth: number): ViewportScale {
-  const [scale, setScale] = useState(() => {
-    if (typeof window === 'undefined') return 1
-    return window.innerWidth >= designWidth ? 1 : window.innerWidth / designWidth
-  })
+  const [scale, setScale] = useState(() =>
+    typeof window === 'undefined' ? 1 : computeScale(designWidth),
+  )
 
   useLayoutEffect(() => {
-    function updateScale() {
-      const nextScale = window.innerWidth >= designWidth ? 1 : window.innerWidth / designWidth
-      setScale((prevScale) => (Math.abs(prevScale - nextScale) < 0.0001 ? prevScale : nextScale))
+    let raf = 0
+
+    const commit = () => {
+      const next = computeScale(designWidth)
+      setScale((prev) => (prev === next ? prev : next))
     }
 
-    updateScale()
-    window.addEventListener('resize', updateScale)
-    window.addEventListener('load', updateScale)
-    document.addEventListener('DOMContentLoaded', updateScale)
+    const schedule = () => {
+      if (raf) cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        raf = 0
+        commit()
+      })
+    }
+
+    commit()
+
+    window.addEventListener('resize', schedule)
+    window.addEventListener('orientationchange', schedule)
 
     return () => {
-      window.removeEventListener('resize', updateScale)
-      window.removeEventListener('load', updateScale)
-      document.removeEventListener('DOMContentLoaded', updateScale)
+      if (raf) cancelAnimationFrame(raf)
+      window.removeEventListener('resize', schedule)
+      window.removeEventListener('orientationchange', schedule)
     }
   }, [designWidth])
 
