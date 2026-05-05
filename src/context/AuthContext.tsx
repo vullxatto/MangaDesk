@@ -1,6 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { apiGet } from '../lib/api'
-import { getAccessToken, setTeamId, setUserProfile, skipAuth, TEAM_KEY, TOKEN_KEY } from '../lib/auth'
+import {
+  clearSession,
+  getAccessToken,
+  setTeamId,
+  setUserProfile,
+  skipAuth,
+  TEAM_KEY,
+  TOKEN_KEY,
+} from '../lib/auth'
 
 export type AuthTeam = {
   id: string
@@ -23,6 +31,7 @@ type AuthContextValue = {
   currentTeamId: string
   setCurrentTeamId: (id: string) => void
   reloadMe: () => Promise<void>
+  logout: () => void
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -92,6 +101,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setCurrentTeamIdState(id)
   }, [])
 
+  const logout = useCallback(() => {
+    clearSession()
+    setUser(null)
+    setTeams([])
+    setCurrentTeamIdState('')
+    setReady(true)
+  }, [])
+
   const value = useMemo<AuthContextValue>(
     () => ({
       ready,
@@ -100,8 +117,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       currentTeamId,
       setCurrentTeamId,
       reloadMe,
+      logout,
     }),
-    [ready, user, teams, currentTeamId, setCurrentTeamId, reloadMe],
+    [ready, user, teams, currentTeamId, setCurrentTeamId, reloadMe, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

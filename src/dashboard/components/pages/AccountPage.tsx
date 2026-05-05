@@ -1,10 +1,20 @@
-import { CreditCard, Link2, Wallet } from 'lucide-react'
+import { CreditCard, Link2, LogOut, Wallet } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../../context/AuthContext'
 
 type AccountPageProps = {
   title?: string
 }
 
 export default function AccountPage({ title = 'Личный кабинет' }: AccountPageProps) {
+  const navigate = useNavigate()
+  const { logout } = useAuth()
+
+  function handleLogout() {
+    logout()
+    void navigate('/auth', { replace: true })
+  }
+
   return (
     <div className="chapters-page projects-page account-page">
       <div className="dashboard-toolbar projects-page-toolbar">
@@ -58,6 +68,12 @@ export default function AccountPage({ title = 'Личный кабинет' }: A
             Пополнить токены
           </button>
         </section>
+      </div>
+      <div className="account-footer">
+        <button type="button" className="account-logout-btn" onClick={handleLogout}>
+          <LogOut size={16} strokeWidth={2} aria-hidden />
+          Выйти из аккаунта
+        </button>
       </div>
     </div>
   )
