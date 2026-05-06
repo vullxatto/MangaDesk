@@ -13,7 +13,7 @@ dist-ssr
 *.local
 .vite
 .env
-.env.*
+.env
 *.log
 
 # Editor directories and files
