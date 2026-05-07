@@ -8,6 +8,7 @@ type ProjectFormModalProps = {
   mode: 'add' | 'edit'
   projectId?: string
   initialName?: string
+  onDelete?: () => void
   onClose: () => void
 }
 
@@ -16,6 +17,7 @@ export default function ProjectFormModal({
   mode,
   projectId,
   initialName = '',
+  onDelete,
   onClose,
 }: ProjectFormModalProps) {
   const { createProject, updateProject } = usePipeline()
@@ -133,6 +135,17 @@ export default function ProjectFormModal({
           ) : null}
         </div>
         <div className="project-form-footer">
+          {mode === 'edit' ? (
+            <button
+              type="button"
+              className="dashboard-reset-btn"
+              onClick={onDelete}
+              disabled={saving}
+              style={{ marginRight: 'auto', color: '#b91c1c', borderColor: 'rgba(180,40,40,0.35)' }}
+            >
+              Удалить
+            </button>
+          ) : null}
           <button type="button" className="dashboard-reset-btn" onClick={onClose} disabled={saving}>
             Отмена
           </button>

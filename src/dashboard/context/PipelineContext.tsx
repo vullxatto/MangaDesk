@@ -187,6 +187,14 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
     [refreshDashboard],
   )
 
+  const removeProject = useCallback(
+    async (projectId: string) => {
+      await apiDelete(`/projects/${projectId}`)
+      await refreshDashboard()
+    },
+    [refreshDashboard],
+  )
+
   const addFilesToUploadQueue = useCallback((fileList: FileList | File[]) => {
     const files = Array.from(fileList)
     if (files.length === 0) return
@@ -316,6 +324,20 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
     [refreshDashboard],
   )
 
+  const removeChapter = useCallback(
+    async (chapterId: string) => {
+      await apiDelete(`/chapters/${chapterId}`)
+      await refreshDashboard()
+      setSelectedWaitingIds((prev) => {
+        if (!prev.has(chapterId)) return prev
+        const next = new Set(prev)
+        next.delete(chapterId)
+        return next
+      })
+    },
+    [refreshDashboard],
+  )
+
   const assignEditor = useCallback(
     async (chapterIds: string[], editorId: string) => {
       const member = teamMembers.find((m) => m.id === editorId)
@@ -436,6 +458,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       refreshDashboard,
       createProject,
       updateProject,
+      removeProject,
       chapters,
       uploadQueue,
       addFilesToUploadQueue,
@@ -446,6 +469,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       stats,
       assignEditor,
       updateChapterMetadata,
+      removeChapter,
       completeEditorTask,
       editorTasks,
       selectedWaitingIds,
@@ -467,6 +491,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       refreshDashboard,
       createProject,
       updateProject,
+      removeProject,
       chapters,
       uploadQueue,
       addFilesToUploadQueue,
@@ -477,6 +502,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       stats,
       assignEditor,
       updateChapterMetadata,
+      removeChapter,
       completeEditorTask,
       editorTasks,
       selectedWaitingIds,

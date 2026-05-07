@@ -62,6 +62,7 @@ export interface PipelineContextValue {
       target_language?: string | null
     },
   ) => Promise<void>
+  removeProject: (projectId: string) => Promise<void>
   chapters: ChapterRow[]
   uploadQueue: UploadQueueItem[]
   addFilesToUploadQueue: (fileList: FileList | File[]) => void
@@ -77,6 +78,7 @@ export interface PipelineContextValue {
     chapterNumber: number,
     chapterTitle?: string | null,
   ) => Promise<void>
+  removeChapter: (chapterId: string) => Promise<void>
   completeEditorTask: (chapterId: string) => Promise<void>
   editorTasks: ChapterRow[]
   selectedWaitingIds: Set<string>

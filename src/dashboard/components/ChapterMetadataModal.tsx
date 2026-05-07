@@ -14,6 +14,7 @@ export default function ChapterMetadataModal({
   uploadQueue,
   onClose,
   onConfirm,
+  onDelete,
 }: {
   initialProjectId: string
   initialNumber: number
@@ -23,6 +24,7 @@ export default function ChapterMetadataModal({
   uploadQueue: UploadQueueItem[]
   onClose: () => void
   onConfirm: (projectId: string, number: number, chapterTitle?: string | null) => void
+  onDelete: () => void
 }) {
   const [projectId, setProjectId] = useState(
     () => projects.find((p) => p.id === initialProjectId)?.id ?? projects[0]?.id ?? '',
@@ -117,6 +119,14 @@ export default function ChapterMetadataModal({
           ) : null}
         </div>
         <div className="chapter-editor-meta-modal-footer">
+          <button
+            type="button"
+            className="dashboard-reset-btn chapter-editor-meta-cancel"
+            onClick={onDelete}
+            style={{ marginRight: 'auto', color: '#b91c1c', borderColor: 'rgba(180,40,40,0.35)' }}
+          >
+            Удалить
+          </button>
           <button type="button" className="dashboard-reset-btn chapter-editor-meta-cancel" onClick={onClose}>
             Отмена
           </button>

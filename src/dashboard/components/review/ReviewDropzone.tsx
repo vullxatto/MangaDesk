@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { ChevronDown, Upload, X } from 'lucide-react'
 import { isDuplicateChapterNumber } from '../../context/pipelineConstants'
 import { usePipeline } from '../../context/usePipeline'
+import { apiPostMultipart } from '../../../lib/api'
 
 function formatBytes(n) {
   if (n < 1024) return `${n} Б`
@@ -28,20 +29,10 @@ function isAllowedUpload(file: File) {
 
 type QueueOption = { value: string; label: string }
 
-/** Моковые цены в токенах; позже заменятся ответом бэка */
-const MOCK_PROCESSING_TOKEN_PRICES = {
-  /** Перевод по умолчанию */
-  baseTranslation: 840,
-  /** Клин звуков */
-  cleanSounds: 120,
-} as const
-
-/** Тайп звуков бесплатен — не входит в итог токенов */
-function processingTokenTotal(cleanSounds: boolean) {
-  return (
-    MOCK_PROCESSING_TOKEN_PRICES.baseTranslation +
-    (cleanSounds ? MOCK_PROCESSING_TOKEN_PRICES.cleanSounds : 0)
-  )
+type ArchiveEstimate = {
+  image_count: number
+  tokens_required: number
+  tokens_per_image: number
 }
 
 function ProcessingSubmitModal({
@@ -50,6 +41,9 @@ function ProcessingSubmitModal({
   typeSounds,
   onCleanSoundsChange,
   onTypeSoundsChange,
+  estimate,
+  estimateLoading,
+  estimateError,
   onClose,
   onConfirm,
 }: {
@@ -58,6 +52,9 @@ function ProcessingSubmitModal({
   typeSounds: boolean
   onCleanSoundsChange: (v: boolean) => void
   onTypeSoundsChange: (v: boolean) => void
+  estimate: ArchiveEstimate | null
+  estimateLoading: boolean
+  estimateError: string | null
   onClose: () => void
   onConfirm: () => void
 }) {
@@ -69,7 +66,7 @@ function ProcessingSubmitModal({
     return () => document.removeEventListener('keydown', onKey)
   }, [onClose])
 
-  const total = processingTokenTotal(cleanSounds)
+  const total = estimate?.tokens_required ?? 0
 
   return createPortal(
     <div
@@ -105,7 +102,7 @@ function ProcessingSubmitModal({
             />
             <span className="review-submit-modal-label">Клинить звуки?</span>
             <span className="review-submit-modal-row-tokens" aria-live="polite">
-              {MOCK_PROCESSING_TOKEN_PRICES.cleanSounds} ток.
+              бесплатно
             </span>
           </label>
           <label className="review-submit-modal-row">
@@ -119,10 +116,26 @@ function ProcessingSubmitModal({
           </label>
         </div>
         <div className="review-submit-modal-footer">
+          {estimateLoading ? <p className="review-submit-modal-sub">Считаем токены...</p> : null}
+          {estimateError ? (
+            <p className="review-queue-field-error" role="alert">
+              {estimateError}
+            </p>
+          ) : null}
+          {estimate ? (
+            <p className="review-submit-modal-sub">
+              Изображений в архиве: {estimate.image_count} · {estimate.tokens_per_image} токена за изображение
+            </p>
+          ) : null}
           <p className="review-submit-modal-total">
             Всего: <strong>{total}</strong> ток.
           </p>
-          <button type="button" className="dashboard-new-btn review-queue-submit" onClick={onConfirm}>
+          <button
+            type="button"
+            className="dashboard-new-btn review-queue-submit"
+            onClick={onConfirm}
+            disabled={estimateLoading || !!estimateError}
+          >
             <span>Отправить в обработку</span>
           </button>
         </div>
@@ -263,6 +276,9 @@ function ReviewDropzone() {
   const [submitModalItemId, setSubmitModalItemId] = useState<string | null>(null)
   const [modalCleanSounds, setModalCleanSounds] = useState(false)
   const [modalTypeSounds, setModalTypeSounds] = useState(false)
+  const [archiveEstimate, setArchiveEstimate] = useState<ArchiveEstimate | null>(null)
+  const [archiveEstimateLoading, setArchiveEstimateLoading] = useState(false)
+  const [archiveEstimateError, setArchiveEstimateError] = useState<string | null>(null)
   const {
     chapters,
     uploadQueue,
@@ -364,6 +380,9 @@ function ReviewDropzone() {
     setModalCleanSounds(false)
     setModalTypeSounds(false)
     setSubmitModalItemId(itemId)
+    setArchiveEstimate(null)
+    setArchiveEstimateError(null)
+    setArchiveEstimateLoading(false)
   }
 
   function closeSubmitModal() {
@@ -376,6 +395,41 @@ function ReviewDropzone() {
     setSubmitModalItemId(null)
     void submitUploadQueueItem(id)
   }
+
+  useEffect(() => {
+    if (!submitModalItem) return
+    const lower = submitModalItem.file.name.toLowerCase()
+    if (!(lower.endsWith('.zip') || lower.endsWith('.rar'))) {
+      setArchiveEstimate({ image_count: 0, tokens_required: 0, tokens_per_image: 0 })
+      setArchiveEstimateError(null)
+      setArchiveEstimateLoading(false)
+      return
+    }
+    const fd = new FormData()
+    fd.append('file', submitModalItem.file)
+    setArchiveEstimateLoading(true)
+    setArchiveEstimateError(null)
+    setArchiveEstimate(null)
+    void apiPostMultipart('/chapters/archive/estimate', fd)
+      .then((res) => {
+        const dto = res as ArchiveEstimate
+        if (
+          !dto ||
+          typeof dto.image_count !== 'number' ||
+          typeof dto.tokens_required !== 'number' ||
+          typeof dto.tokens_per_image !== 'number'
+        ) {
+          throw new Error('Неверный ответ API при расчёте токенов')
+        }
+        setArchiveEstimate(dto)
+      })
+      .catch((e) => {
+        setArchiveEstimateError(e instanceof Error ? e.message : 'Не удалось посчитать токены')
+      })
+      .finally(() => {
+        setArchiveEstimateLoading(false)
+      })
+  }, [submitModalItem])
 
   return (
     <section className="review-section" aria-labelledby="review-upload-heading">
@@ -523,6 +577,9 @@ function ReviewDropzone() {
           typeSounds={modalTypeSounds}
           onCleanSoundsChange={setModalCleanSounds}
           onTypeSoundsChange={setModalTypeSounds}
+          estimate={archiveEstimate}
+          estimateLoading={archiveEstimateLoading}
+          estimateError={archiveEstimateError}
           onClose={closeSubmitModal}
           onConfirm={confirmSubmitFromModal}
         />

@@ -70,6 +70,7 @@ function ChaptersPage({ title }) {
     selectedWaitingIds,
     soloMode,
     updateChapterMetadata,
+    removeChapter,
     uploadQueue,
     teamMembers,
     projects,
@@ -281,6 +282,12 @@ function ChaptersPage({ title }) {
           onConfirm={(projectId, number, chapterTitle) =>
             void updateChapterMetadata(metadataChapter.id, projectId, number, chapterTitle)
           }
+          onDelete={() => {
+            const label = `«${metadataChapter.title}», № ${metadataChapter.number}`
+            const ok = window.confirm(`Удалить ${label}?`)
+            if (!ok) return
+            void removeChapter(metadataChapter.id).finally(() => setMetadataChapterId(null))
+          }}
         />
       ) : null}
     </div>

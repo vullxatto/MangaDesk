@@ -8,7 +8,7 @@ import ProjectsTable, { type ProjectRow } from '../ProjectsTable'
 const PROJECT_LINKS: Record<string, { label: string; href: string }[]> = {}
 
 function ProjectsPage({ title }: { title: string }) {
-  const { chapters, projects } = usePipeline()
+  const { chapters, projects, removeProject } = usePipeline()
   const navigate = useNavigate()
   const [addOpen, setAddOpen] = useState(false)
   const [editingProject, setEditingProject] = useState<ProjectRow | null>(null)
@@ -58,6 +58,12 @@ function ProjectsPage({ title }: { title: string }) {
         mode="edit"
         projectId={editingProject?.projectId}
         initialName={editingProject?.name}
+        onDelete={() => {
+          if (!editingProject) return
+          const ok = window.confirm(`Удалить проект «${editingProject.name}»?`)
+          if (!ok) return
+          void removeProject(editingProject.projectId).finally(() => setEditingProject(null))
+        }}
         onClose={() => setEditingProject(null)}
       />
     </div>
