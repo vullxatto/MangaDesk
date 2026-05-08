@@ -1,13 +1,17 @@
 import {
   BookOpen,
-  ChartColumnIncreasing,
   Check,
   FileStack,
   LayoutGrid,
-  Settings,
+  LogOut,
+  ShoppingBasket,
+  SlidersHorizontal,
+  UserCircle2,
   Users,
 } from 'lucide-react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 import { reloadHome } from '../../utils/reloadHome'
 import { DASHBOARD_MENU_ITEMS } from '../dashboardMenu'
 
@@ -19,12 +23,35 @@ const icons = {
   projects: BookOpen,
   chapters: FileStack,
   team: Users,
-  statistics: ChartColumnIncreasing,
-  settings: Settings,
 }
 
 function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { user, logout } = useAuth()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false)
+    }
+    function onEsc(e: KeyboardEvent) {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', onDocClick)
+    document.addEventListener('keydown', onEsc)
+    return () => {
+      document.removeEventListener('mousedown', onDocClick)
+      document.removeEventListener('keydown', onEsc)
+    }
+  }, [])
+
+  function handleLogout() {
+    logout()
+    setMenuOpen(false)
+    void navigate('/auth', { replace: true })
+  }
 
   return (
     <aside className="dashboard-sidebar">
@@ -63,7 +90,33 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
         })}
       </nav>
 
-      <Link to="/dashboard/account" className="dashboard-user-card">
+      <div className="dashboard-user-card dashboard-user-menu-wrap" ref={menuRef}>
+        {menuOpen ? (
+          <div className="dashboard-user-menu" role="menu">
+            <Link className="dashboard-user-menu-item" to="/dashboard/account" onClick={() => setMenuOpen(false)}>
+              <UserCircle2 size={15} strokeWidth={1.9} aria-hidden /> Кабинет
+            </Link>
+            <Link className="dashboard-user-menu-item" to="/dashboard/statistics" onClick={() => setMenuOpen(false)}>
+              <SlidersHorizontal size={15} strokeWidth={1.9} aria-hidden /> Статистика
+            </Link>
+            <Link className="dashboard-user-menu-item" to="/dashboard/trash" onClick={() => setMenuOpen(false)}>
+              <ShoppingBasket size={15} strokeWidth={1.9} aria-hidden /> Корзина
+            </Link>
+            <Link className="dashboard-user-menu-item" to="/dashboard/settings" onClick={() => setMenuOpen(false)}>
+              <SlidersHorizontal size={15} strokeWidth={1.9} aria-hidden /> Настройки
+            </Link>
+            <button type="button" className="dashboard-user-menu-item" onClick={handleLogout}>
+              <LogOut size={15} strokeWidth={1.9} aria-hidden /> Выйти
+            </button>
+          </div>
+        ) : null}
+        <button
+          type="button"
+          className="dashboard-user-card-btn"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-expanded={menuOpen}
+          aria-label="Открыть меню профиля"
+        >
         <div className="dashboard-user-top">
           <div className="dashboard-user-avatar-wrap">
             <div className="dashboard-user-avatar">
@@ -78,7 +131,7 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
             <span className="dashboard-user-avatar-dot" role="img" aria-label="В сети" />
           </div>
           <div>
-            <div className="dashboard-user-name">Still Rise</div>
+            <div className="dashboard-user-name">{user?.username ?? 'Пользователь'}</div>
             <div className="dashboard-user-role">Руководитель</div>
           </div>
         </div>
@@ -86,7 +139,8 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
           <div className="dashboard-user-meta-label">Потрачено токенов</div>
           <div className="dashboard-user-meta-value">4 500 / 20 000 000</div>
         </div>
-      </Link>
+        </button>
+      </div>
     </aside>
   )
 }

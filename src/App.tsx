@@ -15,6 +15,7 @@ import ReviewPage from './dashboard/components/pages/ReviewPage'
 import SettingsPage from './dashboard/components/pages/SettingsPage'
 import StatisticsPage from './dashboard/components/pages/StatisticsPage'
 import TasksPage from './dashboard/components/pages/TasksPage'
+import TrashPage from './dashboard/components/pages/TrashPage'
 import TeamPage from './dashboard/components/pages/TeamPage'
 import { PipelineProvider } from './dashboard/context/PipelineContext'
 import DashboardLayout from './dashboard/DashboardLayout'
@@ -53,7 +54,8 @@ export default function App() {
         <Route path="team" element={<TeamPage title={dashboardTitleByPage('team')} />} />
         <Route path="account" element={<AccountPage title={dashboardTitleByPage('account')} />} />
         <Route path="statistics" element={<StatisticsPage />} />
-        <Route path="settings" element={<SettingsPage title={dashboardTitleByPage('settings')} />} />
+        <Route path="trash" element={<TrashPage title="Корзина" />} />
+        <Route path="settings" element={<SettingsPage title="Настройки" />} />
       </Route>
     </Routes>
     </>

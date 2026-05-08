@@ -4,8 +4,6 @@ export const DASHBOARD_MENU_ITEMS = [
   { key: 'projects', label: 'Проекты' },
   { key: 'chapters', label: 'Главы' },
   { key: 'team', label: 'Команда' },
-  { key: 'statistics', label: 'Статистика' },
-  { key: 'settings', label: 'Настройки' },
 ] as const
 
 export type DashboardPageKey = (typeof DASHBOARD_MENU_ITEMS)[number]['key']
