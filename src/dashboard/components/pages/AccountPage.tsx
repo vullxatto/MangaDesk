@@ -2,7 +2,7 @@ import { CreditCard, Link2, LogOut, Wallet } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
-import { apiDelete, apiGet, getApiBaseUrl } from '../../../lib/api'
+import { apiDelete, apiGet, apiPatchJson } from '../../../lib/api'
 
 type AccountPageProps = {
   title?: string
@@ -10,12 +10,15 @@ type AccountPageProps = {
 
 export default function AccountPage({ title = 'Личный кабинет' }: AccountPageProps) {
   const navigate = useNavigate()
-  const { logout } = useAuth()
+  const { logout, user, reloadMe } = useAuth()
   const [linkedProviders, setLinkedProviders] = useState<Array<{ provider: 'google' | 'vk'; provider_user_id: string }>>(
     [],
   )
   const [providersLoading, setProvidersLoading] = useState(false)
   const [providersError, setProvidersError] = useState<string | null>(null)
+  const [username, setUsername] = useState('')
+  const [profileSaving, setProfileSaving] = useState(false)
+  const [profileMessage, setProfileMessage] = useState<string | null>(null)
 
   const linkedSet = useMemo(() => new Set(linkedProviders.map((p) => p.provider)), [linkedProviders])
 
@@ -45,15 +48,27 @@ export default function AccountPage({ title = 'Личный кабинет' }: A
     }
   }, [])
 
+  useEffect(() => {
+    setUsername(user?.username ?? '')
+  }, [user?.username])
+
   function handleLogout() {
     logout()
     void navigate('/auth', { replace: true })
   }
 
-  function startLink(provider: 'google' | 'vk') {
-    const api = getApiBaseUrl()
+  async function startLink(provider: 'google' | 'vk') {
+    setProvidersError(null)
     const redirect = `${window.location.origin}/dashboard/account`
-    window.location.href = `${api}/auth/link/${provider}/start?redirect=${encodeURIComponent(redirect)}`
+    try {
+      const res = await apiGet<{ url: string }>(
+        `/auth/link/${provider}/start?redirect=${encodeURIComponent(redirect)}&mode=json`,
+      )
+      if (!res.url) throw new Error('Пустой URL привязки')
+      window.location.href = res.url
+    } catch (e) {
+      setProvidersError(e instanceof Error ? e.message : 'Не удалось начать привязку')
+    }
   }
 
   async function unlink(provider: 'google' | 'vk') {
@@ -62,6 +77,25 @@ export default function AccountPage({ title = 'Личный кабинет' }: A
       await reloadProviders()
     } catch (e) {
       setProvidersError(e instanceof Error ? e.message : 'Не удалось отвязать провайдер')
+    }
+  }
+
+  async function saveName() {
+    const next = username.trim()
+    if (!next) {
+      setProfileMessage('Имя не должно быть пустым')
+      return
+    }
+    setProfileSaving(true)
+    setProfileMessage(null)
+    try {
+      await apiPatchJson('/auth/profile', { username: next })
+      await reloadMe()
+      setProfileMessage('Имя сохранено')
+    } catch (e) {
+      setProfileMessage(e instanceof Error ? e.message : 'Не удалось сохранить имя')
+    } finally {
+      setProfileSaving(false)
     }
   }
 
@@ -75,11 +109,12 @@ export default function AccountPage({ title = 'Личный кабинет' }: A
           <h2>Профиль</h2>
           <label className="account-field">
             <span>Имя пользователя</span>
-            <input className="account-input" defaultValue="Still Rise" />
+            <input className="account-input" value={username} onChange={(e) => setUsername(e.target.value)} />
           </label>
-          <button type="button" className="dashboard-new-btn">
+          <button type="button" className="dashboard-new-btn" onClick={() => void saveName()} disabled={profileSaving}>
             Сохранить имя
           </button>
+          {profileMessage ? <p className="account-muted">{profileMessage}</p> : null}
         </section>
 
         <section className="account-card">
@@ -100,7 +135,7 @@ export default function AccountPage({ title = 'Личный кабинет' }: A
             <button
               type="button"
               className="account-social-btn"
-              onClick={() => (linkedSet.has('google') ? void unlink('google') : startLink('google'))}
+              onClick={() => (linkedSet.has('google') ? void unlink('google') : void startLink('google'))}
               disabled={providersLoading}
             >
               {linkedSet.has('google') ? 'Отвязать Google' : 'Привязать Google'}
@@ -108,7 +143,7 @@ export default function AccountPage({ title = 'Личный кабинет' }: A
             <button
               type="button"
               className="account-social-btn"
-              onClick={() => (linkedSet.has('vk') ? void unlink('vk') : startLink('vk'))}
+              onClick={() => (linkedSet.has('vk') ? void unlink('vk') : void startLink('vk'))}
               disabled={providersLoading}
             >
               {linkedSet.has('vk') ? 'Отвязать VK' : 'Привязать VK'}
