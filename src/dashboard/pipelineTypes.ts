@@ -17,6 +17,7 @@ export interface DashboardProject {
 export interface TeamMember {
   id: string
   name: string
+  role?: string
 }
 
 export interface ChapterRow {
@@ -29,6 +30,7 @@ export interface ChapterRow {
   editorId: string | null
   editorName: string | null
   assignedAt: string | null
+  restoredFromTrash?: boolean
 }
 
 export interface UploadQueueItem {

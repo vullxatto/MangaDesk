@@ -120,7 +120,9 @@ function ChapterTable({
             ) : null}
             <span className="chapters-title">
               <small>{row.title}</small>
-              <strong>№ {row.number}</strong>
+              <strong>
+                № {row.number} {row.restoredFromTrash ? '(восстановленная)' : ''}
+              </strong>
             </span>
             <span>
               <StatusBadge statusCode={row.statusCode} status={label} />

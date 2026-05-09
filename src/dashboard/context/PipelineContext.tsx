@@ -29,6 +29,7 @@ type ChapterApi = {
   editor_id: string | null
   editor_name: string | null
   updated_at: string
+  restored_from_trash?: boolean
 }
 
 type ProjectApi = {
@@ -76,6 +77,7 @@ function mapChapter(c: ChapterApi): ChapterRow {
     editorId: c.editor_id,
     editorName: c.editor_name,
     assignedAt: c.editor_id ? formatNowRuFromIso(c.updated_at) : null,
+    restoredFromTrash: !!c.restored_from_trash,
   }
 }
 
@@ -109,7 +111,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
         apiGet<ChapterApi[]>('/chapters'),
       ])
       setProjects(pj.map((p) => ({ id: p.id, title: p.title, slug: p.slug })))
-      setTeamMembers(tm.map((m) => ({ id: m.id, name: m.username })))
+      setTeamMembers(tm.map((m) => ({ id: m.id, name: m.username, role: m.role })))
       setChapters(ch.map(mapChapter))
     } catch (e) {
       setDashboardError(e instanceof Error ? e.message : 'Ошибка загрузки')
