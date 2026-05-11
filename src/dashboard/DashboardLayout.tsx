@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { usePipeline } from './context/usePipeline'
 import Sidebar from './components/Sidebar'
 import TeamSwitcher from './components/TeamSwitcher'
@@ -16,16 +17,24 @@ function segmentFromPath(pathname: string): string {
 
 export default function DashboardLayout() {
   const { soloMode, dashboardError } = usePipeline()
+  const { teams, currentTeamId } = useAuth()
   const location = useLocation()
 
+  const isPersonalTeam = useMemo(() => {
+    const t = teams.find((x) => x.id === currentTeamId)
+    return !!t?.is_personal
+  }, [teams, currentTeamId])
+
+  const hideTasks = soloMode || isPersonalTeam
+
   const visibleMenuItems = useMemo(
-    () => DASHBOARD_MENU_ITEMS.filter((item) => item.key !== 'tasks' || !soloMode),
-    [soloMode],
+    () => DASHBOARD_MENU_ITEMS.filter((item) => item.key !== 'tasks' || !hideTasks),
+    [hideTasks],
   )
 
   const segment = segmentFromPath(location.pathname)
 
-  if (soloMode && segment === 'tasks') {
+  if (hideTasks && segment === 'tasks') {
     return <Navigate to="/dashboard/review" replace />
   }
 

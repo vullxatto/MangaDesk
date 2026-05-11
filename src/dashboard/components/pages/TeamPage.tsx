@@ -16,10 +16,6 @@ function TeamPage({ title = 'Команда' }) {
   const isPersonalTeam = !!currentTeam?.is_personal
 
   async function handleInvite() {
-    if (isPersonalTeam) {
-      setError('В личную команду нельзя пригласить участника')
-      return
-    }
     setError(null)
     try {
       const res = await apiPostJson<{ invite_url: string }>('/team/invites', {})
@@ -46,17 +42,13 @@ function TeamPage({ title = 'Команда' }) {
     <div className="chapters-page projects-page team-page">
       <div className="dashboard-toolbar projects-page-toolbar team-page-toolbar">
         <h1>{title}</h1>
-        <button
-          type="button"
-          className="dashboard-new-btn"
-          onClick={() => void handleInvite()}
-          disabled={isPersonalTeam}
-        >
-          <UserPlus className="projects-add-project-plus" size={18} strokeWidth={2.5} aria-hidden />
-          <span>Пригласить</span>
-        </button>
+        {!isPersonalTeam ? (
+          <button type="button" className="dashboard-new-btn" onClick={() => void handleInvite()}>
+            <UserPlus className="projects-add-project-plus" size={18} strokeWidth={2.5} aria-hidden />
+            <span>Пригласить</span>
+          </button>
+        ) : null}
       </div>
-      {isPersonalTeam ? <p className="account-muted">В личную команду приглашения недоступны</p> : null}
 
       {error ? <p className="review-queue-field-error">{error}</p> : null}
 

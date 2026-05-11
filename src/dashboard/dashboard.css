@@ -85,6 +85,62 @@
   letter-spacing: 0.06em;
 }
 
+.dashboard-team-switcher-divider {
+  list-style: none;
+  margin: 6px 10px 4px;
+  padding: 0;
+  height: 0;
+  border: 0;
+  border-top: 1px solid rgba(var(--fg-rgb), 0.12);
+}
+
+.dashboard-team-switcher-create-row {
+  list-style: none;
+  margin: 0;
+  padding: 2px 4px 6px;
+}
+
+.dashboard-team-switcher-create {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 10px 8px;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: #1d4ed8;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dashboard-team-switcher-create:hover:not(:disabled) {
+  background: rgba(29, 78, 216, 0.08);
+}
+
+.dashboard-team-switcher-create:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dashboard-team-switcher-create-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(29, 78, 216, 0.14);
+  color: #1d4ed8;
+}
+
+.dashboard-team-switcher-create-label {
+  letter-spacing: 0.01em;
+}
+
 .dashboard-layout {
   flex: 1;
   min-height: 0;
