@@ -41,6 +41,17 @@ export interface UploadQueueItem {
   editorId: string
 }
 
+/** Прогресс пайплайна с экрана «Обзор» (OCR + перевод по всем страницам). */
+export interface OverviewPipelineJob {
+  chapterId: string
+  fileLabel: string
+  state: string
+  total: number
+  done: number
+  phase: string
+  error: string | null
+}
+
 export interface PipelineContextValue {
   soloMode: boolean
   setSoloMode: (value: boolean) => void
@@ -72,6 +83,8 @@ export interface PipelineContextValue {
   removeUploadQueueItem: (id: string) => void
   clearUploadQueue: () => void
   submitUploadQueueItem: (id: string) => Promise<void>
+  overviewJob: OverviewPipelineJob | null
+  dismissOverviewJob: () => void
   stats: { queue: number; inEdit: number; ready: number }
   assignEditor: (chapterIds: string[], editorId: string) => Promise<void>
   updateChapterMetadata: (

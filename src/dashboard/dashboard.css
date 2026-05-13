@@ -392,6 +392,41 @@
   -webkit-touch-callout: none;
 }
 
+.chapter-editor-scan-viewport--multi {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+}
+
+.chapter-editor-scan-stack--page {
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.chapter-editor-page-caption {
+  margin: 0 0 8px;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fg) 52%, transparent);
+}
+
+.chapter-editor-page-badge {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fg) 48%, transparent);
+}
+
+.chapter-editor-page-badge-sep {
+  font-weight: 600;
+}
+
 .chapter-editor-glass {
   position: absolute;
   z-index: 2;
@@ -437,7 +472,7 @@
   min-height: 0;
   width: 100%;
   margin: 0;
-  padding: 2px 0;
+  padding: 0;
   resize: none;
   border: none;
   border-radius: 4px;
@@ -448,14 +483,14 @@
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  font-size: clamp(5px, 14cqmin, 13px);
+  text-align: center;
+  font-size: 10px;
   overflow-wrap: anywhere;
   word-break: break-word;
   hyphens: auto;
   -webkit-hyphens: auto;
-  overflow-y: auto;
+  overflow: hidden;
   cursor: text;
-  -webkit-overflow-scrolling: touch;
 }
 
 .chapter-editor-glass-textarea:focus {
@@ -2751,6 +2786,73 @@ button.tasks-open-btn {
   margin-bottom: 10px;
 }
 
+.review-pipeline-active {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid rgba(var(--fg-rgb), 0.16);
+  border-radius: calc(var(--radius) + 6px);
+  background: color-mix(in srgb, var(--fg) 4%, var(--bg));
+}
+
+.review-pipeline-file {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--fg);
+  word-break: break-all;
+}
+
+.review-pipeline-phase {
+  margin: 0;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fg) 55%, transparent);
+}
+
+.review-pipeline-bar-wrap {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(var(--fg-rgb), 0.1);
+  overflow: hidden;
+}
+
+.review-pipeline-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--fg) 35%, transparent), var(--fg));
+  transition: width 0.35s ease;
+}
+
+.review-pipeline-meta {
+  margin: 0;
+  font-size: 0.65rem;
+  color: color-mix(in srgb, var(--fg) 52%, transparent);
+}
+
+.review-pipeline-dismiss {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 4px 10px;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid rgba(var(--fg-rgb), 0.18);
+  border-radius: var(--radius);
+  background: transparent;
+  cursor: pointer;
+  color: color-mix(in srgb, var(--fg) 60%, transparent);
+}
+
+.review-pipeline-dismiss:hover {
+  color: var(--fg);
+  border-color: rgba(var(--fg-rgb), 0.28);
+}
+
 .review-processing-group.review-panel {
   min-height: auto;
 }
@@ -2913,6 +3015,54 @@ button.tasks-open-btn {
   gap: 12px 16px;
   flex-wrap: wrap;
   width: 100%;
+}
+
+.chapter-editor-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.chapter-editor-pipeline-btn {
+  flex-shrink: 0;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fg) 70%, transparent);
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(var(--fg-rgb), 0.18);
+  background: color-mix(in srgb, var(--fg) 8%, transparent);
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.chapter-editor-pipeline-btn:hover:not(:disabled) {
+  color: var(--fg);
+  border-color: rgba(var(--fg-rgb), 0.26);
+  background: color-mix(in srgb, var(--fg) 11%, transparent);
+}
+
+.chapter-editor-pipeline-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.chapter-editor-banner {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.chapter-editor-banner--error {
+  color: #c44;
+}
+
+.chapter-editor-banner--ok {
+  color: color-mix(in srgb, var(--fg) 62%, transparent);
 }
 
 .chapter-editor-glossary-btn {

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import type {
   ChapterRow,
   DashboardProject,
+  OverviewPipelineJob,
   PipelineContextValue,
   PipelineProviderProps,
   TeamMember,
@@ -101,6 +102,12 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
   const [dashboardLoading, setDashboardLoading] = useState(true)
   const [dashboardError, setDashboardError] = useState<string | null>(null)
 
+  const [overviewJob, setOverviewJob] = useState<OverviewPipelineJob | null>(null)
+
+  const dismissOverviewJob = useCallback(() => {
+    setOverviewJob(null)
+  }, [])
+
   const refreshDashboard = useCallback(async () => {
     setDashboardError(null)
     setDashboardLoading(true)
@@ -124,6 +131,68 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
     if (!authReady) return
     void refreshDashboard()
   }, [authReady, currentTeamId, refreshDashboard])
+
+  type OverviewStatusApi = {
+    state: string
+    total: number
+    done: number
+    phase: string
+    error: string | null
+  }
+
+  useEffect(() => {
+    const cid = overviewJob?.chapterId
+    if (!cid) return
+    let cancelled = false
+    const timerRef = { current: null as ReturnType<typeof setInterval> | null }
+
+    const poll = async () => {
+      try {
+        const s = await apiGet<OverviewStatusApi>(`/chapters/${cid}/overview-pipeline/status`)
+        if (cancelled) return
+        setOverviewJob((prev) => {
+          if (!prev || prev.chapterId !== cid) return prev
+          return {
+            ...prev,
+            state: s.state,
+            total: s.total,
+            done: s.done,
+            phase: s.phase,
+            error: s.error ?? null,
+          }
+        })
+        if (s.state === 'completed') {
+          if (timerRef.current) clearInterval(timerRef.current)
+          timerRef.current = null
+          await refreshDashboard()
+          if (!cancelled) {
+            setTimeout(() => {
+              if (!cancelled) setOverviewJob(null)
+            }, 2200)
+          }
+        } else if (s.state === 'failed') {
+          if (timerRef.current) clearInterval(timerRef.current)
+          timerRef.current = null
+          await refreshDashboard()
+        }
+      } catch {
+        if (!cancelled) {
+          setOverviewJob((prev) =>
+            prev?.chapterId === cid
+              ? { ...prev, state: 'failed', error: 'Не удалось получить статус обработки' }
+              : prev,
+          )
+        }
+      }
+    }
+
+    void poll()
+    timerRef.current = setInterval(() => void poll(), 1400)
+    return () => {
+      cancelled = true
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [overviewJob?.chapterId, refreshDashboard])
 
   const setSoloMode = useCallback(
     (value: boolean) => {
@@ -281,17 +350,24 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
           fd.append('files', item.file)
           await apiPostMultipart(`/chapters/${chapterId}/upload`, fd)
         }
-        if (soloMode) {
-          await apiPatchJson(`/chapters/${chapterId}`, {
-            assigned_editor_id: CURRENT_USER.id,
-            status_code: 'edit',
-          })
-        } else if (item.editorId) {
-          await apiPatchJson(`/chapters/${chapterId}`, {
-            assigned_editor_id: item.editorId,
-            status_code: 'edit',
-          })
-        }
+        await apiPatchJson(`/chapters/${chapterId}`, { status_code: 'ai' })
+        await apiPostJson(`/chapters/${chapterId}/overview-pipeline/start`, {
+          solo_mode: soloMode,
+          assigned_editor_id: soloMode
+            ? CURRENT_USER.id
+            : item.editorId?.trim()
+              ? item.editorId
+              : null,
+        })
+        setOverviewJob({
+          chapterId,
+          fileLabel: item.file.name,
+          state: 'running',
+          total: 0,
+          done: 0,
+          phase: 'queued',
+          error: null,
+        })
         await refreshDashboard()
         setUploadQueue((prev) => prev.filter((q) => q.id !== id))
       } catch (e) {
@@ -468,6 +544,8 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       removeUploadQueueItem,
       clearUploadQueue,
       submitUploadQueueItem,
+      overviewJob,
+      dismissOverviewJob,
       stats,
       assignEditor,
       updateChapterMetadata,
@@ -501,6 +579,8 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       removeUploadQueueItem,
       clearUploadQueue,
       submitUploadQueueItem,
+      overviewJob,
+      dismissOverviewJob,
       stats,
       assignEditor,
       updateChapterMetadata,

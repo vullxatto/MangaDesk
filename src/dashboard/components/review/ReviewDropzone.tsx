@@ -467,7 +467,10 @@ function ReviewDropzone() {
           Перетащите сюда архив <strong>.zip</strong> / <strong>.rar</strong> или отдельные файлы{' '}
           <strong>.png</strong> / <strong>.psd</strong> (и др. изображения)
         </p>
-        <p className="review-dropzone-hint">Файлы отправляются на API после подтверждения в очереди</p>
+        <p className="review-dropzone-hint">
+          После подтверждения в модальном окне файл уходит на сервер; OCR и перевод запускаются сразу, прогресс — ниже в
+          блоке «Обработка». Глава появится во вкладке «Главы», когда всё будет готово.
+        </p>
       </div>
 
       {uploadQueue.length > 0 && (

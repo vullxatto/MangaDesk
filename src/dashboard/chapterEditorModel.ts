@@ -1,5 +1,5 @@
 /**
- * Фрагмент текста главы (ответ бэкенда).
+ * Фрагмент текста главы (ответ бэкенда GET /chapters/:id/editor).
  * bbox — четыре целых: [left, top, right, bottom] в пикселях исходного скана.
  */
 export interface ChapterTranslationSlice {
@@ -8,8 +8,34 @@ export interface ChapterTranslationSlice {
   type: string
   text: string
   bbox: [number, number, number, number]
-  confidence?: number
+  confidence?: number | null
   translated: string
+  /** Индекс страницы (0-based), для многостраничного translation_json v2 */
+  page_order?: number
+}
+
+export interface ChapterEditorPagePayload {
+  order_index: number
+  storage_key: string
+  image_width: number
+  image_height: number
+  slices: ChapterTranslationSlice[]
+}
+
+export interface ChapterEditorApiResponse {
+  chapter_number: number
+  chapter_title: string | null
+  project_id: string | null
+  layout?: 'flat' | 'multi'
+  storage_key: string | null
+  image_width: number | null
+  image_height: number | null
+  pages?: ChapterEditorPagePayload[]
+  slices: ChapterTranslationSlice[]
+}
+
+export interface ChapterPreviewPipelineResponse extends ChapterEditorApiResponse {
+  ok: boolean
 }
 
 export function bboxToPercentStyle(
