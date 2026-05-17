@@ -366,6 +366,51 @@
   min-height: 0;
 }
 
+.chapter-editor-right-toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(var(--fg-rgb), 0.12);
+  background: color-mix(in srgb, var(--fg) 3%, var(--bg));
+}
+
+.chapter-editor-psd-btn {
+  flex-shrink: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fg) 55%, transparent);
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(var(--fg-rgb), 0.14);
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.chapter-editor-psd-btn:hover:not(:disabled) {
+  color: var(--fg);
+  border-color: rgba(var(--fg-rgb), 0.22);
+  background: color-mix(in srgb, var(--fg) 7%, transparent);
+}
+
+.chapter-editor-psd-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.chapter-editor-psd-banner {
+  margin: 0;
+  padding: 6px 10px 8px;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
 .chapter-editor-scan-viewport {
   flex: 1;
   min-height: 0;

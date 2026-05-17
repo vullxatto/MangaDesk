@@ -1,4 +1,10 @@
-FROM node:22-alpine AS build
+# Базовые образы с mirror.gcr.io/library/... — кэш Docker Hub в Google Artifact Registry;
+# при TLS timeout до registry-1.docker.io можно переопределить: docker compose build --build-arg NODE_IMAGE=node:22-alpine web
+# Оба ARG до первого FROM — иначе второй FROM не видит NGINX_IMAGE (BuildKit).
+ARG NODE_IMAGE=mirror.gcr.io/library/node:22-alpine
+ARG NGINX_IMAGE=mirror.gcr.io/library/nginx:1.27-alpine
+
+FROM ${NODE_IMAGE} AS build
 
 WORKDIR /app
 
@@ -14,7 +20,7 @@ ENV VITE_TEAM_ID=$VITE_TEAM_ID
 
 RUN npm run build
 
-FROM nginx:1.27-alpine
+FROM ${NGINX_IMAGE}
 
 COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf

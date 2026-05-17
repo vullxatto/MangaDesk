@@ -78,6 +78,19 @@ export async function apiPatchJson<T>(path: string, body: unknown): Promise<T> {
   return parseJson<T>(res)
 }
 
+export async function apiPutJson<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${baseUrl}${path}`, {
+    method: 'PUT',
+    headers: headers({ 'Content-Type': 'application/json' }),
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const t = await res.text()
+    throw new ApiError(t || res.statusText, res.status, t)
+  }
+  return parseJson<T>(res)
+}
+
 export async function apiPostMultipart(path: string, form: FormData): Promise<unknown> {
   const res = await fetch(`${baseUrl}${path}`, {
     method: 'POST',
@@ -104,6 +117,40 @@ export function apiFileUrl(storageKey: string): string {
     .map(encodeURIComponent)
     .join('/')
   return `${baseUrl}/files/${path}`
+}
+
+/** Скачивание файла с JWT / X-Team-Id (надёжнее, чем window.open — не блокируется как всплывающее окно). */
+export async function apiDownloadFile(storageKey: string, suggestedName?: string): Promise<void> {
+  const url = apiFileUrl(storageKey)
+  const h = new Headers()
+  const token = getAccessToken()
+  if (token) h.set('Authorization', `Bearer ${token}`)
+  const team = getTeamId() || teamIdEnv
+  if (team) h.set('X-Team-Id', team)
+  h.set('Accept', '*/*')
+
+  const res = await fetch(url, { headers: h })
+  if (!res.ok) {
+    const t = await res.text()
+    throw new ApiError(t || res.statusText, res.status, t)
+  }
+  const blob = await res.blob()
+  const name =
+    suggestedName?.trim() ||
+    storageKey.split('/').filter((p) => p && p !== '..').pop() ||
+    'download'
+  const objectUrl = URL.createObjectURL(blob)
+  try {
+    const a = document.createElement('a')
+    a.href = objectUrl
+    a.download = name
+    a.rel = 'noopener'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+  } finally {
+    URL.revokeObjectURL(objectUrl)
+  }
 }
 
 export function getApiBaseUrl(): string {

@@ -18,7 +18,7 @@ import {
   type ChapterEditorPagePayload,
   type ChapterTranslationSlice,
 } from '../../chapterEditorModel'
-import { apiFileUrl, apiGet } from '../../../lib/api'
+import { apiDownloadFile, apiFileUrl, apiGet, apiPostJson, apiPutJson } from '../../../lib/api'
 import scanPlaceholder from '../../../assets/projects - titles/title.png'
 
 function scrollTableRowToCenterClamped(
@@ -309,6 +309,8 @@ export default function ChapterEditorPage() {
     initialSource: '',
   })
   const [glossaryModalInstance, setGlossaryModalInstance] = useState(0)
+  const [psdExporting, setPsdExporting] = useState(false)
+  const [psdBanner, setPsdBanner] = useState<string | null>(null)
 
   const setRowRef = useCallback((rowId: number, el: HTMLTableRowElement | null) => {
     if (el) rowRefs.current.set(rowId, el)
@@ -411,6 +413,68 @@ export default function ChapterEditorPage() {
     },
     [resolvedProjectId],
   )
+
+  const handleDownloadPsd = useCallback(async () => {
+    if (!chapterId) return
+    setPsdBanner(null)
+    setPsdExporting(true)
+    try {
+      await apiPutJson(`/chapters/${chapterId}/editor/translation`, {
+        slices: slices.map((s) => ({ id: s.id, translated: s.translated })),
+      })
+      const start = await apiPostJson<{ job_id: string }>(
+        `/chapters/${chapterId}/photopea-export/start`,
+        {},
+      )
+      const jid = start.job_id
+      // GIMP первый запуск занимает до 3–5 минут; даём 12 минут с запасом.
+      const TIMEOUT_MS = 720_000
+      const startedAt = Date.now()
+      const deadline = startedAt + TIMEOUT_MS
+
+      type JobSt = {
+        state: string
+        error?: string | null
+        storage_key?: string | null
+      }
+      let last: JobSt = { state: 'queued' }
+
+      while (Date.now() < deadline) {
+        last = await apiGet<JobSt>(`/chapters/${chapterId}/photopea-export/jobs/${jid}`)
+        if (last.state === 'done' || last.state === 'failed') break
+
+        const elapsed = Math.floor((Date.now() - startedAt) / 1000)
+        const stateRu = last.state === 'running' ? 'выполняется' : 'в очереди'
+        setPsdBanner(`Экспорт PSD ${stateRu}… ${elapsed}с`)
+
+        // Опрос каждые 2 с — снижаем нагрузку на API
+        await new Promise<void>((r) => setTimeout(r, 2000))
+      }
+
+      if (last.state === 'done' && last.storage_key) {
+        try {
+          await apiDownloadFile(last.storage_key, 'chapter.psd')
+          setPsdBanner('Файл PSD сохранён в папку загрузок браузера.')
+        } catch {
+          window.open(apiFileUrl(last.storage_key), '_blank', 'noopener,noreferrer')
+          setPsdBanner('Открыта вкладка с файлом — при блокировке загрузок проверьте настройки браузера.')
+        }
+      } else if (last.state === 'failed') {
+        setPsdBanner(last.error?.trim() || 'Не удалось собрать PSD.')
+      } else {
+        // Превышен лимит ожидания на стороне браузера — сервер может ещё работать
+        setPsdBanner(
+          `Экспорт PSD занял больше ${Math.round(TIMEOUT_MS / 60000)} мин. ` +
+            'Обновите страницу и попробуйте снова; при первом запуске GIMP инициализируется дольше обычного.',
+        )
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Ошибка запроса'
+      setPsdBanner(msg)
+    } finally {
+      setPsdExporting(false)
+    }
+  }, [chapterId, slices])
 
   const applyEditorPayload = useCallback((data: ChapterEditorApiResponse) => {
     setEditorHead({
@@ -581,6 +645,19 @@ export default function ChapterEditorPage() {
           className="chapter-editor-pane chapter-editor-pane--right"
           onContextMenu={onGlossaryPaneContextMenu}
         >
+          <div className="chapter-editor-right-toolbar">
+            <button
+              type="button"
+              className="chapter-editor-psd-btn"
+              disabled={editorLoading || psdExporting || !chapterId}
+              onClick={() => void handleDownloadPsd()}
+            >
+              {psdExporting ? 'Сборка PSD…' : 'Скачать PSD'}
+            </button>
+          </div>
+          {psdBanner ? (
+            <p className="chapter-editor-banner chapter-editor-banner--ok chapter-editor-psd-banner">{psdBanner}</p>
+          ) : null}
           <div
             className={
               layout === 'multi'
