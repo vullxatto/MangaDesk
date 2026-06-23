@@ -10,11 +10,11 @@ import {
 } from 'lucide-react'
 import { useId, useState } from 'react'
 import { Link } from 'react-router-dom'
-import catImage from '../assets/images/cat.png'
-import cat2Image from '../assets/images/cat2.png'
-import cat3Image from '../assets/images/cat3.png'
-import landingEng from '../assets/images/landing_eng.jpg'
-import landingRu from '../assets/images/landing_ru.jpg'
+import catImage from '../assets/images/Features/cat.avif'
+import cat2Image from '../assets/images/Features/cat2.avif'
+import cat3Image from '../assets/images/Features/cat3.avif'
+import landingEng from '../assets/images/Features/landing_eng.jpg'
+import landingRu from '../assets/images/Features/landing_ru.jpg'
 import { BeforeAfterSlider } from '../components/BeforeAfterSlider'
 
 const FEATURE_BEFORE_SRC = landingRu

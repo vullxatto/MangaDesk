@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { ArrowBigUpDash, CheckLine, Sparkles, type LucideIcon } from 'lucide-react'
-import boardPng from '../assets/images/board.png'
+import boardAvif from '../assets/images/HowItWorks/board.avif'
 
 type Step = {
   id: string
@@ -76,7 +76,7 @@ export function HowItWorks() {
             </article>
           ))}
           <div className="how-it-works__board" aria-hidden>
-            <img className="how-it-works__board-img" src={boardPng} alt="" loading="lazy" decoding="async" />
+            <img className="how-it-works__board-img" src={boardAvif} alt="" loading="lazy" decoding="async" />
           </div>
         </div>
       </div>

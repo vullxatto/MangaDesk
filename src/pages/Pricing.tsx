@@ -6,9 +6,9 @@ import {
   Ticket,
   Users,
 } from 'lucide-react'
-import girlImage from '../assets/images/girl.png'
-import portal1Image from '../assets/images/portal1.png'
-import portal2Image from '../assets/images/portal2.png'
+import girlImage from '../assets/images/Pricing/girl.avif'
+import portal1Image from '../assets/images/Pricing/portal1.avif'
+import portal2Image from '../assets/images/Pricing/portal2.avif'
 
 export function Pricing() {
   return (

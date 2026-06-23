@@ -1,8 +1,8 @@
 import { Cloud, Heart, Maximize2, Send, Settings, type LucideIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { HeroSparkles } from '../components/HeroSparkles'
-import cornerCatPng from '../assets/images/corner_cat.png'
-import heroArt from '../assets/images/character1.png'
+import cornerCatAvif from '../assets/images/Landing/corner_cat.avif'
+import heroArt from '../assets/images/Landing/character1.avif'
 import pointsSvg from '../assets/svg/Points.svg'
 
 const toolButtons: Array<{ label: string; Icon: LucideIcon }> = [
@@ -70,7 +70,7 @@ export function Landing() {
         </div>
       </div>
       <div className="landing-hero__corner-cat" aria-hidden>
-        <img src={cornerCatPng} alt="" className="landing-hero__corner-cat-img" draggable={false} />
+        <img src={cornerCatAvif} alt="" className="landing-hero__corner-cat-img" draggable={false} />
       </div>
     </section>
   )

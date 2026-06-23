@@ -1,5 +1,5 @@
-import landingEng from '../assets/images/landing_eng.jpg'
-import landingRu from '../assets/images/landing_ru.jpg'
+import landingEng from '../assets/images/Features/landing_eng.jpg'
+import landingRu from '../assets/images/Features/landing_ru.jpg'
 import { Layout } from '../components/Layout'
 import { BeforeAfterSlider } from '../components/BeforeAfterSlider'
 

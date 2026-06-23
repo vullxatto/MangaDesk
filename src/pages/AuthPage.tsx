@@ -1,9 +1,9 @@
 import { Sun } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import housePng from '../assets/images/house.png'
-import kittyPng from '../assets/images/kitty.png'
-import treePng from '../assets/images/tree.png'
+import houseAvif from '../assets/images/AuthPage/house.avif'
+import kittyAvif from '../assets/images/AuthPage/kitty.avif'
+import treeAvif from '../assets/images/AuthPage/tree.avif'
 import googleIcon from '../assets/svg/Google.svg'
 import vkIcon from '../assets/svg/VK.svg'
 import { PageScaler } from '../components/PageScaler'
@@ -46,10 +46,10 @@ export function AuthPage() {
           <main className="app-main">
             <section className="landing-hero auth-landing" aria-label="Вход и регистрация">
               <div className="auth-landing__bg-tree" aria-hidden>
-                <img className="auth-landing__tree-img" src={treePng} alt="" loading="lazy" decoding="async" />
+                <img className="auth-landing__tree-img" src={treeAvif} alt="" loading="lazy" decoding="async" />
               </div>
               <div className="auth-landing__bg-house" aria-hidden>
-                <img className="auth-landing__house-img" src={housePng} alt="" loading="lazy" decoding="async" />
+                <img className="auth-landing__house-img" src={houseAvif} alt="" loading="lazy" decoding="async" />
               </div>
               <div className="content-window auth-landing__panel">
                 <span className="btn-press-wrap btn-press-wrap--design window-close-wrap auth-landing__theme">
@@ -160,7 +160,7 @@ export function AuthPage() {
                   </div>
                 </div>
                 <div className="auth-landing__kitty" aria-hidden>
-                  <img className="auth-landing__kitty-img" src={kittyPng} alt="" loading="lazy" decoding="async" />
+                  <img className="auth-landing__kitty-img" src={kittyAvif} alt="" loading="lazy" decoding="async" />
                 </div>
               </div>
             </section>

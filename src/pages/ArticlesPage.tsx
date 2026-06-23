@@ -1,9 +1,9 @@
 import { Eraser, Info, Languages, Type } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
-import mangaPng from '../assets/images/manga.png'
-import meme1Png from '../assets/images/meme1.png'
-import meme2Png from '../assets/images/meme2.png'
-import meme3Jpg from '../assets/images/meme3.jpg'
+import mangaAvif from '../assets/images/ArticlesPage/manga.avif'
+import meme1Avif from '../assets/images/ArticlesPage/meme1.avif'
+import meme2Avif from '../assets/images/ArticlesPage/meme2.avif'
+import meme3Avif from '../assets/images/ArticlesPage/meme3.avif'
 import arrowSvg from '../assets/svg/arrow.svg'
 import { Layout } from '../components/Layout'
 
@@ -19,6 +19,8 @@ const TOC_SUBSECTION_IDS = [
   'translators-consistency',
   'translators-adaptations-sounds',
   'translators-work-table',
+  'translators-extract-text',
+  'translators-how-to-translate',
 ] as const
 type TocSubsectionId = (typeof TOC_SUBSECTION_IDS)[number]
 
@@ -130,10 +132,12 @@ function ArticlesToc({
         <div className="articles-toc-children">
           <a href="#translators-basics" className={active === 'translators' && activeSubsection === 'translators-basics' ? 'is-active' : ''}>Базовый минимум</a>
           <a href="#translators-meaning" className={active === 'translators' && activeSubsection === 'translators-meaning' ? 'is-active' : ''}>Смысл, а не слова</a>
-          <a href="#translators-repetitions-synonyms" className={active === 'translators' && activeSubsection === 'translators-repetitions-synonyms' ? 'is-active' : ''}>Повторения и синонимы</a>
-          <a href="#translators-consistency" className={active === 'translators' && activeSubsection === 'translators-consistency' ? 'is-active' : ''}>Цифры, имена и единообразие</a>
+          <a href="#translators-repetitions-synonyms" className={active === 'translators' && activeSubsection === 'translators-repetitions-synonyms' ? 'is-active' : ''}>Повторения <br />и синонимы</a>
+          <a href="#translators-consistency" className={active === 'translators' && activeSubsection === 'translators-consistency' ? 'is-active' : ''}>Цифры, имена <br />и единообразие</a>
           <a href="#translators-adaptations-sounds" className={active === 'translators' && activeSubsection === 'translators-adaptations-sounds' ? 'is-active' : ''}>Отсылки, адаптации и звуки</a>
           <a href="#translators-work-table" className={active === 'translators' && activeSubsection === 'translators-work-table' ? 'is-active' : ''}>Файл с переводом</a>
+          <a href="#translators-extract-text" className={active === 'translators' && activeSubsection === 'translators-extract-text' ? 'is-active' : ''}>Как вытащить текст со сканов?</a>
+          <a href="#translators-how-to-translate" className={active === 'translators' && activeSubsection === 'translators-how-to-translate' ? 'is-active' : ''}>Как переводить?</a>
         </div>
 
         <a
@@ -308,7 +312,7 @@ export function ArticlesPage() {
               зависит судьба всего проекта — поэтому давайте перейдём к конкретике.
               </p>
               <img
-                src={meme1Png}
+                src={meme1Avif}
                 alt="Meme"
                 style={{
                   opacity: 0.9,
@@ -391,7 +395,7 @@ export function ArticlesPage() {
                 В общем, КАПС наш друг.
               </p>
               <img
-                src={meme2Png}
+                src={meme2Avif}
                 alt="Meme 2"
                 style={{
                   opacity: 0.9,
@@ -413,7 +417,7 @@ export function ArticlesPage() {
               </p>
               <div className="article-mini-card" style={{ margin: '12px 0 18px', padding: 0, overflow: 'hidden' }}>
                 <img
-                  src={mangaPng}
+                  src={mangaAvif}
                   alt="Порядок чтения облачков"
                   style={{
                     opacity: 0.9,
@@ -559,7 +563,7 @@ export function ArticlesPage() {
               <h4 className="article-block__subtitle" id="translators-consistency">Цифры, имена и единообразие</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '14px', alignItems: 'center', marginBottom: '12px' }}>
                 <img
-                  src={meme3Jpg}
+                  src={meme3Avif}
                   alt="Пример про числа и названия"
                   style={{
                     opacity: 0.9,
@@ -732,7 +736,7 @@ export function ArticlesPage() {
                   </div>
                 </div>
               </div>
-              <h4 className="article-block__subtitle" id="translators-work-table">Как вытащить текст со сканов?</h4>
+              <h4 className="article-block__subtitle" id="translators-extract-text">Как вытащить текст со сканов?</h4>
               <p>
                 Необходимо собрать оригинальный текст в колонку «Оригинал», для этого существует несколько способов.
               </p>
@@ -756,13 +760,20 @@ export function ArticlesPage() {
                </a>: она совмещает скриншот
                 и распознавание в один шаг. С декоративными или нестандартными
                 шрифтами справляется плохо, но для типового текста — отличная штука. Также можно отправлять скрины
-                в нейронки (Claude, Gemini и т.д.) — они хорошо распознают текст, в том числе извращённые шрифты.
+                в нейронки ({""}
+                   <a href="https://claude.ai" target="_blank" rel="noopener noreferrer">
+                     Claude
+                   </a>{""}
+                   ,{" "}
+                   <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">
+                     Gemini
+                   </a> и т.д.) — они хорошо распознают текст, в том числе извращённые шрифты.
               </p>
               <p>
                 Но что бы Вы ни использовали, всегда проверяйте результат. Один пропущенный или перепутанный символ в слове — и перевод
                 поедет.
               </p>
-              <h5 className="article-mini-card__title" style={{ marginTop: 'var(--space-4)' }}>Как переводить?</h5>
+              <h4 className="article-block__subtitle" id="translators-how-to-translate">Как переводить?</h4>
               <p>
                 Когда «Оригинал» собран, переходим к «Переводу».
               </p>
@@ -774,15 +785,15 @@ export function ArticlesPage() {
               </p>
               <p>
                  Вручную через сторонние сервисы тоже можно. Копируете содержимое «Оригинала» (не весь столбец
-                   разом, а по несколько фраз), отправляете в нейронку (хорошо справляются{" "}
+                   разом, а по несколько фраз), отправляете в нейронку ({""}
                    <a href="https://claude.ai" target="_blank" rel="noopener noreferrer">
                      Claude
-                   </a>{" "}
-                   и{" "}
+                   </a>{""}
+                   ,{" "}
                    <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">
                      Gemini
-                   </a>
-                   ) с просьбой
+                   </a> и т.д.)
+                   с просьбой
                    перевести на русский. Полученный перевод можно прогнать через вторую для «более литературного слога», а потом —
                    корректировать под правила, которые мы разобрали выше.
                  </p>

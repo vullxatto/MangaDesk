@@ -1,5 +1,5 @@
 import { Mail, Send } from 'lucide-react'
-import annaImage from '../assets/images/anna.png'
+import annaImage from '../assets/images/Footer/anna.avif'
 import { reloadHome } from '../utils/reloadHome'
 
 export function Footer() {

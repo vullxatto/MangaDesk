@@ -33,7 +33,7 @@
   --fg-rgb: 61, 61, 61;
   --bg-main: color-mix(in srgb, var(--bg) 92%, var(--fg) 8%);
   --wallpaper-layer: linear-gradient(rgba(var(--bg-rgb), 0.65), rgba(var(--bg-rgb), 0.65)),
-    url('./assets/images/background.jpg');
+    url('./assets/images/HomePage/background.avif');
   --paper-size: auto, 378px 378px;
   --container-max: 1300px;
   --hero-comic-shadow-x: 8px;
@@ -2257,6 +2257,25 @@ html.viewport-le-1400 .how-it-works__panel {
 
 .article-block p + p {
   margin-top: var(--space-3);
+}
+
+.article-block a {
+  color: color-mix(in srgb, var(--purple) 88%, var(--fg));
+  text-decoration-color: color-mix(in srgb, var(--purple) 40%, transparent);
+  transition:
+    color 0.15s ease,
+    text-decoration-color 0.15s ease;
+}
+
+.article-block a:hover,
+.article-block a:focus-visible {
+  color: color-mix(in srgb, var(--purple) 95%, var(--fg));
+  text-decoration-color: color-mix(in srgb, var(--purple) 65%, transparent);
+}
+
+.article-block a:active,
+.article-block a:visited {
+  color: color-mix(in srgb, var(--purple) 72%, var(--fg));
 }
 
 .article-note {
