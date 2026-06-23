@@ -2040,6 +2040,7 @@ html.viewport-le-1400 .how-it-works__panel {
 .articles-page-main {
   --articles-toc-rail-width: 250px;
   --articles-toc-rail-gap: var(--space-4);
+  --articles-toc-sticky-top: calc(var(--space-2) + 60px);
   width: 100%;
   max-width: var(--container-max);
   margin: 0 auto;
@@ -2056,16 +2057,23 @@ html.viewport-le-1400 .how-it-works__panel {
 
 .articles-layout__toc-rail {
   position: sticky;
-  top: calc(var(--space-2) + 60px);
+  top: var(--articles-toc-sticky-top);
+  max-height: calc(100vh - var(--articles-toc-sticky-top) - var(--space-4));
   width: var(--articles-toc-rail-width);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
   align-self: start;
+  overflow: hidden;
+  padding-bottom: var(--space-2);
 }
 
 .articles-layout__toc {
   transition: opacity 0.16s ease;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
 }
 
 .articles-sidebar {
@@ -2076,6 +2084,11 @@ html.viewport-le-1400 .how-it-works__panel {
   border-radius: 0;
   box-shadow: none;
   background: transparent;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
 }
 
 .articles-sidebar-title {
@@ -2086,12 +2099,25 @@ html.viewport-le-1400 .how-it-works__panel {
   text-transform: uppercase;
   color: rgba(var(--fg-rgb), 0.55);
   margin-bottom: var(--space-2);
+  flex-shrink: 0;
 }
 
 .articles-toc {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: var(--space-1);
+}
+
+.articles-toc::-webkit-scrollbar {
+  display: none;
 }
 
 .articles-toc a {

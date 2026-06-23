@@ -1,5 +1,5 @@
 import { Eraser, Info, Languages, Type } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import mangaAvif from '../assets/images/ArticlesPage/manga.avif'
 import meme1Avif from '../assets/images/ArticlesPage/meme1.avif'
 import meme2Avif from '../assets/images/ArticlesPage/meme2.avif'
@@ -96,6 +96,19 @@ function useActiveSubsection(ids: readonly TocSubsectionId[]) {
   return activeSubsection
 }
 
+function scrollTocToSection(nav: HTMLElement, sectionId: SectionId, smooth: boolean) {
+  if (sectionId === 'general') {
+    nav.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' })
+    return
+  }
+
+  const link = nav.querySelector<HTMLElement>(`a.articles-toc-main[href="#${sectionId}"]`)
+  if (!link) return
+
+  const top = link.getBoundingClientRect().top - nav.getBoundingClientRect().top + nav.scrollTop
+  nav.scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' })
+}
+
 function ArticlesToc({
   active,
   activeSubsection,
@@ -105,10 +118,34 @@ function ArticlesToc({
   activeSubsection: TocSubsectionId | null
   onNavigate: (id: SectionId) => void
 }) {
+  const tocNavRef = useRef<HTMLElement>(null)
+  const prevActiveRef = useRef<SectionId | null>(null)
+
+  useLayoutEffect(() => {
+    const nav = tocNavRef.current
+    if (nav) nav.scrollTop = 0
+  }, [])
+
+  useEffect(() => {
+    const nav = tocNavRef.current
+    if (!nav) return
+
+    if (prevActiveRef.current === null) {
+      prevActiveRef.current = active
+      nav.scrollTop = 0
+      return
+    }
+
+    if (prevActiveRef.current === active) return
+
+    prevActiveRef.current = active
+    scrollTocToSection(nav, active, true)
+  }, [active])
+
   return (
     <aside className="articles-sidebar" aria-label="Навигация по статье">
       <p className="articles-sidebar-title">Содержание</p>
-      <nav className="articles-toc" aria-label="Разделы руководства">
+      <nav ref={tocNavRef} className="articles-toc" aria-label="Разделы руководства">
         <a
           href="#general"
           className={`articles-toc-main${active === 'general' ? ' is-active' : ''}`}
