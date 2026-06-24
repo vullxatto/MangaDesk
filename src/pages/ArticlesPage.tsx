@@ -5,6 +5,7 @@ import meme1Avif from '../assets/images/ArticlesPage/meme1.avif'
 import meme2Avif from '../assets/images/ArticlesPage/meme2.avif'
 import meme3Avif from '../assets/images/ArticlesPage/meme3.avif'
 import meme4Avif from '../assets/images/ArticlesPage/meme4.avif'
+import meme5Avif from '../assets/images/ArticlesPage/meme5.avif'
 import translatorsGlossary1Avif from '../assets/images/ArticlesPage/Translators_Glossary1.avif'
 import translatorsGlossary2Avif from '../assets/images/ArticlesPage/Translators_Glossary2.avif'
 import translationChapter1Avif from '../assets/images/ArticlesPage/Translation_Chapter1.avif'
@@ -981,6 +982,20 @@ export function ArticlesPage() {
                 решений: какой размер шрифта, где сделать перенос, какую форму придать тексту, нужна ли обводка. От суммы
                 этих решений зависит, будет глава выглядеть профессионально или любительски.
               </p>
+              <img
+                src={meme5Avif}
+                alt="Meme"
+                style={{
+                  opacity: 0.9,
+                  display: 'block',
+                  width: '600px',
+                  maxWidth: '100%',
+                  height: 'auto',
+                  margin: '12px auto 18px',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(255, 255, 255, 0.22)',
+                }}
+              />
               <h4 className="article-block__subtitle" id="typers-bubble-layout">Компоновка текста в облачке</h4>
               <p>
                 Начнём с основы — как текст должен сидеть внутри облачка.
