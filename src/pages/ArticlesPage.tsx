@@ -5,8 +5,20 @@ import meme1Avif from '../assets/images/ArticlesPage/meme1.avif'
 import meme2Avif from '../assets/images/ArticlesPage/meme2.avif'
 import meme3Avif from '../assets/images/ArticlesPage/meme3.avif'
 import meme4Avif from '../assets/images/ArticlesPage/meme4.avif'
+import translatorsGlossary1Avif from '../assets/images/ArticlesPage/Translators_Glossary1.avif'
+import translatorsGlossary2Avif from '../assets/images/ArticlesPage/Translators_Glossary2.avif'
+import translationChapter1Avif from '../assets/images/ArticlesPage/Translation_Chapter1.avif'
+import translationChapter2Avif from '../assets/images/ArticlesPage/Translation_Chapter2.avif'
 import arrowSvg from '../assets/svg/arrow.svg'
+import { ArticleImageCarousel } from '../components/ArticleImageCarousel'
 import { Layout } from '../components/Layout'
+
+const GOOGLE_DOCS_CAROUSEL_SLIDES = [
+  { src: translatorsGlossary1Avif, alt: 'Глоссарий в google-документе — персонажи' },
+  { src: translatorsGlossary2Avif, alt: 'Глоссарий в google-документе — термины' },
+  { src: translationChapter1Avif, alt: 'Таблица перевода главы в google-документе' },
+  { src: translationChapter2Avif, alt: 'Шаблон таблицы перевода в google-документе' },
+] as const
 
 const SECTION_IDS = ['general', 'translators', 'cleaners', 'typers'] as const
 type SectionId = (typeof SECTION_IDS)[number]
@@ -710,82 +722,38 @@ export function ArticlesPage() {
               </p>
               <h4 className="article-block__subtitle" id="translators-work-table">Файл с переводом</h4>
               <p>
-                Любой перевод начинается с файла, содержащего две основные сущности:
-                глоссарий проекта <br />и вкладки (таблицы) под каждую главу. В MangaDesk такая штука заполняется и обновляется автоматически
-                при создании проекта, с возможностью ручных правок. Раньше мы использовали google-таблицы, поскольку они
+                Любой перевод проекта начинается с файла, содержащего две основные сущности:
+                глоссарий <br />и вкладки (таблицы) под каждую главу. В MangaDesk такая штука заполняется и обновляется автоматически
+                при создании проекта, с возможностью ручных правок. Раньше мы использовали google-документы, поскольку они
                 поддерживают совместное редактирование.
-              </p>
+                </p>
               <p>
                 Глоссарий — это Ваша личная карта проекта. Сюда выписываем всё, что должно
                 сохраняться <br />от главы к главе (на оригинале и в переводе):
-                имена персонажей, названия мест, организаций, артефактов, техник и так далее.
+                имена персонажей, названия мест, организаций, артефактов, техник и так далее. опционально, можно добавлять
+                к оригинальному тексту <br />ещё и картинку, для персонажей например.
               </p>
               <p>
                 Если Вы переводите не с первой главы, а подхватываете проект после других переводчиков, прочитайте уже выпущенные главы
-                и заполните глоссарий до того, как сядете за свою.
-               </p> 
-               <p>
+                и заполните глоссарий до того, как сядете за свою.            
                 Это спасёт от ситуации, когда в новой главе
                 у героя внезапно меняется имя или техника называется иначе, чем в предыдущих десяти.
               </p>
-              <p>                
-                Пример глоссария:
-              </p>
-              <div className="article-mini-card" style={{ width: '100%', margin: '10px 0 16px' }}>
-                <div style={{ overflowX: 'auto' }}>
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr 1fr',
-                      gap: '12px 16px',
-                      fontSize: '14px',
-                      color: 'var(--fg)',
-                    }}
-                  >
-                    <p style={{ margin: 0, fontWeight: 700, textTransform: 'uppercase', color: 'rgba(var(--fg-rgb), 1)' }}>Оригинал</p>
-                    <p style={{ margin: 0, fontWeight: 700, textTransform: 'uppercase', color: 'rgba(var(--fg-rgb), 1)' }}>Перевод</p>
-                    <p style={{ margin: 0, fontWeight: 700, textTransform: 'uppercase', color: 'rgba(var(--fg-rgb), 1)' }}>Комментарий</p>
-                    <p style={{ margin: 0 }}>ケイタロウ</p>
-                    <p style={{ margin: 0 }}>Кейтаро</p>
-                    <p style={{ margin: 0 }}>главный герой</p>
-                    <p style={{ margin: 0 }}>七つの風の剣</p>
-                    <p style={{ margin: 0 }}>Меч Семи Ветров</p>
-                    <p style={{ margin: 0 }}>артефакт героя</p>
-                    <p style={{ margin: 0 }}>桜高校</p>
-                    <p style={{ margin: 0 }}>старшая школа «Сакура»</p>
-                    <p style={{ margin: 0 }}>школа главного героя</p>
-                  </div>
-                </div>
-              </div>
               <p>
                 Под каждую главу — отдельная вкладка (таблица) с двумя основными колонками: Оригинал (текст из облачков и опционально звуки
                 на исходном языке) и Перевод (Ваша русская версия).
               </p>
-              <p>
-                Пример таблицы перевода главы:
+              <p>                
+                Пример для google-документов:
               </p>
-              <div className="article-mini-card" style={{ width: '100%', margin: '10px 0 16px' }}>
-                <div style={{ overflowX: 'auto' }}>
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
-                      gap: '12px 20px',
-                      fontSize: '14px',
-                      color: 'var(--fg)',
-                    }}
-                  >
-                    <p style={{ margin: 0, fontWeight: 700, textTransform: 'uppercase', color: 'rgba(var(--fg-rgb), 1)' }}>Оригинал</p>
-                    <p style={{ margin: 0, fontWeight: 700, textTransform: 'uppercase', color: 'rgba(var(--fg-rgb), 1)' }}>Перевод</p>
-                    <p style={{ margin: 0 }}>I can't believe you did that!</p>
-                    <p style={{ margin: 0 }}>НЕ МОГУ ПОВЕРИТЬ, ЧТО ТЫ ТАК СДЕЛАЛ!</p>
-                    <p style={{ margin: 0 }}>お前、マジで…</p>
-                    <p style={{ margin: 0 }}>ТЫ СЕРЬЁЗНО...</p>
-                    <p style={{ margin: 0 }}>BOOM! BOOM! BOOM!</p>
-                    <p style={{ margin: 0 }}>БИМ! БАМ! БУМ!</p>
-                  </div>
-                </div>
-              </div>
+              <ArticleImageCarousel
+                slides={GOOGLE_DOCS_CAROUSEL_SLIDES}
+                label="Примеры google-документов для переводчиков"
+              />
+
+              <p>
+                Пример MangaDesk:
+              </p>
               <h4 className="article-block__subtitle" id="translators-extract-text">Как вытащить текст со сканов?</h4>
               <p>
                 Необходимо собрать оригинальный текст в колонку «Оригинал», для этого существует несколько способов.
@@ -796,7 +764,7 @@ export function ArticlesPage() {
                 распознаёт ни одна программа.
               </p>
               <p>
-                Самый крутой — через MangaDesk: загружаете ZIP со сканами, сервис распознаёт текст и раскладывает
+                Самый крутой — через MangaDesk: загружаете ZIP со сканами (или одну картинку), сервис распознаёт текст и раскладывает
                 его по облачкам в таблице. Дальше Вам остаётся проверить результат и переходить <br />к следующему этапу. Так как
                 сервис заточен именно под мангу, с ним меньше шансов получить кашу в местах, где стандартные
                 распознавалки спотыкаются.

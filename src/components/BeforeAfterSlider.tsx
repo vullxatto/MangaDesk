@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react'
 import { createPortal } from 'react-dom'
+import { ControlPressButton } from './ControlPressButton'
 
 export type BeforeAfterSliderProps = {
   beforeSrc: string
@@ -155,17 +156,17 @@ export function BeforeAfterSlider({
           aria-hidden
         >
           <span className="before-after__line" />
-          <button
-            type="button"
-            className="before-after__handle"
-            aria-label="Перетащите влево или вправо, чтобы сравнить до и после"
+          <ControlPressButton
+            wrapClassName="before-after__handle-wrap"
+            buttonClassName="before-after__handle"
+            ariaLabel="Перетащите влево или вправо, чтобы сравнить до и после"
             aria-valuemin={0}
             aria-valuemax={100}
             aria-valuenow={Math.round(position)}
             onPointerDown={onHandlePointerDown}
           >
-            <ChevronsLeftRight size={18} strokeWidth={2.25} aria-hidden />
-          </button>
+            <ChevronsLeftRight size={20} strokeWidth={2.25} aria-hidden />
+          </ControlPressButton>
         </div>
       </div>
     )
@@ -198,14 +199,14 @@ export function BeforeAfterSlider({
           className="before-after-fs__backdrop"
           onClick={() => setFullscreen(false)}
         />
-        <button
-          type="button"
-          className="before-after-fs__close"
-          aria-label="Закрыть полноэкранный просмотр"
+        <ControlPressButton
+          wrapClassName="before-after-fs__close-wrap"
+          buttonClassName="before-after-fs__close"
+          ariaLabel="Закрыть полноэкранный просмотр"
           onClick={() => setFullscreen(false)}
         >
-          <X size={22} strokeWidth={2.25} aria-hidden />
-        </button>
+          <X size={20} strokeWidth={2.25} aria-hidden />
+        </ControlPressButton>
         <div className="before-after-fs__stage">
           <div className="before-after__card before-after__card--fullscreen">
             {renderViewport(fullscreenContainerRef, { mode: 'fullscreen' })}

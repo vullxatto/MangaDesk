@@ -72,6 +72,9 @@
   --font-shonen: 'Shonen', 'Comic Sans MS', 'Segoe Print', 'Bradley Hand', cursive;
   --font-pixel: 'Press Start 2P', 'Comic Sans MS', 'Segoe Print', 'Bradley Hand', cursive;
   --purple: #9872d6;
+  --control-surface-hover: color-mix(in srgb, var(--purple) 15%, var(--bg));
+  --media-control-size: 44px;
+  --media-control-icon-size: 20px;
   --how-step-num-color: color-mix(in srgb, var(--purple) 16%, transparent);
   --how-step-icon-size: 100px;
 
@@ -489,6 +492,8 @@ a {
 }
 
 .btn-press svg {
+  display: block;
+  flex-shrink: 0;
   width: var(--size-icon-sm);
   height: var(--size-icon-sm);
 }
@@ -521,6 +526,7 @@ a {
   width: var(--size-icon-btn);
   height: var(--size-icon-btn);
   padding: 0;
+  line-height: 0;
   flex-shrink: 0;
 }
 
@@ -2372,6 +2378,132 @@ html.viewport-le-1400 .how-it-works__panel {
   font-size: 14px;
 }
 
+.control-surface-btn.btn-press {
+  background-color: var(--bg);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.12s ease;
+}
+
+.control-surface-btn.btn-press:hover,
+.control-surface-btn.btn-press:focus-visible {
+  background-color: var(--control-surface-hover);
+  color: color-mix(in srgb, var(--purple) 88%, var(--fg));
+  border-color: color-mix(in srgb, #9872d6 82%, var(--fg));
+}
+
+.article-carousel__nav.control-surface-btn.btn-press,
+.before-after__handle.control-surface-btn.btn-press,
+.before-after-fs__close.control-surface-btn.btn-press {
+  width: var(--media-control-size);
+  height: var(--media-control-size);
+  padding: 0;
+}
+
+.article-carousel__nav.control-surface-btn.btn-press,
+.before-after-fs__close.control-surface-btn.btn-press {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.article-carousel__nav.control-surface-btn.btn-press:active {
+  cursor: pointer;
+}
+
+.before-after__handle.control-surface-btn.btn-press {
+  cursor: grab;
+  touch-action: none;
+}
+
+.before-after__handle.control-surface-btn.btn-press:active {
+  cursor: grabbing;
+}
+
+.article-carousel__nav.control-surface-btn.btn-press svg,
+.before-after__handle.control-surface-btn.btn-press svg,
+.before-after-fs__close.control-surface-btn.btn-press svg {
+  width: var(--media-control-icon-size);
+  height: var(--media-control-icon-size);
+}
+
+.article-carousel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 12px 0 18px;
+}
+
+.article-carousel__frame {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.article-carousel__frame--interactive {
+  display: block;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  cursor: zoom-in;
+}
+
+.article-carousel__frame--interactive:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+}
+
+.article-carousel__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: 0.9;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.article-carousel-fs .before-after-fs__stage {
+  padding: max(var(--space-5), calc(env(safe-area-inset-top, 0px) + 44px)) var(--space-3)
+    max(var(--space-4), env(safe-area-inset-bottom, 0px));
+}
+
+.article-carousel--fullscreen {
+  gap: var(--space-3);
+  margin: 0;
+  width: min(98vw, 1680px);
+  max-width: 100%;
+}
+
+.article-carousel--fullscreen .article-carousel__frame {
+  max-height: min(94vh, calc(100vh - 88px));
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.article-carousel--fullscreen .article-carousel__image {
+  width: auto;
+  max-width: 100%;
+  max-height: min(94vh, calc(100vh - 88px));
+  margin: 0 auto;
+  opacity: 1;
+}
+
+.article-carousel__nav-wrap {
+  flex-shrink: 0;
+}
+
+.before-after-fs .article-carousel__nav-wrap {
+  z-index: 2;
+}
+
 .article-muted {
   font-size: 14px !important;
   color: rgba(var(--fg-rgb), 0.55) !important;
@@ -2703,27 +2835,11 @@ html.viewport-le-1400 .how-it-works__panel {
   cursor: pointer;
 }
 
-.before-after-fs__close {
+.before-after-fs__close-wrap {
   position: absolute;
   top: max(var(--space-4), env(safe-area-inset-top, 0px));
   right: max(var(--space-4), env(safe-area-inset-right, 0px));
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border: var(--border-button);
-  border-radius: var(--radius);
-  background: var(--bg);
-  color: var(--fg);
-  box-shadow: var(--shadow-button);
-  cursor: pointer;
-}
-
-.before-after-fs__close:hover {
-  background: color-mix(in srgb, var(--purple) 12%, var(--bg));
+  z-index: 10;
 }
 
 .before-after-fs__stage {
@@ -2739,6 +2855,11 @@ html.viewport-le-1400 .how-it-works__panel {
 }
 
 .before-after-fs__stage > * {
+  pointer-events: auto;
+}
+
+.before-after-fs .control-surface-btn,
+.before-after-fs .btn-press-wrap {
   pointer-events: auto;
 }
 
@@ -2793,33 +2914,13 @@ html.viewport-le-1400 .how-it-works__panel {
   pointer-events: none;
 }
 
-.before-after__handle {
-  pointer-events: auto;
+.before-after__handle-wrap {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border: var(--border-button);
-  border-radius: var(--radius);
-  background: var(--bg);
-  color: var(--fg);
-  box-shadow: var(--shadow-button);
-  cursor: grab;
-  touch-action: none;
-}
-
-.before-after__handle:hover {
-  background: color-mix(in srgb, var(--purple) 12%, var(--bg));
-}
-
-.before-after__handle:active {
-  cursor: grabbing;
+  pointer-events: auto;
+  z-index: 3;
 }
 
 .before-after__heading {
