@@ -9,6 +9,7 @@ import translatorsGlossary1Avif from '../assets/images/ArticlesPage/Translators_
 import translatorsGlossary2Avif from '../assets/images/ArticlesPage/Translators_Glossary2.avif'
 import translationChapter1Avif from '../assets/images/ArticlesPage/Translation_Chapter1.avif'
 import translationChapter2Avif from '../assets/images/ArticlesPage/Translation_Chapter2.avif'
+import translationChapter3Avif from '../assets/images/ArticlesPage/Translation_Chapter3.avif'
 import arrowSvg from '../assets/svg/arrow.svg'
 import { ArticleImageCarousel } from '../components/ArticleImageCarousel'
 import { Layout } from '../components/Layout'
@@ -18,6 +19,7 @@ const GOOGLE_DOCS_CAROUSEL_SLIDES = [
   { src: translatorsGlossary2Avif, alt: 'Глоссарий в google-документе — термины' },
   { src: translationChapter1Avif, alt: 'Таблица перевода главы в google-документе' },
   { src: translationChapter2Avif, alt: 'Шаблон таблицы перевода в google-документе' },
+  { src: translationChapter3Avif, alt: 'Таблица перевода главы с картинками и цветовым выделением' },
 ] as const
 
 const SECTION_IDS = ['general', 'translators', 'cleaners', 'typers'] as const
