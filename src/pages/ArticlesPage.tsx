@@ -29,6 +29,8 @@ import typersFontSizeTooSmall1Png from '../assets/images/ArticlesPage/10.1.png'
 import typersFontSizeTooSmall2Png from '../assets/images/ArticlesPage/10.2.png'
 import typersFontSizeAccent1Png from '../assets/images/ArticlesPage/11.1.png'
 import typersFontSizeAccent2Png from '../assets/images/ArticlesPage/11.2.png'
+import typersPerspective1Png from '../assets/images/ArticlesPage/13.1.png'
+import typersPerspective2Png from '../assets/images/ArticlesPage/13.2.png'
 import arrowSvg from '../assets/svg/arrow.svg'
 import { ArticleImageCarousel } from '../components/ArticleImageCarousel'
 import { Layout } from '../components/Layout'
@@ -137,6 +139,20 @@ const TYPERS_FONT_SIZE_ACCENT_CAROUSEL_SLIDES = [
   {
     src: typersFontSizeAccent2Png,
     alt: 'Размер текста увеличивают в крупных облачках, чтобы он не «тонул» в пустоте',
+  },
+] as const
+
+const TYPERS_APPROPRIATENESS_CAROUSEL_SLIDES = [
+  {
+    src: typersPerspective1Png,
+    alt: 'Уместный шрифт под стиль рисунка — рукописный вместо печатного на письме',
+  },
+] as const
+
+const TYPERS_PERSPECTIVE_CAROUSEL_SLIDES = [
+  {
+    src: typersPerspective2Png,
+    alt: 'Текст повторяет перспективу поверхности — табличка под углом и экран на панели',
   },
 ] as const
 
@@ -1265,23 +1281,26 @@ export function ArticlesPage() {
               Для основного текста выбираем читаемый шрифт с несколькими начертаниями — обычным, жирным, курсивом и жирным курсивом.
               Так удобнее выделять что-то внутри реплики, не подбирая отдельный шрифт.
               </p>
-              <p>
-              Для остальных типов текста выбираем уместный шрифт: стилизованный под 
-              звуки или крики, печатные для интерфейсов, рукописные для писем и так далее.
-              </p>
+
               <h4 className="article-block__subtitle" id="typers-appropriateness-perspective">Уместность и перспектива</h4>
               <p>
                 Мало выбрать красивый шрифт — он должен быть уместным. Логика простая: шрифт подбирается под ситуацию.
                 В компьютерном интерфейсе — технический, а не рукописный. На строгой официальной табличке — строгий, а
-                не игривый. В рукописном письме — рукописный, а не печатный. Несоответствие шрифта контексту читатель
-                чувствует, даже если не формулирует.
+                не игривый. В рукописном письме — рукописный, а не печатный.
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_APPROPRIATENESS_CAROUSEL_SLIDES}
+                label="Пример уместного шрифта"
+              />
               <p>
                 Второй момент — перспектива. Текст должен жить на той же плоскости, что и поверхность, на которой
                 написан. Если табличка нарисована под углом, текст на ней тоже разворачивается под этим углом. Если
-                надпись лежит на изгибающемся флаге — текст повторяет изгиб. Плоский текст поверх объёмного объекта
-                смотрится как наклейка и сразу разрушает погружение.
+                надпись лежит на изгибающемся флаге — текст повторяет изгиб.
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_PERSPECTIVE_CAROUSEL_SLIDES}
+                label="Примеры перспективы текста"
+              />
               <h4 className="article-block__subtitle" id="typers-styling">Оформление: мысли, крики, персонажи</h4>
               <p>
                 Разные типы текста оформляются по-разному, и это помогает читателю без подсказок понимать, что
