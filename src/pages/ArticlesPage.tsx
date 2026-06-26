@@ -22,6 +22,13 @@ import typersLineBreaks3Png from '../assets/images/ArticlesPage/5.3.png'
 import typersLineBreakRules1Png from '../assets/images/ArticlesPage/6.1.png'
 import typersLineBreakUndesirable1Png from '../assets/images/ArticlesPage/7.1.png'
 import typersLineBreakUndesirable2Png from '../assets/images/ArticlesPage/7.2.png'
+import typersFontSize1Png from '../assets/images/ArticlesPage/9.1.png'
+import typersFontSize2Png from '../assets/images/ArticlesPage/9.2.png'
+import typersFontSizePerProject1Png from '../assets/images/ArticlesPage/9.5.png'
+import typersFontSizeTooSmall1Png from '../assets/images/ArticlesPage/10.1.png'
+import typersFontSizeTooSmall2Png from '../assets/images/ArticlesPage/10.2.png'
+import typersFontSizeAccent1Png from '../assets/images/ArticlesPage/11.1.png'
+import typersFontSizeAccent2Png from '../assets/images/ArticlesPage/11.2.png'
 import arrowSvg from '../assets/svg/arrow.svg'
 import { ArticleImageCarousel } from '../components/ArticleImageCarousel'
 import { Layout } from '../components/Layout'
@@ -90,6 +97,46 @@ const TYPERS_LINE_BREAK_UNDESIRABLE_CAROUSEL_SLIDES = [
   {
     src: typersLineBreakUndesirable2Png,
     alt: 'Частицы и предлоги не отрывают от главного слова — примеры с ошибками и правильным оформлением',
+  },
+] as const
+
+const TYPERS_FONT_SIZE_CAROUSEL_SLIDES = [
+  {
+    src: typersFontSize1Png,
+    alt: 'Подбор размера шрифта под каждое облачко — удачная свёрстка страницы',
+  },
+  {
+    src: typersFontSize2Png,
+    alt: 'Один размер на всю страницу — текст не заполняет облачка',
+  },
+] as const
+
+const TYPERS_FONT_SIZE_PER_PROJECT_CAROUSEL_SLIDES = [
+  {
+    src: typersFontSizePerProject1Png,
+    alt: 'Средний размер шрифта в разных проектах — сравнение страниц двух тайтлов',
+  },
+] as const
+
+const TYPERS_FONT_SIZE_TOO_SMALL_CAROUSEL_SLIDES = [
+  {
+    src: typersFontSizeTooSmall1Png,
+    alt: 'Слишком мелкий шрифт в облачках и тот же текст с размером ближе к среднему',
+  },
+  {
+    src: typersFontSizeTooSmall2Png,
+    alt: 'Визуальные скачки размера из-за излишне мелкого текста на странице',
+  },
+] as const
+
+const TYPERS_FONT_SIZE_ACCENT_CAROUSEL_SLIDES = [
+  {
+    src: typersFontSizeAccent1Png,
+    alt: 'Акцентная реплика «ПО-СТОЙ!» — увеличенный размер текста повторяет оригинал',
+  },
+  {
+    src: typersFontSizeAccent2Png,
+    alt: 'Размер текста увеличивают в крупных облачках, чтобы он не «тонул» в пустоте',
   },
 ] as const
 
@@ -1166,21 +1213,38 @@ export function ArticlesPage() {
                 незаметна глазу. В этом и смысл: текст подстраивается под пространство облачка, оставаясь в рамках
                 единого «среднего».
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_FONT_SIZE_CAROUSEL_SLIDES}
+                label="Примеры подбора размера шрифта"
+              />
               <p>
-                Важный нюанс: средний размер у каждого проекта свой. Облачка и текст в разных тайтлах отличаются,
-                поэтому один и тот же размер нельзя механически переносить из проекта в проект — его подбирают заново.
-                А если в проекте встречается облачко заметно крупнее обычного, размер текста в нём увеличивают
-                пропорционально, чтобы он не «тонул» в пустоте.
+                Важный нюанс: В каждом проекте не получится использовать один и тот же размер текста, поскольку
+                отличаются средние размеры облачков и текста в них. Вот несколько примеров, где средние размеры текста разные.
+
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_FONT_SIZE_PER_PROJECT_CAROUSEL_SLIDES}
+                label="Примеры размера шрифта в разных проектах"
+              />
               <p>
                 Уменьшать текст ниже среднего стоит только в крайнем случае — когда он физически не влезает в облачко
                 даже с грамотными переносами. Не нужно делать шрифт мельче без причины: это создаёт визуальные «скачки»
                 размера, бьёт по читаемости и выдаёт себя несоответствием формы текста форме облачка.
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_FONT_SIZE_TOO_SMALL_CAROUSEL_SLIDES}
+                label="Примеры излишне мелкого шрифта"
+              />
               <p>
-                И наоборот: если в оригинале реплика заметно крупнее остальных — например, акцентное «ПОСТОЙ!» — этот
-                акцент стоит повторить и в переводе. Ориентир на оригинал помогает сохранить интонацию сцены.
+                Если в проекте встречается облачко заметно крупнее обычного, размер текста в нём увеличивают
+                пропорционально, чтобы он не «тонул» в пустоте. Например, акцентное «ПОСТОЙ!» — этот
+                акцент стоит повторить и в переводе. Ориентир на оригинал помогает сохранить интонацию сцены.                
+              
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_FONT_SIZE_ACCENT_CAROUSEL_SLIDES}
+                label="Пример акцентной реплики с увеличенным размером"
+              />
               <h4 className="article-block__subtitle" id="typers-fonts">Шрифты</h4>
               <p>
                 Шрифт — половина впечатления от тайпа, поэтому к выбору относимся серьёзно. (Под «шрифтами» для
