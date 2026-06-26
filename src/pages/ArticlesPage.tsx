@@ -11,6 +11,17 @@ import translatorsGlossary2Avif from '../assets/images/ArticlesPage/Translators_
 import translationChapter1Avif from '../assets/images/ArticlesPage/Translation_Chapter1.avif'
 import translationChapter2Avif from '../assets/images/ArticlesPage/Translation_Chapter2.avif'
 import translationChapter3Avif from '../assets/images/ArticlesPage/Translation_Chapter3.avif'
+import typersBubbleLayout1Png from '../assets/images/ArticlesPage/1.1.png'
+import typersBubbleLayout2Png from '../assets/images/ArticlesPage/1.2.png'
+import typersBubbleLayout3Png from '../assets/images/ArticlesPage/1.3.png'
+import typersFreeText1Png from '../assets/images/ArticlesPage/4.1.png'
+import typersFreeText2Png from '../assets/images/ArticlesPage/4.2.png'
+import typersLineBreaks1Png from '../assets/images/ArticlesPage/5.1.png'
+import typersLineBreaks2Png from '../assets/images/ArticlesPage/5.2.png'
+import typersLineBreaks3Png from '../assets/images/ArticlesPage/5.3.png'
+import typersLineBreakRules1Png from '../assets/images/ArticlesPage/6.1.png'
+import typersLineBreakUndesirable1Png from '../assets/images/ArticlesPage/7.1.png'
+import typersLineBreakUndesirable2Png from '../assets/images/ArticlesPage/7.2.png'
 import arrowSvg from '../assets/svg/arrow.svg'
 import { ArticleImageCarousel } from '../components/ArticleImageCarousel'
 import { Layout } from '../components/Layout'
@@ -21,6 +32,65 @@ const GOOGLE_DOCS_CAROUSEL_SLIDES = [
   { src: translationChapter1Avif, alt: 'Таблица перевода главы в google-документе' },
   { src: translationChapter2Avif, alt: 'Шаблон таблицы перевода в google-документе' },
   { src: translationChapter3Avif, alt: 'Таблица перевода главы с картинками и цветовым выделением' },
+] as const
+
+const TYPERS_BUBBLE_LAYOUT_CAROUSEL_SLIDES = [
+  {
+    src: typersBubbleLayout1Png,
+    alt: 'Текст не должен липнуть к краям облачка — примеры с ошибками и правильным оформлением',
+  },
+  {
+    src: typersBubbleLayout2Png,
+    alt: 'Компоновка текста в облачке: слишком много коротких строк и сбалансированная форма',
+  },
+  {
+    src: typersBubbleLayout3Png,
+    alt: 'Оформление текста в овальном облачке: кавычки и переносы строк',
+  },
+] as const
+
+const TYPERS_FREE_TEXT_CAROUSEL_SLIDES = [
+  {
+    src: typersFreeText1Png,
+    alt: 'Свободный текст на фоне: выравнивание по центру и сбалансированные переносы',
+  },
+  {
+    src: typersFreeText2Png,
+    alt: 'Примеры текста в облачках и вне них на странице манги',
+  },
+] as const
+
+const TYPERS_LINE_BREAKS_CAROUSEL_SLIDES = [
+  {
+    src: typersLineBreaks1Png,
+    alt: 'Слишком много переносов ради формы и естественная компоновка без лишних переносов',
+  },
+  {
+    src: typersLineBreaks2Png,
+    alt: 'Узкая форма текста и перенос слова для лучшей компоновки в облачке',
+  },
+  {
+    src: typersLineBreaks3Png,
+    alt: 'Случаи, когда перенос слова необходим, чтобы текст вписался в облачко',
+  },
+] as const
+
+const TYPERS_LINE_BREAK_RULES_CAROUSEL_SLIDES = [
+  {
+    src: typersLineBreakRules1Png,
+    alt: 'Запреты при переносах: знаки препинания, одна буква на строке и перенос по имеющемуся дефису',
+  },
+] as const
+
+const TYPERS_LINE_BREAK_UNDESIRABLE_CAROUSEL_SLIDES = [
+  {
+    src: typersLineBreakUndesirable1Png,
+    alt: 'Висячие предлоги и разделение связанных слов — примеры с ошибками и правильным оформлением',
+  },
+  {
+    src: typersLineBreakUndesirable2Png,
+    alt: 'Частицы и предлоги не отрывают от главного слова — примеры с ошибками и правильным оформлением',
+  },
 ] as const
 
 const SECTION_IDS = ['general', 'translators', 'cleaners', 'typers', 'misc'] as const
@@ -990,15 +1060,15 @@ export function ArticlesPage() {
               <h3 className="article-block__title">Тайперам</h3>
               <p>
                 Тайпер — это человек, ответственный за то, как переведённый текст ляжет на очищенные сканы. Он берёт
-                готовый перевод и чистый «холст», чтобы собрать из них финальную страницу: расставить реплики по облачкам,
+                готовый перевод и чистый «холст» после переводчика и клинера, чтобы собрать <br />из них финальную страницу: расставить реплики по облачкам,
                 подобрать шрифты, оформить эмоции и мысли, разместить звуки. Это последний этап перед публикацией, и
                 именно его видит читатель.
               </p>
               <p>
-                Задача тайпера — разместить текст грамотно, читабельно и стилистически верно, сохранив атмосферу
+                Задача тайпера — разместить текст грамотно, читабельно и стилистически верно, сохранив <br /> атмосферу
                 оригинала. Звучит как «просто вставить буквы в кружочки», но за каждым облачком стоит десяток мелких
                 решений: какой размер шрифта, где сделать перенос, какую форму придать тексту, нужна ли обводка. От суммы
-                этих решений зависит, будет глава выглядеть профессионально или любительски.
+                этих решений зависит, будет глава выглядеть <br /> профессионально или любительски.
               </p>
               <img
                 src={meme5Avif}
@@ -1022,35 +1092,48 @@ export function ArticlesPage() {
                 Текст аккуратно повторяет форму облачка и располагается по центру, с комфортными отступами от краёв.
                 Никаких «лесенок», «пирамидок» и фигурных конструкций из текста — читабельность всегда важнее красоты
                 построения. Если облачко круглое, текст собираем в круглую форму; если вытянутое — вытягиваем и текст.
-                При этом не нужно бояться, что текст получился слишком «нагруженным»: если реплика длинная, облачко это
+                При этом не нужно бояться, что форма текста получилась слишком «сложной»: если реплика длинная, облачко это
                 компенсирует, и дело тут в количестве текста, а не в его форме.
               </p>
               <p>
-                Строки не должны наезжать друг на друга. Между ними нужен достаточный межстрочный интервал, чтобы буквы
-                не слипались и не наползали. Тесный текст читается тяжело и сразу выдаёт спешку.
+              Строки не должны наезжать друг на друга.
+              Между ними нужен достаточный межстрочный интервал. Буквы не должны
+              наползать друг на друга или слипаться.
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_BUBBLE_LAYOUT_CAROUSEL_SLIDES}
+                label="Примеры компоновки текста в облачке"
+              />
               <p>
                 Для текста вне облачков (мысли без оформленного баббла, реплики поверх фона) в общем случае выбирают
                 круглую или узкую овальную форму. Но стоит ориентироваться и на сам проект: если облачка в нём
                 преимущественно узкие, то и свободный текст логично собирать в узкую форму, чтобы он не выбивался из
                 общего стиля.
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_FREE_TEXT_CAROUSEL_SLIDES}
+                label="Примеры текста вне облачков"
+              />
               <h4 className="article-block__subtitle" id="typers-line-breaks">Переносы</h4>
               <p>
-                Переносы — тема, на которой новички спотыкаются чаще всего, поэтому разберём подробно.
-              </p>
-              <p>
-                Главный принцип: переносов должно быть как можно меньше. Текст без переносов читается легче. Не
+                Переносов должно быть как можно меньше. Текст без переносов читается легче. Не
                 переживайте, что без них форма «поедет» и станет некрасивой, — после перебора вариантов почти всегда
                 находится хорошая компоновка. Но и совсем без переносов не обойтись: если слово не помещается на строке
                 или сильно ломает форму облачка, перенос неизбежен.
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_LINE_BREAKS_CAROUSEL_SLIDES}
+                label="Примеры переносов в облачках"
+              />
               <p>
                 Когда переносить всё-таки приходится, есть несколько запретов. Нельзя переносить знаки препинания на
-                отдельную строку. Нельзя оставлять на строке одну-единственную букву слова или переносить одну букву.
-                Слова с дефисом, если их надо разбить, переносим по уже имеющемуся дефису — два дефиса в одном слове
-                выглядят ужасно.
+                отдельную строку. Нельзя оставлять на строке всего одну букву из слова, либо переносить всего одну букву. 
+                Слова с дефисом переносим по уже имеющемуся дефису. Два дефиса в одном слове выглядят ужасно. 
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_LINE_BREAK_RULES_CAROUSEL_SLIDES}
+                label="Примеры запретов при переносах"
+              />
               <p>
                 Есть и набор «нежелательного», которого по возможности избегают. Предлоги стараются не оставлять на
                 конце строки (висячие предлоги — классика плохого тайпа). Наречия из нескольких коротких слов — «всё
@@ -1059,9 +1142,13 @@ export function ArticlesPage() {
                 не отрывать от главного слова, в первую очередь частицу «не», а также «бы», «ли», «уж», «же», «-то»,
                 «-либо».
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_LINE_BREAK_UNDESIRABLE_CAROUSEL_SLIDES}
+                label="Примеры нежелательных переносов"
+              />
               <p>
                 Сами переносы делаем по правилам русского языка — если подзабылись, есть удобный{' '}
-                <a href="https://gramota.ru/slovari/bss/orfografoicheskii/pri_perenose_slov" target="_blank" rel="noopener noreferrer">
+                <a href="https://gramota.ru/biblioteka/spravochniki/pravila-russkoj-orfografii-i-punktuacii/pravila-perenosov" target="_blank" rel="noopener noreferrer">
                   справочник
                 </a>
                 . Это не придирка: неправильный перенос читатель замечает мгновенно, даже если не может объяснить, что
