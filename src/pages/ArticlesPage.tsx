@@ -1,4 +1,4 @@
-import { Eraser, Info, Languages, Type } from 'lucide-react'
+import { Eraser, Info, Languages, Layers, Type } from 'lucide-react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import mangaAvif from '../assets/images/ArticlesPage/manga.avif'
 import meme1Avif from '../assets/images/ArticlesPage/meme1.avif'
@@ -23,7 +23,7 @@ const GOOGLE_DOCS_CAROUSEL_SLIDES = [
   { src: translationChapter3Avif, alt: 'Таблица перевода главы с картинками и цветовым выделением' },
 ] as const
 
-const SECTION_IDS = ['general', 'translators', 'cleaners', 'typers'] as const
+const SECTION_IDS = ['general', 'translators', 'cleaners', 'typers', 'misc'] as const
 type SectionId = (typeof SECTION_IDS)[number]
 const TOC_SUBSECTION_IDS = [
   'general-terms',
@@ -252,6 +252,18 @@ function ArticlesToc({
           <a href="#typers-photoshop" className={active === 'typers' && activeSubsection === 'typers-photoshop' ? 'is-active' : ''}>Инструменты <br />Photoshop</a>
           <a href="#typers-mangadesk" className={active === 'typers' && activeSubsection === 'typers-mangadesk' ? 'is-active' : ''}>Через MangaDesk</a>
         </div>
+
+        <a
+          href="#misc"
+          className={`articles-toc-main${active === 'misc' ? ' is-active' : ''}`}
+          onClick={(e) => {
+            e.preventDefault()
+            onNavigate('misc')
+          }}
+        >
+          <Layers size={16} strokeWidth={2} aria-hidden />
+          <span>Разное</span>
+        </a>
       </nav>
     </aside>
   )
@@ -305,6 +317,12 @@ export function ArticlesPage() {
                 Чтобы не повторять каждый раз «манга, манхва, маньхуа, комиксы, вебтуны и прочее», в статье
                 мы будем называть всё это одним словом — «проект». А «главы», «выпуски», «эпизоды» и «серии»
                 в любом из этих форматов — просто «глава». Так короче и понятнее.
+              </p>
+              <p>
+                Ещё несколько слов, которые будут встречаться дальше: «Облачка» («баблы» или «пузыри», <br />от англ.
+                bubbles) — области, в которых нарисованы реплики и мысли персонажей. <br />«Сканы» («равки», от англ.
+                raw) — страницы проекта в оригинале, до перевода и обработки. <br />«Анлейт» — страницы проекта,
+                уже переведённые на английский зарубежными коллегами.
               </p>
 
               <h4 className="article-block__subtitle" id="general-about-article">О чём эта статья?</h4>
@@ -771,7 +789,7 @@ export function ArticlesPage() {
               </p>
               <p>
                 Самый крутой — через MangaDesk: загружаете ZIP со сканами (или одну картинку), сервис распознаёт текст и раскладывает
-                его по облачкам в таблице. Дальше Вам остаётся проверить результат и переходить <br />к следующему этапу. Так как
+                его по облачкам в таблице. Дальше Вам остаётся проверить результат и переходить к следующему этапу. Так как
                 сервис заточен именно под мангу, с ним меньше шансов получить кашу в местах, где стандартные
                 распознавалки спотыкаются.
               </p>
@@ -1228,6 +1246,16 @@ export function ArticlesPage() {
               <p>
                 После финального «ок» глава отправляется в публикацию, и круг замыкается: то, что начиналось с пустой
                 таблицы у переводчика, становится готовой страницей на русском.
+              </p>
+            </section>
+
+            <section className="article-block" id="misc">
+              <h3 className="article-block__title">Разное</h3>
+              <p>
+                Здесь собрано то, что не вошло в разделы по ролям, но без чего цельной картины не сложится. Если
+                предыдущие разделы отвечали на вопрос «что делает каждый участник», то этот — про то, что происходит
+                до перевода и после тайпа. Откуда вообще берутся сканы, как привести их в рабочий вид и что с готовой
+                главой происходит перед публикацией.
               </p>
             </section>
           </div>
