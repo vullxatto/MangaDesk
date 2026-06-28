@@ -314,6 +314,11 @@ const TOC_SUBSECTION_IDS = [
   'typers-styling',
   'typers-small-details',
   'typers-photoshop',
+  'typers-photoshop-text',
+  'typers-photoshop-options',
+  'typers-photoshop-kerning',
+  'typers-photoshop-character-styles',
+  'typers-photoshop-layer-styles',
   'typers-mangadesk',
 ] as const
 type TocSubsectionId = (typeof TOC_SUBSECTION_IDS)[number]
@@ -512,6 +517,13 @@ function ArticlesToc({
           <a href="#typers-styling" className={active === 'typers' && activeSubsection === 'typers-styling' ? 'is-active' : ''}>Оформление</a>
           <a href="#typers-small-details" className={active === 'typers' && activeSubsection === 'typers-small-details' ? 'is-active' : ''}>Мелочи</a>
           <a href="#typers-photoshop" className={active === 'typers' && activeSubsection === 'typers-photoshop' ? 'is-active' : ''}>Инструменты <br />Photoshop</a>
+          <div className="articles-toc-grandchildren">
+            <a href="#typers-photoshop-text" className={active === 'typers' && activeSubsection === 'typers-photoshop-text' ? 'is-active' : ''}>Текст и «Символ»</a>
+            <a href="#typers-photoshop-options" className={active === 'typers' && activeSubsection === 'typers-photoshop-options' ? 'is-active' : ''}>Параметры</a>
+            <a href="#typers-photoshop-kerning" className={active === 'typers' && activeSubsection === 'typers-photoshop-kerning' ? 'is-active' : ''}>Кернинг</a>
+            <a href="#typers-photoshop-character-styles" className={active === 'typers' && activeSubsection === 'typers-photoshop-character-styles' ? 'is-active' : ''}>Стили символов</a>
+            <a href="#typers-photoshop-layer-styles" className={active === 'typers' && activeSubsection === 'typers-photoshop-layer-styles' ? 'is-active' : ''}>Стили слоя</a>
+          </div>
           <a href="#typers-mangadesk" className={active === 'typers' && activeSubsection === 'typers-mangadesk' ? 'is-active' : ''}>Через MangaDesk</a>
         </div>
 
@@ -1480,8 +1492,10 @@ export function ArticlesPage() {
               <h4 className="article-block__subtitle" id="typers-photoshop">Инструменты Photoshop</h4>
               <p>
                 Здесь — короткая практическая выжимка по тому, чем тайпер пользуется в Photoshop каждый день.
+                Разберём по частям: сам текст, панель параметров, подгонку расстояния и стили.
               </p>
 
+              <h5 className="article-block__subsubsection" id="typers-photoshop-text">Текст и окно «Символ»</h5>
               <p>
                 Главный инструмент тайпера — «Текст» (горячая клавиша T). Для настройки открываем окно «Символ»:
               </p>
@@ -1516,6 +1530,7 @@ export function ArticlesPage() {
               курсор на иконку размера, зажать левую кнопку мыши и двигать мышь влево-вправо.
               </p>
 
+              <h5 className="article-block__subsubsection" id="typers-photoshop-options">Панель параметров</h5>
               <p>
                 После выбора инструмента «Текст» сверху появляется панель с настройками:
               </p>
@@ -1527,6 +1542,8 @@ export function ArticlesPage() {
                 1 — Режим текста (горизонтальный или вертикальный), 2 — выравнивание (в
                 большинстве случаев по центру) и 3 — деформация текста (для работы с перспективой).
               </p>
+
+              <h5 className="article-block__subsubsection" id="typers-photoshop-kerning">Кернинг</h5>
               <p>
               Когда из-за пробела между словами образовывается провал,
               мы ставим курсор перед или после пробела между проблемной парой и используем
@@ -1537,6 +1554,7 @@ export function ArticlesPage() {
                 label="Подгонка расстояния между словами"
               />
 
+              <h5 className="article-block__subsubsection" id="typers-photoshop-character-styles">Стили символов</h5>
               <p>
                 Стили символов сильно ускоряют работу. Вместо того чтобы каждый раз настраивать текст заново, создаём
                 стиль (например, «Основной», «Мысли серый», «Крик») и применяем его одним кликом. На большом
@@ -1544,6 +1562,7 @@ export function ArticlesPage() {
                 https://www.youtube.com/watch?v=kBZrYZt_Jd8
               </p>
 
+              <h5 className="article-block__subsubsection" id="typers-photoshop-layer-styles">Стили слоя</h5>
               <p>
                 Стили слоя открываются двойным кликом по слою с текстом:
               </p>
