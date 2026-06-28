@@ -1,11 +1,11 @@
 import { Eraser, Info, Languages, Layers, Type } from 'lucide-react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import mangaAvif from '../assets/images/ArticlesPage/manga.avif'
-import meme1Avif from '../assets/images/ArticlesPage/meme1.avif'
-import meme2Avif from '../assets/images/ArticlesPage/meme2.avif'
-import meme3Avif from '../assets/images/ArticlesPage/meme3.avif'
-import meme4Avif from '../assets/images/ArticlesPage/meme4.avif'
-import meme5Avif from '../assets/images/ArticlesPage/meme5.avif'
+import translationExample1Avif from '../assets/images/ArticlesPage/Translation_Example1.avif'
+import meme1Avif from '../assets/images/ArticlesPage/Meme1.avif'
+import meme2Avif from '../assets/images/ArticlesPage/Meme2.avif'
+import meme3Avif from '../assets/images/ArticlesPage/Meme3.avif'
+import meme4Avif from '../assets/images/ArticlesPage/Meme4.avif'
+import meme5Avif from '../assets/images/ArticlesPage/Meme5.avif'
 import translatorsGlossary1Avif from '../assets/images/ArticlesPage/Translators_Glossary1.avif'
 import translatorsGlossary2Avif from '../assets/images/ArticlesPage/Translators_Glossary2.avif'
 import translationChapter1Avif from '../assets/images/ArticlesPage/Translation_Chapter1.avif'
@@ -762,7 +762,7 @@ export function ArticlesPage() {
               </p>
               <div className="article-mini-card" style={{ margin: '12px 0 18px', padding: 0, overflow: 'hidden' }}>
                 <img
-                  src={mangaAvif}
+                  src={translationExample1Avif}
                   alt="Порядок чтения облачков"
                   style={{
                     opacity: 0.9,
@@ -777,7 +777,7 @@ export function ArticlesPage() {
               </div>
               <p>
                 Облачка, в которых только знаки препинания вроде «!!!» или «?!», — это тоже реплики. Их
-                также выписываем в таблицу с переводом, чтобы не потерять при тайпинге. <br />(Подробнее о таблице с переводом будет ниже).
+                также выписываем в файл с переводом, чтобы не потерять при тайпинге. <br />(Подробнее о файле с переводом будет ниже).
               </p>
               <h4 className="article-block__subtitle" id="translators-meaning">Смысл, а не слова</h4>
               <p>
