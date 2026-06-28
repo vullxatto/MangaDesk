@@ -449,7 +449,7 @@ a {
 .site-nav a:hover,
 .site-nav a.site-nav__link--active {
   color: color-mix(in srgb, #9872d6 88%, transparent);
-  background: rgba(var(--fg-rgb), 0.04);
+  background: rgba(var(--fg-rgb), 0.02);
 }
 
 .site-nav a.site-nav__link--active {

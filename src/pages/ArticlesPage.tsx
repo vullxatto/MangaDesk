@@ -31,6 +31,27 @@ import typersFontSizeAccent1Png from '../assets/images/ArticlesPage/11.1.png'
 import typersFontSizeAccent2Png from '../assets/images/ArticlesPage/11.2.png'
 import typersPerspective1Png from '../assets/images/ArticlesPage/13.1.png'
 import typersPerspective2Png from '../assets/images/ArticlesPage/13.2.png'
+import typersStyling1Png from '../assets/images/ArticlesPage/15.1.png'
+import typersStyling2Png from '../assets/images/ArticlesPage/15.2.png'
+import typersStyling3Png from '../assets/images/ArticlesPage/15.3.png'
+import typersStyling4Png from '../assets/images/ArticlesPage/15.4.png'
+import typersStyling5Png from '../assets/images/ArticlesPage/15.5.png'
+import typersOutline1Png from '../assets/images/ArticlesPage/16.1.png'
+import typersOutline2Png from '../assets/images/ArticlesPage/16.2.png'
+import typersOutline3Png from '../assets/images/ArticlesPage/16.3.png'
+import typersOriginalStyle1Png from '../assets/images/ArticlesPage/17.1.png'
+import typersOriginalStyle2Png from '../assets/images/ArticlesPage/17.2.png'
+import typersOriginalStyle3Png from '../assets/images/ArticlesPage/17.3.png'
+import typersPhotoshopCharacter1Png from '../assets/images/ArticlesPage/PS1.png'
+import typersPhotoshopCharacter2Png from '../assets/images/ArticlesPage/PS2.png'
+import typersPhotoshopOptions1Png from '../assets/images/ArticlesPage/ps3.png'
+import typersPhotoshopKerning1Png from '../assets/images/ArticlesPage/ps4.png'
+import typersPhotoshopLayerStyle1Png from '../assets/images/ArticlesPage/Слой 21.png'
+import typersPhotoshopLayerEffects1Png from '../assets/images/ArticlesPage/ps5.png'
+import typersPhotoshopLayerEffects2Png from '../assets/images/ArticlesPage/ps6.png'
+import typersPhotoshopLayerEffects3Png from '../assets/images/ArticlesPage/ps7.png'
+import typersPhotoshopLayerEffects4Png from '../assets/images/ArticlesPage/ps8.png'
+import typersPhotoshopLayerEffects5Png from '../assets/images/ArticlesPage/ps9.png'
 import arrowSvg from '../assets/svg/arrow.svg'
 import { ArticleImageCarousel } from '../components/ArticleImageCarousel'
 import { Layout } from '../components/Layout'
@@ -153,6 +174,114 @@ const TYPERS_PERSPECTIVE_CAROUSEL_SLIDES = [
   {
     src: typersPerspective2Png,
     alt: 'Текст повторяет перспективу поверхности — табличка под углом и экран на панели',
+  },
+] as const
+
+const TYPERS_STYLING_CAROUSEL_SLIDES = [
+  {
+    src: typersStyling1Png,
+    alt: 'Разное оформление реплик и мыслей на странице',
+  },
+  {
+    src: typersStyling2Png,
+    alt: 'Крики — крупнее и «жёстче», рваные облачка',
+  },
+  {
+    src: typersStyling3Png,
+    alt: '«Дрожащие» облачка и оформление для жутких сцен',
+  },
+  {
+    src: typersStyling4Png,
+    alt: 'Крик в рваном облачке — акцентное оформление',
+  },
+  {
+    src: typersStyling5Png,
+    alt: 'Системные надписи — механический угловатый шрифт',
+  },
+] as const
+
+const TYPERS_OUTLINE_CAROUSEL_SLIDES = [
+  {
+    src: typersOutline1Png,
+    alt: 'Обводка текста на ярком и цветном фоне',
+  },
+  {
+    src: typersOutline2Png,
+    alt: 'Обводка в облачках на фиолетовом фоне',
+  },
+  {
+    src: typersOutline3Png,
+    alt: 'Обводка для читаемости текста на сложном фоне в ч/б манге',
+  },
+] as const
+
+const TYPERS_ORIGINAL_STYLE_CAROUSEL_SLIDES = [
+  {
+    src: typersOriginalStyle1Png,
+    alt: 'Сохранение стиля текста при переводе — градиент и свечение',
+  },
+  {
+    src: typersOriginalStyle2Png,
+    alt: 'Перевод с сохранением трещин, градиента и красного свечения',
+  },
+  {
+    src: typersOriginalStyle3Png,
+    alt: 'Сохранение цвета и начертания текста в облачке при переводе',
+  },
+] as const
+
+const TYPERS_PHOTOSHOP_CHARACTER_CAROUSEL_SLIDES = [
+  {
+    src: typersPhotoshopCharacter1Png,
+    alt: 'Окно «Символ» в Photoshop — как открыть через меню «Окно»',
+  },
+  {
+    src: typersPhotoshopCharacter2Png,
+    alt: 'Панель «Символ» с нумерацией настроек: шрифт, размер, интервал, кернинг, цвет и сглаживание',
+  },
+] as const
+
+const TYPERS_PHOTOSHOP_OPTIONS_CAROUSEL_SLIDES = [
+  {
+    src: typersPhotoshopOptions1Png,
+    alt: 'Панель параметров инструмента «Текст» — шрифт, цвет, выравнивание и деформация',
+  },
+] as const
+
+const TYPERS_PHOTOSHOP_KERNING_CAROUSEL_SLIDES = [
+  {
+    src: typersPhotoshopKerning1Png,
+    alt: 'Подгонка расстояния между словами — Alt + ← уменьшить, Alt + → увеличить',
+  },
+] as const
+
+const TYPERS_PHOTOSHOP_LAYER_STYLE_CAROUSEL_SLIDES = [
+  {
+    src: typersPhotoshopLayerStyle1Png,
+    alt: 'Окно «Стиль слоя» в Photoshop — обводка, тень, градиент и другие эффекты',
+  },
+] as const
+
+const TYPERS_PHOTOSHOP_LAYER_EFFECTS_CAROUSEL_SLIDES = [
+  {
+    src: typersPhotoshopLayerEffects1Png,
+    alt: 'Обводка текста — настройки «Выполнить обводку» на примере облачка',
+  },
+  {
+    src: typersPhotoshopLayerEffects2Png,
+    alt: 'Несколько обводок — кнопка «+» у эффекта «Выполнить обводку»',
+  },
+  {
+    src: typersPhotoshopLayerEffects3Png,
+    alt: 'Настройки тени для текста',
+  },
+  {
+    src: typersPhotoshopLayerEffects4Png,
+    alt: 'Обводка по отдельности и на всю группу — сравнение на слове «ПРИМЕР»',
+  },
+  {
+    src: typersPhotoshopLayerEffects5Png,
+    alt: 'Обводка по отдельности и на всю группу — сравнение на звуке «УРАА!»',
   },
 ] as const
 
@@ -1307,30 +1436,42 @@ export function ArticlesPage() {
                 происходит на странице.
               </p>
               <p>
-                Для обычных реплик, мыслей, криков, названий и системных надписей используют разное оформление —
+                Для обычных реплик, мыслей, криков, названий, системных надписей и т.д. используем разное оформление —
                 шрифты, цвета, начертания. Мысли традиционно делают чуть тише обычной речи: классический приём —
                 серый цвет (часто используют значение #5f5f5f вместо чистого чёрного). Крики — крупнее и «жёстче». Этим
                 же приёмом можно различать персонажей: например, дать роботу механический угловатый шрифт, а призраку —
                 «дрожащий». Главное — не превратить страницу в выставку шрифтов: приёмов должно быть ровно столько,
                 сколько нужно для ясности.
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_STYLING_CAROUSEL_SLIDES}
+                label="Примеры оформления разных типов текста"
+              />
               <p>
                 Отдельно про обводку. Её добавляют, когда текст лежит на фоне, отличном от белого, или вообще вне
                 облачка, — чтобы буквы читались на любой подложке. Размер обводки тайпер выбирает сам, но на однотипных
-                облачках и текстах его держат одинаковым, иначе страница начинает «дребезжать».
+                облачках и текстах его держат одинаковым.
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_OUTLINE_CAROUSEL_SLIDES}
+                label="Примеры обводки текста"
+              />
               <p>
                 И ещё одно общее правило: при размещении переведённого текста и звуков копируем стиль оригинала. Если
                 оригинальный звук был с градиентом и тенью — переведённый делаем похожим. Небольшие отклонения от
                 оригинала, которые не портят картинку, допустимы — это не копирование пиксель в пиксель, а сохранение
                 духа оформления.
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_ORIGINAL_STYLE_CAROUSEL_SLIDES}
+                label="Примеры копирования стиля оригинала"
+              />
               <h4 className="article-block__subtitle" id="typers-small-details">Мелочи, которые легко забыть</h4>
               <p>
                 Несколько правил, которые перекликаются с переводческими, но за них отвечает и тайпер. Облачка с одной
-                только пунктуацией — «...», «?!» — тоже тайпим, они не пустые. Длинные многоточия «……...» приводим к
+                только пунктуацией — «...», «?!» — тоже тайпим, чтобы шрифт был везде одинаковый. Длинные многоточия «……...» приводим к
                 стандартному троеточию «...». Букву «Ё» сохраняем, не подменяем на «Е». И весь вставляемый текст
-                пишем КАПСОМ — как и весь текст в манге.
+                пишем КАПСОМ.
               </p>
               <p>
                 Тайп, как и клин, делается только в Photoshop или его аналогах, понимающих PSD и стили текста. В Paint не
@@ -1340,64 +1481,90 @@ export function ArticlesPage() {
               <p>
                 Здесь — короткая практическая выжимка по тому, чем тайпер пользуется в Photoshop каждый день.
               </p>
+
               <p>
-                <strong>Инструмент «Текст»</strong>
+                Главный инструмент тайпера — «Текст» (горячая клавиша T). Для настройки открываем окно «Символ»:
               </p>
-              <p>
-                Главный инструмент тайпера — «Текст» (горячая клавиша T). Для тонкой настройки открываем окно «Символ»
-                (Window → Character). В нём живёт всё, что определяет вид текста:
-              </p>
+              <ArticleImageCarousel
+                slides={TYPERS_PHOTOSHOP_CHARACTER_CAROUSEL_SLIDES}
+                label="Окно «Символ» в Photoshop"
+              />
+              <p>В нём живёт всё, что определяет вид текста:</p>
               <ul className="article-checklist">
-                <li>Шрифт и начертание — что и в каком стиле пишем.</li>
-                <li>Размер текста — тот самый «средний размер».</li>
-                <li>Межстрочный интервал — расстояние между строками. Хорошее правило: интервал примерно на 10 пунктов больше размера текста (размер 30 → интервал ~40).</li>
-                <li>Кернинг — ставим «Оптический».</li>
-                <li>Трекинг — ставим «0».</li>
-                <li>Масштаб по высоте и ширине — растяжка текста, если нужно вписать его в нестандартную форму.</li>
-                <li>Смещение базовой линии — двигает отдельные символы вверх-вниз.</li>
-                <li>Цвет — для мыслей, например, #5f5f5f.</li>
-                <li>Псевдоначертания (искусственные жирный/курсив) — по необходимости.</li>
-                <li>Язык и сглаживание — выбираем «Русский» и «Плавное».</li>
+                <li>1 и 2 — Выбор шрифта и его начертания;</li>
+                <li>3 — Размер текста;</li>
+                <li>4 — Межстрочный интервал.</li>
+              </ul>
+              <ul className="article-checklist">
+                <li>5 и 6 — Всегда выбираем «Оптический» и «0»;</li>
+                <li>7 и 8 — Растяжка текста по высоте и ширине;</li>
+                <li>
+                  9 — Позволяет «двигать» вверх / вниз отдельно стоящие символы в тексте;
+                </li>
+                <li>10 — Цвет;</li>
+                <li>11 — Псевдо-начертания: жирный, наклонный и т.д.;</li>
+                <li>12 — Очень редко используемая штука, которая нам не пригодится;</li>
+                <li>13 — Всегда выбираем «Русский» и «Плавное».</li>
               </ul>
               <p>
-                Маленький лайфхак: чтобы менять размер, не обязательно каждый раз вписывать число — можно навести
-                курсор на иконку размера, зажать левую кнопку мыши и двигать мышь влево-вправо.
+              Разница между размером текста и межстрочным интервалом преимущественно в 130% от размера текста.
+              Например, если размер текста 30, то межстрочный интервал должен быть 39. Можно округлять
+              до целого числа если хочется, то есть 40 пунктов.
               </p>
               <p>
-                <strong>Панель параметров</strong>
+              Чтобы менять размер текста, не обязательно каждый раз вписывать число — можно навести
+              курсор на иконку размера, зажать левую кнопку мыши и двигать мышь влево-вправо.
+              </p>
+
+              <p>
+                После выбора инструмента «Текст» сверху появляется панель с настройками:
+              </p>
+              <ArticleImageCarousel
+                slides={TYPERS_PHOTOSHOP_OPTIONS_CAROUSEL_SLIDES}
+                label="Панель параметров инструмента «Текст»"
+              />
+              <p>
+                1 — Режим текста (горизонтальный или вертикальный), 2 — выравнивание (в
+                большинстве случаев по центру) и 3 — деформация текста (для работы с перспективой).
               </p>
               <p>
-                После выбора инструмента «Текст» сверху появляется панель с настройками: режим текста (горизонтальный
-                или вертикальный — почти всегда горизонтальный), выравнивание (в большинстве случаев по центру) и
-                деформация текста (для работы с перспективой).
+              Когда из-за пробела между словами образовывается провал,
+              мы ставим курсор перед или после пробела между проблемной парой и используем
+              комбинацию: Alt + ← или Alt + →, подгоняя расстояние вручную.
               </p>
-              <p>
-                Ещё одна частая ситуация: между словами образуется некрасивый «провал» из-за пробела. Лечится так —
-                ставим курсор рядом с проблемным пробелом и жмём Alt + ← или Alt + →, подгоняя расстояние вручную.
-              </p>
-              <p>
-                <strong>Стили символов</strong>
-              </p>
+              <ArticleImageCarousel
+                slides={TYPERS_PHOTOSHOP_KERNING_CAROUSEL_SLIDES}
+                label="Подгонка расстояния между словами"
+              />
+
               <p>
                 Стили символов сильно ускоряют работу. Вместо того чтобы каждый раз настраивать текст заново, создаём
-                стиль (например, «Основной 30», «Мысли серый», «Крик») и применяем его одним кликом. На большом
-                проекте это экономит часы. По работе со стилями символов есть хорошие видеоразборы — поищите «стили
-                символов Photoshop тайп».
+                стиль (например, «Основной», «Мысли серый», «Крик») и применяем его одним кликом. На большом
+                проекте это экономит часы.
+                https://www.youtube.com/watch?v=kBZrYZt_Jd8
               </p>
+
               <p>
-                <strong>Стили слоя</strong>
+                Стили слоя открываются двойным кликом по слою с текстом:
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_PHOTOSHOP_LAYER_STYLE_CAROUSEL_SLIDES}
+                label="Окно «Стиль слоя» в Photoshop"
+              />
               <p>
-                Стили слоя открываются двойным кликом по слою с текстом. Это набор эффектов оформления: обводка,
-                наложение градиента, внешнее свечение, тень и так далее. Именно отсюда берётся обводка для текста на
-                сложном фоне и эффекты для стилизованных звуков.
+                Это набор эффектов оформления: обводка, наложение градиента, внешнее свечение, тень и так далее.
+                Именно отсюда берётся обводка для текста на сложном фоне и эффекты для стилизованных звуков.
               </p>
+              <ArticleImageCarousel
+                slides={TYPERS_PHOTOSHOP_LAYER_EFFECTS_CAROUSEL_SLIDES}
+                label="Примеры стилей слоя — обводка и тень"
+              />
               <h4 className="article-block__subtitle" id="typers-mangadesk">Через MangaDesk</h4>
               <p>
                 Если работаете в MangaDesk, многое из вышеперечисленного сервис берёт на себя. Переведённый текст
                 автоматически раскладывается по облачкам с учётом их формы и размера, подбирается подходящий размер
                 шрифта, расставляются переносы по правилам русского языка, добавляется обводка там, где фон не белый.
-                Можно загрузить свои шрифты — в том числе набор Вашей команды — и настроить оформление под стиль
+                Можно загрузить свои шрифты и настроить оформление под стиль
                 проекта: отдельно для реплик, мыслей, криков и звуков.
               </p>
               <p>
