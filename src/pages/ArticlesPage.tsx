@@ -1,4 +1,4 @@
-import { Eraser, Info, Languages, Layers, Type } from 'lucide-react'
+import { Eraser, Info, Languages, LayoutGrid, Type } from 'lucide-react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import translationExample1Avif from '../assets/images/ArticlesPage/Translation_Example1.avif'
 import meme1Avif from '../assets/images/ArticlesPage/Meme1.avif'
@@ -523,7 +523,7 @@ function ArticlesToc({
             onNavigate('misc')
           }}
         >
-          <Layers size={16} strokeWidth={2} aria-hidden />
+          <LayoutGrid size={16} strokeWidth={2} aria-hidden />
           <span>Разное</span>
         </a>
       </nav>
