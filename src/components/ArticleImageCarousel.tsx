@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { ControlPressButton } from './ControlPressButton'
 
@@ -13,14 +13,26 @@ type ArticleImageCarouselProps = {
   label: string
 }
 
+function CarouselCounter({ current, total }: { current: number; total: number }) {
+  if (total <= 1) return null
+
+  return (
+    <span className="article-carousel__counter" aria-live="polite">
+      {current}/{total}
+    </span>
+  )
+}
+
 function CarouselSlide({
   slide,
   onOpenFullscreen,
   interactive,
+  counter,
 }: {
   slide: ArticleCarouselSlide
   onOpenFullscreen?: () => void
   interactive?: boolean
+  counter?: ReactNode
 }) {
   if (interactive && onOpenFullscreen) {
     return (
@@ -31,6 +43,7 @@ function CarouselSlide({
         onClick={onOpenFullscreen}
       >
         <img className="article-carousel__image" src={slide.src} alt={slide.alt} draggable={false} />
+        {counter}
       </button>
     )
   }
@@ -38,6 +51,7 @@ function CarouselSlide({
   return (
     <div className="article-mini-card article-carousel__frame">
       <img className="article-carousel__image" src={slide.src} alt={slide.alt} draggable={false} />
+      {counter}
     </div>
   )
 }
@@ -105,7 +119,12 @@ export function ArticleImageCarousel({ slides, label }: ArticleImageCarouselProp
             >
               <ChevronLeft size={20} strokeWidth={2.25} aria-hidden />
             </ControlPressButton>
-            <CarouselSlide slide={slide} />
+            <div className="article-carousel__slide-wrap">
+              <CarouselSlide
+                slide={slide}
+                counter={<CarouselCounter current={index + 1} total={count} />}
+              />
+            </div>
             <ControlPressButton
               wrapClassName="article-carousel__nav-wrap"
               buttonClassName="article-carousel__nav"
@@ -132,7 +151,14 @@ export function ArticleImageCarousel({ slides, label }: ArticleImageCarouselProp
           <ChevronLeft size={20} strokeWidth={2.25} aria-hidden />
         </ControlPressButton>
 
-        <CarouselSlide slide={slide} interactive onOpenFullscreen={() => setFullscreen(true)} />
+        <div className="article-carousel__slide-wrap">
+          <CarouselSlide
+            slide={slide}
+            interactive
+            onOpenFullscreen={() => setFullscreen(true)}
+            counter={<CarouselCounter current={index + 1} total={count} />}
+          />
+        </div>
 
         <ControlPressButton
           wrapClassName="article-carousel__nav-wrap"

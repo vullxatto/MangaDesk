@@ -2435,12 +2435,36 @@ html.viewport-le-1400 .how-it-works__panel {
   margin: 12px 0 18px;
 }
 
-.article-carousel__frame {
+.article-carousel__slide-wrap {
+  position: relative;
   flex: 1;
+  min-width: 0;
+}
+
+.article-carousel__frame {
+  position: relative;
   min-width: 0;
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+.article-carousel__counter {
+  position: absolute;
+  right: var(--space-2);
+  bottom: var(--space-2);
+  padding: 2px 8px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 1.4;
+  color: rgba(var(--fg-rgb), 0.85);
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  border: var(--border-main);
+  box-shadow: var(--shadow-card);
+  pointer-events: none;
+  user-select: none;
 }
 
 .article-carousel__frame--interactive {
@@ -2480,6 +2504,9 @@ html.viewport-le-1400 .how-it-works__panel {
 }
 
 .article-carousel--fullscreen .article-carousel__frame {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
   max-height: min(94vh, calc(100vh - 88px));
   padding: 0;
   border: none;
@@ -2492,7 +2519,7 @@ html.viewport-le-1400 .how-it-works__panel {
   width: auto;
   max-width: 100%;
   max-height: min(94vh, calc(100vh - 88px));
-  margin: 0 auto;
+  margin: 0;
   opacity: 1;
 }
 
