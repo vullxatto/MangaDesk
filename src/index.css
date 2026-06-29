@@ -2462,7 +2462,7 @@ html.viewport-le-1400 .how-it-works__panel {
   color: rgba(var(--fg-rgb), 0.85);
   background: color-mix(in srgb, var(--bg) 90%, transparent);
   border: var(--border-main);
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--btn-design-shadow);
   pointer-events: none;
   user-select: none;
 }
