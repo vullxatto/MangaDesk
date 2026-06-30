@@ -1,6 +1,7 @@
 import { useEffect, useId, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
+import { PressActionButton } from '../../components/PressActionButton'
 import { usePipeline } from '../context/usePipeline'
 
 type ProjectFormModalProps = {
@@ -10,6 +11,7 @@ type ProjectFormModalProps = {
   initialName?: string
   onDelete?: () => void
   onClose: () => void
+  onCreated?: (projectId: string) => void
 }
 
 export default function ProjectFormModal({
@@ -19,6 +21,7 @@ export default function ProjectFormModal({
   initialName = '',
   onDelete,
   onClose,
+  onCreated,
 }: ProjectFormModalProps) {
   const { createProject, updateProject } = usePipeline()
   const titleId = useId()
@@ -56,12 +59,13 @@ export default function ProjectFormModal({
     setError(null)
     try {
       if (mode === 'add') {
-        await createProject({
+        const created = await createProject({
           title: trimmed,
           description: null,
           source_language: sourceLang,
           target_language: targetLang,
         })
+        onCreated?.(created.id)
       } else if (projectId) {
         await updateProject(projectId, {
           title: trimmed,
@@ -146,12 +150,12 @@ export default function ProjectFormModal({
               Удалить
             </button>
           ) : null}
-          <button type="button" className="dashboard-reset-btn" onClick={onClose} disabled={saving}>
-            Отмена
-          </button>
-          <button type="button" className="dashboard-new-btn" onClick={() => void handleSave()} disabled={saving}>
+          <PressActionButton onClick={onClose} disabled={saving}>
+            <span>Отмена</span>
+          </PressActionButton>
+          <PressActionButton onClick={() => void handleSave()} disabled={saving}>
             {saving ? 'Сохранение…' : 'Сохранить'}
-          </button>
+          </PressActionButton>
         </div>
       </div>
     </div>,

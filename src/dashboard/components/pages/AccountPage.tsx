@@ -1,4 +1,5 @@
 import { CreditCard, Link2, LogOut, Wallet } from 'lucide-react'
+import { PressActionButton } from '../../../components/PressActionButton'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
@@ -111,9 +112,9 @@ export default function AccountPage({ title = 'Личный кабинет' }: A
             <span>Имя пользователя</span>
             <input className="account-input" value={username} onChange={(e) => setUsername(e.target.value)} />
           </label>
-          <button type="button" className="dashboard-new-btn" onClick={() => void saveName()} disabled={profileSaving}>
+          <PressActionButton onClick={() => void saveName()} disabled={profileSaving}>
             Сохранить имя
-          </button>
+          </PressActionButton>
           {profileMessage ? <p className="account-muted">{profileMessage}</p> : null}
         </section>
 
@@ -122,9 +123,7 @@ export default function AccountPage({ title = 'Личный кабинет' }: A
             <CreditCard size={16} strokeWidth={2} /> Подписка
           </h2>
           <p className="account-muted">Текущий тариф: Pro Team (демо)</p>
-          <button type="button" className="dashboard-new-btn">
-            Оплатить подписку
-          </button>
+          <PressActionButton>Оплатить подписку</PressActionButton>
         </section>
 
         <section className="account-card">
@@ -165,9 +164,7 @@ export default function AccountPage({ title = 'Личный кабинет' }: A
             <span>Сумма пополнения</span>
             <input className="account-input" defaultValue="5000" />
           </label>
-          <button type="button" className="dashboard-new-btn">
-            Пополнить токены
-          </button>
+          <PressActionButton>Пополнить токены</PressActionButton>
         </section>
       </div>
       <div className="account-footer">

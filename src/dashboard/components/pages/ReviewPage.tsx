@@ -2,7 +2,6 @@ import ReviewActivityFeed from '../review/ReviewActivityFeed'
 import ReviewDropzone from '../review/ReviewDropzone'
 import ReviewOnlineSidebar from '../review/ReviewOnlineSidebar'
 import ReviewProcessingSection from '../review/ReviewProcessingSection'
-import { usePipeline } from '../../context/usePipeline'
 
 const onlineMock = [
   { id: 1, name: 'Still Rise', activity: 'Проверяет макет 14-й главы', presence: 'active' },
@@ -37,18 +36,112 @@ const feedMock = [
     timeLabel: '3 часа назад',
     isoTime: '',
   },
+  {
+    id: 4,
+    type: 'achievement',
+    actor: 'Still Rise',
+    text: 'отправил главу 41 на финальную вычитку (F6DSF6DS).',
+    timeLabel: '5 часов назад',
+    isoTime: '',
+  },
+  {
+    id: 5,
+    type: 'system',
+    actor: 'Система',
+    text: 'OCR завершён для обложки ReManga.png — 1 страница, без ошибок.',
+    timeLabel: '6 часов назад',
+    isoTime: '',
+  },
+  {
+    id: 6,
+    type: 'discussion',
+    actor: 'Алексей',
+    text: 'предложил правку в глоссарии проекта «Атака титанов».',
+    quote: '«Survey Corps лучше оставить как Разведкорпус, без кальки.»',
+    timeLabel: 'вчера',
+    isoTime: '',
+  },
+  {
+    id: 7,
+    type: 'achievement',
+    actor: 'Мария',
+    text: 'добавила 12 терминов в глоссарий «Клинок, рассекающий демонов».',
+    timeLabel: 'вчера',
+    isoTime: '',
+  },
+  {
+    id: 8,
+    type: 'system',
+    actor: 'Система',
+    text: 'автоматическая синхронизация с ReManga прошла успешно.',
+    timeLabel: 'вчера',
+    isoTime: '',
+  },
+  {
+    id: 9,
+    type: 'discussion',
+    actor: 'Роберт',
+    text: 'оставил комментарий к макету главы 14.',
+    quote: '«На 7-й странице обрезан SFX — нужно подвинуть текстовый блок.»',
+    timeLabel: '2 дня назад',
+    isoTime: '',
+  },
+  {
+    id: 10,
+    type: 'achievement',
+    actor: 'Still Rise',
+    text: 'принял приглашение в команду и получил роль редактора.',
+    timeLabel: '2 дня назад',
+    isoTime: '',
+  },
+  {
+    id: 11,
+    type: 'system',
+    actor: 'Система',
+    text: 'глава 40 переведена в статус «На проверке».',
+    timeLabel: '3 дня назад',
+    isoTime: '',
+  },
+  {
+    id: 12,
+    type: 'discussion',
+    actor: 'Мария',
+    text: 'спросила про формат экспорта для ReManga.',
+    quote: '«Отдаём PSD послойно или плоский PNG достаточно?»',
+    timeLabel: '3 дня назад',
+    isoTime: '',
+  },
+  {
+    id: 13,
+    type: 'achievement',
+    actor: 'Алексей',
+    text: 'закрыл 8 задач по вычитке в проекте «Атака титанов».',
+    timeLabel: '4 дня назад',
+    isoTime: '',
+  },
+  {
+    id: 14,
+    type: 'system',
+    actor: 'Система',
+    text: 'резервная копия проектов команды создана автоматически.',
+    timeLabel: '5 дней назад',
+    isoTime: '',
+  },
+  {
+    id: 15,
+    type: 'achievement',
+    actor: 'Роберт',
+    text: 'опубликовал главу 13 на ReManga.',
+    timeLabel: '6 дней назад',
+    isoTime: '',
+  },
 ]
 
 function ReviewPage({ title = 'Обзор' }) {
-  const { stats } = usePipeline()
-
   return (
     <div className="chapters-page projects-page review-page">
       <div className="dashboard-toolbar projects-page-toolbar review-page-toolbar">
         <h1>{title}</h1>
-        <p className="review-summary" aria-live="polite">
-          В очереди: {stats.queue} · В редактуре: {stats.inEdit} · Готово: {stats.ready}
-        </p>
       </div>
 
       <div className="review-layout">
@@ -58,7 +151,7 @@ function ReviewPage({ title = 'Обзор' }) {
         </div>
         <aside className="review-aside">
           <ReviewOnlineSidebar members={onlineMock} />
-          <ReviewActivityFeed events={feedMock} />
+          <ReviewActivityFeed events={feedMock} maxHeight={380} />
         </aside>
       </div>
     </div>

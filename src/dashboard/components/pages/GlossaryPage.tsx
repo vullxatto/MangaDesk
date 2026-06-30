@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import { BookOpen, Pencil, Plus, Trash2 } from 'lucide-react'
+import { PressActionButton } from '../../../components/PressActionButton'
 import { usePipeline } from '../../context/usePipeline'
 import type { GlossaryEntry } from '../../glossary/glossaryTypes'
 import { AddGlossaryEntryModal } from '../AddGlossaryEntryModal'
 
 export default function GlossaryPage() {
   const { projectId: projectIdParam } = useParams<{ projectId: string }>()
-  const location = useLocation()
   const {
     projects,
     glossaryByProjectId,
@@ -17,7 +17,6 @@ export default function GlossaryPage() {
     updateGlossaryEntry,
   } = usePipeline()
 
-  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
   const project = useMemo(
     () => (projectIdParam ? projects.find((p) => p.id === projectIdParam) : undefined),
     [projectIdParam, projects],
@@ -38,24 +37,16 @@ export default function GlossaryPage() {
 
   const entries = glossaryByProjectId[projectIdParam] ?? []
 
-  const backHref = returnTo && returnTo.startsWith('/dashboard/') ? returnTo : '/dashboard/projects'
-  const backLabel = returnTo ? '← К переводу' : '← К проектам'
-
   return (
     <div className="chapters-page projects-page glossary-page">
       <div className="dashboard-toolbar projects-page-toolbar glossary-page-toolbar">
         <div className="glossary-page-heading">
-          <Link to={backHref} className="chapter-editor-back glossary-page-back">
-            {backLabel}
-          </Link>
           <h1>
             <BookOpen className="glossary-page-title-icon" size={22} strokeWidth={2} aria-hidden />
             Глоссарий: {project.title}
           </h1>
         </div>
-        <button
-          type="button"
-          className="dashboard-new-btn"
+        <PressActionButton
           onClick={() => {
             setFormKey((n) => n + 1)
             setEditingEntry(null)
@@ -64,10 +55,10 @@ export default function GlossaryPage() {
         >
           <Plus className="projects-add-project-plus" size={18} strokeWidth={2.5} aria-hidden />
           <span>Добавить термин</span>
-        </button>
+        </PressActionButton>
       </div>
 
-      <div className="chapters-panel">
+      <div className="chapters-panel article-mini-card">
         <div className="glossary-table">
           <div className="glossary-table-row glossary-table-row--head">
             <span>Оригинал</span>

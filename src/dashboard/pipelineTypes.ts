@@ -59,13 +59,14 @@ export interface PipelineContextValue {
   teamMembers: TeamMember[]
   dashboardLoading: boolean
   dashboardError: string | null
+  clearDashboardError: () => void
   refreshDashboard: () => Promise<void>
   createProject: (payload: {
     title: string
     description?: string | null
     source_language?: string | null
     target_language?: string | null
-  }) => Promise<void>
+  }) => Promise<DashboardProject>
   updateProject: (
     projectId: string,
     payload: {
@@ -83,8 +84,9 @@ export interface PipelineContextValue {
   removeUploadQueueItem: (id: string) => void
   clearUploadQueue: () => void
   submitUploadQueueItem: (id: string) => Promise<void>
-  overviewJob: OverviewPipelineJob | null
-  dismissOverviewJob: () => void
+  overviewJobs: OverviewPipelineJob[]
+  dismissOverviewJob: (chapterId: string) => void
+  clearOverviewJobs: () => void
   stats: { queue: number; inEdit: number; ready: number }
   assignEditor: (chapterIds: string[], editorId: string) => Promise<void>
   updateChapterMetadata: (

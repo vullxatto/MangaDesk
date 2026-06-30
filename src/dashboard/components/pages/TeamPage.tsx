@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Trash2, UserPlus } from 'lucide-react'
+import { PressActionButton } from '../../../components/PressActionButton'
 import TeamInviteModal from '../TeamInviteModal'
 import { apiDelete, apiPostJson } from '../../../lib/api'
 import { useAuth } from '../../../context/AuthContext'
@@ -43,34 +44,37 @@ function TeamPage({ title = 'Команда' }) {
       <div className="dashboard-toolbar projects-page-toolbar team-page-toolbar">
         <h1>{title}</h1>
         {!isPersonalTeam ? (
-          <button type="button" className="dashboard-new-btn" onClick={() => void handleInvite()}>
+          <PressActionButton onClick={() => void handleInvite()}>
             <UserPlus className="projects-add-project-plus" size={18} strokeWidth={2.5} aria-hidden />
             <span>Пригласить</span>
-          </button>
+          </PressActionButton>
         ) : null}
       </div>
 
       {error ? <p className="review-queue-field-error">{error}</p> : null}
 
-      <div className="account-card">
-        <h2>Участники команды</h2>
-        <div className="trash-list">
+      <div className="chapters-panel article-mini-card">
+        <div className="projects-table team-members-table">
+          <div className="projects-row projects-head">
+            <span>Участник</span>
+            <span>Роль</span>
+            <span className="chapters-actions-head" aria-hidden="true" />
+          </div>
           {teamMembers.map((m) => (
-            <div key={m.id} className="trash-item">
-              <div>
-                <div className="dashboard-user-name">{m.name}</div>
-                <div className="account-muted">{m.role ?? 'member'}</div>
-              </div>
-              {user?.id !== m.id ? (
-                <button
-                  type="button"
-                  className="account-social-btn"
-                  onClick={() => void handleRemove(m.id, m.name)}
-                  aria-label={`Удалить ${m.name}`}
-                >
-                  <Trash2 size={14} strokeWidth={1.8} aria-hidden /> Удалить
-                </button>
-              ) : null}
+            <div key={m.id} className="projects-row">
+              <span className="projects-name">{m.name}</span>
+              <span className="account-muted">{m.role ?? 'member'}</span>
+              <span className="chapters-actions">
+                {user?.id !== m.id ? (
+                  <button
+                    type="button"
+                    onClick={() => void handleRemove(m.id, m.name)}
+                    aria-label={`Удалить ${m.name}`}
+                  >
+                    <Trash2 size={14} strokeWidth={1.8} aria-hidden /> Удалить
+                  </button>
+                ) : null}
+              </span>
             </div>
           ))}
         </div>

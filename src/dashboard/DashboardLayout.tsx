@@ -2,6 +2,8 @@ import { useMemo } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { usePipeline } from './context/usePipeline'
+import DashboardBreadcrumbs from './components/DashboardBreadcrumbs'
+import DashboardLoadError from './components/DashboardLoadError'
 import Sidebar from './components/Sidebar'
 import TeamSwitcher from './components/TeamSwitcher'
 import { DASHBOARD_MENU_ITEMS } from './dashboardMenu'
@@ -16,7 +18,7 @@ function segmentFromPath(pathname: string): string {
 }
 
 export default function DashboardLayout() {
-  const { soloMode, dashboardError } = usePipeline()
+  const { soloMode, dashboardError, dashboardLoading, refreshDashboard, clearDashboardError } = usePipeline()
   const { teams, currentTeamId } = useAuth()
   const location = useLocation()
 
@@ -40,31 +42,29 @@ export default function DashboardLayout() {
 
   return (
     <div className="dashboard-root" data-dashboard-segment={segment}>
-      <div className="dashboard-top-bar">
-        <TeamSwitcher />
-      </div>
-      <div className="dashboard-layout dashboard-body-row">
+      <div className="dashboard-layout">
         <Sidebar menuItems={visibleMenuItems} />
 
-        <main className="dashboard-main">
-        {dashboardError ? (
-          <div
-            className="dashboard-content"
-            style={{
-              padding: '10px 16px',
-              background: 'rgba(180,40,40,0.12)',
-              color: '#b91c1c',
-              fontSize: 14,
-            }}
-            role="alert"
-          >
-            {dashboardError}
+        <div className="dashboard-main-column">
+          <div className="dashboard-top-bar">
+            <TeamSwitcher />
+            <DashboardBreadcrumbs />
           </div>
-        ) : null}
-        <section className="dashboard-content">
-          <Outlet />
-        </section>
-      </main>
+          <main className="dashboard-main">
+            <section className="dashboard-content">
+              {dashboardError ? (
+                <DashboardLoadError
+                  message={dashboardError}
+                  onRetry={() => void refreshDashboard()}
+                  onClose={clearDashboardError}
+                  retrying={dashboardLoading}
+                />
+              ) : (
+                <Outlet />
+              )}
+            </section>
+          </main>
+        </div>
       </div>
     </div>
   )

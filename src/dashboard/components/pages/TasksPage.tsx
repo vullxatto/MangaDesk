@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { PressActionButton } from '../../../components/PressActionButton'
 import { usePipeline } from '../../context/usePipeline'
 import StatusBadge from '../StatusBadge'
 
@@ -30,7 +31,7 @@ function TasksPage({ title = 'Задачи' }) {
       <div className="dashboard-toolbar projects-page-toolbar">
         <h1>{title}</h1>
       </div>
-      <div className="chapters-panel">
+      <div className="chapters-panel article-mini-card">
         <div className="chapters-table tasks-table">
           <div className="chapters-row chapters-head chapters-row--tasks">
             <span>Проект / №</span>
@@ -59,13 +60,9 @@ function TasksPage({ title = 'Задачи' }) {
                 >
                   Открыть
                 </button>
-                <button
-                  type="button"
-                  className="dashboard-new-btn review-queue-submit"
-                  onClick={() => void completeEditorTask(row.id)}
-                >
+                <PressActionButton buttonClassName="review-queue-submit" onClick={() => void completeEditorTask(row.id)}>
                   <span>Завершить</span>
-                </button>
+                </PressActionButton>
               </span>
             </div>
           ))}

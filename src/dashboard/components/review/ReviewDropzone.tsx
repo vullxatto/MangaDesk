@@ -1,9 +1,13 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { ChevronDown, Upload, X } from 'lucide-react'
+import { BookPlus, ChevronDown, Upload, UserPlus, X } from 'lucide-react'
+import { PressActionButton } from '../../../components/PressActionButton'
+import { useAuth } from '../../../context/AuthContext'
 import { isDuplicateChapterNumber } from '../../context/pipelineConstants'
 import { usePipeline } from '../../context/usePipeline'
-import { apiPostMultipart } from '../../../lib/api'
+import { apiPostJson, apiPostMultipart } from '../../../lib/api'
+import ProjectFormModal from '../ProjectFormModal'
+import TeamInviteModal from '../TeamInviteModal'
 
 function formatBytes(n) {
   if (n < 1024) return `${n} Б`
@@ -67,6 +71,13 @@ function ProcessingSubmitModal({
   }, [onClose])
 
   const total = estimate?.tokens_required ?? 0
+  const optionTokenCosts = useMemo(
+    () => ({
+      clean: Math.floor(Math.random() * 15) + 1,
+      type: Math.floor(Math.random() * 15) + 1,
+    }),
+    [fileName],
+  )
 
   return createPortal(
     <div
@@ -83,7 +94,7 @@ function ProcessingSubmitModal({
       >
         <div className="team-modal-header">
           <div>
-            <h2 id="review-submit-modal-title" className="team-modal-title">
+            <h2 id="review-submit-modal-title" className="review-aside-title">
               Параметры обработки
             </h2>
             <p className="review-submit-modal-sub">{fileName}</p>
@@ -102,7 +113,7 @@ function ProcessingSubmitModal({
             />
             <span className="review-submit-modal-label">Клинить звуки?</span>
             <span className="review-submit-modal-row-tokens" aria-live="polite">
-              бесплатно
+              {optionTokenCosts.clean} ток.
             </span>
           </label>
           <label className="review-submit-modal-row">
@@ -113,6 +124,9 @@ function ProcessingSubmitModal({
               onChange={(e) => onTypeSoundsChange(e.target.checked)}
             />
             <span className="review-submit-modal-label">Тайпить звуки?</span>
+            <span className="review-submit-modal-row-tokens" aria-live="polite">
+              {optionTokenCosts.type} ток.
+            </span>
           </label>
         </div>
         <div className="review-submit-modal-footer">
@@ -128,16 +142,15 @@ function ProcessingSubmitModal({
             </p>
           ) : null}
           <p className="review-submit-modal-total">
-            Всего: <strong>{total}</strong> ток.
+            Всего: <strong>{total}</strong> токенов
           </p>
-          <button
-            type="button"
-            className="dashboard-new-btn review-queue-submit"
+          <PressActionButton
+            buttonClassName="review-queue-submit"
             onClick={onConfirm}
             disabled={estimateLoading || !!estimateError}
           >
             <span>Отправить в обработку</span>
-          </button>
+          </PressActionButton>
         </div>
       </div>
     </div>,
@@ -153,6 +166,7 @@ function QueueDropdown({
   ddKey,
   openKey,
   onOpenChange,
+  footerAction,
 }: {
   label: string
   options: QueueOption[]
@@ -161,6 +175,7 @@ function QueueDropdown({
   ddKey: string
   openKey: string | null
   onOpenChange: (key: string | null) => void
+  footerAction?: { label: string; icon?: ReactNode; onClick: () => void }
 }) {
   const isOpen = openKey === ddKey
   const selectedLabel = options.find((o) => o.value === value)?.label ?? '—'
@@ -222,6 +237,22 @@ function QueueDropdown({
                 {option.label}
               </button>
             ))}
+            {footerAction ? (
+              <div className="dashboard-dropdown-menu-footer">
+                <button
+                  type="button"
+                  className="dashboard-dropdown-item dashboard-dropdown-item--action"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onOpenChange(null)
+                    footerAction.onClick()
+                  }}
+                >
+                  {footerAction.icon}
+                  <span>{footerAction.label}</span>
+                </button>
+              </div>
+            ) : null}
           </div>,
           document.body,
         )
@@ -279,6 +310,11 @@ function ReviewDropzone() {
   const [archiveEstimate, setArchiveEstimate] = useState<ArchiveEstimate | null>(null)
   const [archiveEstimateLoading, setArchiveEstimateLoading] = useState(false)
   const [archiveEstimateError, setArchiveEstimateError] = useState<string | null>(null)
+  const [addProjectOpen, setAddProjectOpen] = useState(false)
+  const [addProjectForQueueItemId, setAddProjectForQueueItemId] = useState<string | null>(null)
+  const [inviteOpen, setInviteOpen] = useState(false)
+  const [inviteLink, setInviteLink] = useState('')
+  const { teams, currentTeamId } = useAuth()
   const {
     chapters,
     uploadQueue,
@@ -291,6 +327,21 @@ function ReviewDropzone() {
     submitUploadQueueItem,
     soloMode,
   } = usePipeline()
+
+  const isPersonalTeam = useMemo(() => {
+    const team = teams.find((t) => t.id === currentTeamId)
+    return !!team?.is_personal
+  }, [teams, currentTeamId])
+
+  async function openInviteMemberModal() {
+    try {
+      const res = await apiPostJson<{ invite_url: string }>('/team/invites', {})
+      setInviteLink(res.invite_url)
+      setInviteOpen(true)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   useEffect(() => {
     if (!submitModalItemId) return
@@ -483,7 +534,7 @@ function ReviewDropzone() {
               Очистить
             </button>
           </div>
-          <div className="review-panel review-queue-group">
+          <div className="article-mini-card review-queue-group">
             <ul className="review-queue-group-list">
             {uploadQueue.map((item) => {
               const project = projects.find((p) => p.id === item.projectId)
@@ -520,28 +571,44 @@ function ReviewDropzone() {
                       ddKey={`${item.id}|project`}
                       openKey={openQueueDropdownKey}
                       onOpenChange={setOpenQueueDropdownKey}
+                      footerAction={{
+                        label: 'Добавить проект',
+                        icon: <BookPlus size={12} strokeWidth={2.5} aria-hidden />,
+                        onClick: () => {
+                          setAddProjectForQueueItemId(item.id)
+                          setAddProjectOpen(true)
+                        },
+                      }}
                     />
                   </div>
-                  <label className="review-queue-field">
-                    <span className="review-queue-field-label">Номер главы</span>
-                    <input
-                      type="number"
-                      className={`review-queue-input${duplicate ? ' review-queue-input--invalid' : ''}`}
-                      min={1}
-                      step={1}
-                      value={item.chapterNumber}
-                      onChange={(e) =>
-                        updateUploadQueueItem(item.id, { chapterNumber: e.target.value })
-                      }
-                      placeholder="—"
-                      aria-invalid={duplicate}
-                    />
+                  <div className="review-queue-field">
+                    <label
+                      className={`dashboard-filter-btn review-queue-chapter-cell${duplicate ? ' review-queue-chapter-cell--invalid' : ''}`}
+                    >
+                      <span className="dashboard-filter-btn-text">
+                        <span className="dashboard-filter-btn-label">Номер главы:</span>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          className="review-queue-chapter-input"
+                          value={item.chapterNumber}
+                          onChange={(e) => {
+                            const next = e.target.value.replace(/\D/g, '')
+                            updateUploadQueueItem(item.id, { chapterNumber: next })
+                          }}
+                          placeholder="—"
+                          aria-invalid={duplicate}
+                          aria-label="Номер главы"
+                        />
+                      </span>
+                    </label>
                     {duplicate ? (
                       <p className="review-queue-field-error" role="alert">
                         Такой номер для этого проекта уже занят
                       </p>
                     ) : null}
-                  </label>
+                  </div>
                   {!soloMode ? (
                     <div className="review-queue-field">
                       <QueueDropdown
@@ -552,18 +619,26 @@ function ReviewDropzone() {
                         ddKey={`${item.id}|editor`}
                         openKey={openQueueDropdownKey}
                         onOpenChange={setOpenQueueDropdownKey}
+                        footerAction={
+                          isPersonalTeam
+                            ? undefined
+                            : {
+                                label: 'Добавить участника',
+                                icon: <UserPlus size={12} strokeWidth={2.5} aria-hidden />,
+                                onClick: () => void openInviteMemberModal(),
+                              }
+                        }
                       />
                     </div>
                   ) : null}
                   <div className="review-queue-submit-wrap">
-                    <button
-                      type="button"
-                      className="dashboard-new-btn review-queue-submit"
+                    <PressActionButton
+                      buttonClassName="review-queue-submit"
                       disabled={!itemCanSubmit(item, chapters, uploadQueue, projects)}
                       onClick={() => openSubmitModal(item.id)}
                     >
                       <span>Отправить в обработку</span>
-                    </button>
+                    </PressActionButton>
                   </div>
                 </div>
               </li>
@@ -587,6 +662,26 @@ function ReviewDropzone() {
           onConfirm={confirmSubmitFromModal}
         />
       ) : null}
+      <ProjectFormModal
+        open={addProjectOpen}
+        mode="add"
+        onClose={() => {
+          setAddProjectOpen(false)
+          setAddProjectForQueueItemId(null)
+        }}
+        onCreated={(projectId) => {
+          if (addProjectForQueueItemId) {
+            updateUploadQueueItem(addProjectForQueueItemId, { projectId })
+          }
+          setAddProjectOpen(false)
+          setAddProjectForQueueItemId(null)
+        }}
+      />
+      <TeamInviteModal
+        open={inviteOpen}
+        inviteLink={inviteLink}
+        onClose={() => setInviteOpen(false)}
+      />
     </section>
   )
 }

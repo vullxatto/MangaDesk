@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type {
   ChapterRow,
   DashboardProject,
@@ -102,11 +102,22 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
   const [dashboardLoading, setDashboardLoading] = useState(true)
   const [dashboardError, setDashboardError] = useState<string | null>(null)
 
-  const [overviewJob, setOverviewJob] = useState<OverviewPipelineJob | null>(null)
+  const [overviewJobs, setOverviewJobs] = useState<OverviewPipelineJob[]>([])
+  const overviewJobsRef = useRef(overviewJobs)
+  overviewJobsRef.current = overviewJobs
 
-  const dismissOverviewJob = useCallback(() => {
-    setOverviewJob(null)
+  const dismissOverviewJob = useCallback((chapterId: string) => {
+    setOverviewJobs((prev) => prev.filter((j) => j.chapterId !== chapterId))
   }, [])
+
+  const clearOverviewJobs = useCallback(() => {
+    setOverviewJobs([])
+  }, [])
+
+  const activeOverviewJobCount = useMemo(
+    () => overviewJobs.filter((j) => j.state !== 'completed' && j.state !== 'failed').length,
+    [overviewJobs],
+  )
 
   const refreshDashboard = useCallback(async () => {
     setDashboardError(null)
@@ -141,58 +152,68 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
   }
 
   useEffect(() => {
-    const cid = overviewJob?.chapterId
-    if (!cid) return
+    if (activeOverviewJobCount === 0) return
     let cancelled = false
-    const timerRef = { current: null as ReturnType<typeof setInterval> | null }
 
-    const poll = async () => {
+    const pollOne = async (cid: string) => {
       try {
         const s = await apiGet<OverviewStatusApi>(`/chapters/${cid}/overview-pipeline/status`)
         if (cancelled) return
-        setOverviewJob((prev) => {
-          if (!prev || prev.chapterId !== cid) return prev
-          return {
-            ...prev,
-            state: s.state,
-            total: s.total,
-            done: s.done,
-            phase: s.phase,
-            error: s.error ?? null,
-          }
-        })
+        setOverviewJobs((prev) =>
+          prev.map((job) =>
+            job.chapterId === cid
+              ? {
+                  ...job,
+                  state: s.state,
+                  total: s.total,
+                  done: s.done,
+                  phase: s.phase,
+                  error: s.error ?? null,
+                }
+              : job,
+          ),
+        )
         if (s.state === 'completed') {
-          if (timerRef.current) clearInterval(timerRef.current)
-          timerRef.current = null
           await refreshDashboard()
           if (!cancelled) {
             setTimeout(() => {
-              if (!cancelled) setOverviewJob(null)
+              if (!cancelled) {
+                setOverviewJobs((prev) => prev.filter((j) => j.chapterId !== cid))
+              }
             }, 2200)
           }
         } else if (s.state === 'failed') {
-          if (timerRef.current) clearInterval(timerRef.current)
-          timerRef.current = null
           await refreshDashboard()
         }
       } catch {
         if (!cancelled) {
-          setOverviewJob((prev) =>
-            prev?.chapterId === cid
-              ? { ...prev, state: 'failed', error: 'Не удалось получить статус обработки' }
-              : prev,
+          setOverviewJobs((prev) =>
+            prev.map((job) =>
+              job.chapterId === cid
+                ? { ...job, state: 'failed', error: 'Не удалось получить статус обработки' }
+                : job,
+            ),
           )
         }
       }
     }
 
-    void poll()
-    timerRef.current = setInterval(() => void poll(), 1400)
+    const pollAll = async () => {
+      if (cancelled) return
+      const active = overviewJobsRef.current.filter(
+        (j) => j.state !== 'completed' && j.state !== 'failed',
+      )
+      if (active.length === 0) return
+      await Promise.all(active.map((j) => pollOne(j.chapterId)))
+    }
+
+    void pollAll()
+    const timer = setInterval(() => void pollAll(), 1400)
     return () => {
       cancelled = true
-      if (timerRef.current) clearInterval(timerRef.current)
+      clearInterval(timer)
     }
-  }, [overviewJob?.chapterId, refreshDashboard])
+  }, [activeOverviewJobCount, refreshDashboard])
 
   const setSoloMode = useCallback(
     (value: boolean) => {
@@ -231,13 +252,18 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       source_language?: string | null
       target_language?: string | null
     }) => {
-      await apiPostJson<ProjectApi>('/projects', {
+      const created = await apiPostJson<ProjectApi>('/projects', {
         title: payload.title,
         description: payload.description ?? null,
         source_language: payload.source_language ?? null,
         target_language: payload.target_language ?? null,
       })
       await refreshDashboard()
+      return {
+        id: created.id,
+        title: created.title,
+        slug: created.slug,
+      }
     },
     [refreshDashboard],
   )
@@ -359,15 +385,18 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
               ? item.editorId
               : null,
         })
-        setOverviewJob({
-          chapterId,
-          fileLabel: item.file.name,
-          state: 'running',
-          total: 0,
-          done: 0,
-          phase: 'queued',
-          error: null,
-        })
+        setOverviewJobs((prev) => [
+          ...prev,
+          {
+            chapterId,
+            fileLabel: item.file.name,
+            state: 'running',
+            total: 0,
+            done: 0,
+            phase: 'queued',
+            error: null,
+          },
+        ])
         await refreshDashboard()
         setUploadQueue((prev) => prev.filter((q) => q.id !== id))
       } catch (e) {
@@ -525,6 +554,10 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
     })
   }, [])
 
+  const clearDashboardError = useCallback(() => {
+    setDashboardError(null)
+  }, [])
+
   const value = useMemo<PipelineContextValue>(
     () => ({
       soloMode,
@@ -533,6 +566,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       teamMembers,
       dashboardLoading,
       dashboardError,
+      clearDashboardError,
       refreshDashboard,
       createProject,
       updateProject,
@@ -544,8 +578,9 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       removeUploadQueueItem,
       clearUploadQueue,
       submitUploadQueueItem,
-      overviewJob,
+      overviewJobs,
       dismissOverviewJob,
+      clearOverviewJobs,
       stats,
       assignEditor,
       updateChapterMetadata,
@@ -568,6 +603,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       teamMembers,
       dashboardLoading,
       dashboardError,
+      clearDashboardError,
       refreshDashboard,
       createProject,
       updateProject,
@@ -579,8 +615,9 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       removeUploadQueueItem,
       clearUploadQueue,
       submitUploadQueueItem,
-      overviewJob,
+      overviewJobs,
       dismissOverviewJob,
+      clearOverviewJobs,
       stats,
       assignEditor,
       updateChapterMetadata,

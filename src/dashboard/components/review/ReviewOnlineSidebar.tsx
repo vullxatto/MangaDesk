@@ -11,7 +11,7 @@ function ReviewOnlineSidebar({ members }) {
   const onlineCount = onlineMembers.length
 
   return (
-    <div className="review-aside-block">
+    <div className="review-aside-block article-mini-card">
       <div className="review-aside-head">
         <h2 className="review-aside-title">Участники онлайн</h2>
         <span className="review-aside-badge">{onlineCount}</span>
@@ -41,7 +41,7 @@ function ReviewOnlineSidebar({ members }) {
       )}
 
       <div className="review-chat-teaser">
-        <MessageCircle size={18} strokeWidth={2} aria-hidden className="review-chat-teaser-icon" />
+        <MessageCircle size={16} strokeWidth={2} aria-hidden className="review-chat-teaser-icon" />
         <p className="review-chat-teaser-text">Общий чат для обсуждения материалов (скоро)</p>
       </div>
     </div>

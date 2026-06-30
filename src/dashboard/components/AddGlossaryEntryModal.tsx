@@ -1,6 +1,7 @@
 import { useEffect, useId, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
+import { PressActionButton } from '../../components/PressActionButton'
 
 type AddGlossaryEntryModalProps = {
   open: boolean
@@ -82,9 +83,7 @@ export function AddGlossaryEntryModal({
           <button type="button" className="dashboard-reset-btn" onClick={onClose}>
             Отмена
           </button>
-          <button
-            type="button"
-            className="dashboard-new-btn"
+          <PressActionButton
             onClick={() => {
               const s = source.trim()
               const t = target.trim()
@@ -94,7 +93,7 @@ export function AddGlossaryEntryModal({
             }}
           >
             Сохранить
-          </button>
+          </PressActionButton>
         </div>
       </div>
     </div>,

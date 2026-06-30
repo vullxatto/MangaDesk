@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
+import { PressActionButton } from '../../components/PressActionButton'
 
 type CreateTeamModalProps = {
   open: boolean
@@ -101,9 +102,9 @@ export default function CreateTeamModal({ open, onClose, onSubmit }: CreateTeamM
           <button type="button" className="dashboard-reset-btn" onClick={onClose} disabled={saving}>
             Отмена
           </button>
-          <button type="button" className="dashboard-new-btn" onClick={() => void handleSave()} disabled={saving}>
+          <PressActionButton onClick={() => void handleSave()} disabled={saving}>
             {saving ? 'Создание…' : 'Создать'}
-          </button>
+          </PressActionButton>
         </div>
       </div>
     </div>,

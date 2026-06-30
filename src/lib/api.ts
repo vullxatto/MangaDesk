@@ -25,6 +25,40 @@ export class ApiError extends Error {
   }
 }
 
+const API_ERROR_MESSAGES_RU: Record<string, string> = {
+  'chapter number already exists for project':
+    'Такой номер главы для этого проекта\nуже занят',
+}
+
+function extractApiDetail(text: string): string {
+  const trimmed = text.trim()
+  if (!trimmed) return ''
+  if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) return trimmed
+  try {
+    const obj = JSON.parse(trimmed) as Record<string, unknown>
+    const detail = obj.detail ?? obj.DETAIL
+    if (typeof detail === 'string') return detail
+    if (Array.isArray(detail) && detail.length > 0) {
+      const first = detail[0] as { msg?: string }
+      if (typeof first?.msg === 'string') return first.msg
+    }
+  } catch {
+    return trimmed
+  }
+  return trimmed
+}
+
+export function formatApiErrorMessage(raw: string): string {
+  const detail = extractApiDetail(raw)
+  const key = detail.trim().toLowerCase()
+  return API_ERROR_MESSAGES_RU[key] ?? (detail || raw)
+}
+
+function apiErrorFromResponse(text: string, status: number, statusText: string): ApiError {
+  const message = formatApiErrorMessage(text || statusText)
+  return new ApiError(message, status, text)
+}
+
 async function parseJson<T>(res: Response): Promise<T> {
   const text = await res.text()
   if (!text) return undefined as T
@@ -39,7 +73,7 @@ export async function apiGet<T>(path: string): Promise<T> {
   const res = await fetch(`${baseUrl}${path}`, { headers: headers() })
   if (!res.ok) {
     const body = await res.text()
-    throw new ApiError(body || res.statusText, res.status, body)
+    throw apiErrorFromResponse(body, res.status, res.statusText)
   }
   return parseJson<T>(res)
 }
@@ -48,7 +82,7 @@ export async function apiDelete(path: string): Promise<void> {
   const res = await fetch(`${baseUrl}${path}`, { method: 'DELETE', headers: headers() })
   if (!res.ok) {
     const body = await res.text()
-    throw new ApiError(body || res.statusText, res.status, body)
+    throw apiErrorFromResponse(body, res.status, res.statusText)
   }
 }
 
@@ -60,7 +94,7 @@ export async function apiPostJson<T>(path: string, body: unknown): Promise<T> {
   })
   if (!res.ok) {
     const t = await res.text()
-    throw new ApiError(t || res.statusText, res.status, t)
+    throw apiErrorFromResponse(t, res.status, res.statusText)
   }
   return parseJson<T>(res)
 }
@@ -73,7 +107,7 @@ export async function apiPatchJson<T>(path: string, body: unknown): Promise<T> {
   })
   if (!res.ok) {
     const t = await res.text()
-    throw new ApiError(t || res.statusText, res.status, t)
+    throw apiErrorFromResponse(t, res.status, res.statusText)
   }
   return parseJson<T>(res)
 }
@@ -86,7 +120,7 @@ export async function apiPutJson<T>(path: string, body: unknown): Promise<T> {
   })
   if (!res.ok) {
     const t = await res.text()
-    throw new ApiError(t || res.statusText, res.status, t)
+    throw apiErrorFromResponse(t, res.status, res.statusText)
   }
   return parseJson<T>(res)
 }
@@ -99,7 +133,7 @@ export async function apiPostMultipart(path: string, form: FormData): Promise<un
   })
   if (!res.ok) {
     const t = await res.text()
-    throw new ApiError(t || res.statusText, res.status, t)
+    throw apiErrorFromResponse(t, res.status, res.statusText)
   }
   const text = await res.text()
   if (!text) return {}
@@ -132,7 +166,7 @@ export async function apiDownloadFile(storageKey: string, suggestedName?: string
   const res = await fetch(url, { headers: h })
   if (!res.ok) {
     const t = await res.text()
-    throw new ApiError(t || res.statusText, res.status, t)
+    throw apiErrorFromResponse(t, res.status, res.statusText)
   }
   const blob = await res.blob()
   const name =

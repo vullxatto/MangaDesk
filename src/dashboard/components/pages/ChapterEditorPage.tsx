@@ -95,6 +95,23 @@ function ChapterEditorAutosizeTextarea({
 
 const GLASS_FONT_MIN = 5
 const GLASS_FONT_MAX_CAP = 520
+/** Базовое значение font-size в CSS; меняется пропорционально (12 → 100%, 18 → 150%). */
+const GLASS_FONT_CSS_REF = 12
+
+function readGlassFontScale(textarea: HTMLTextAreaElement): number {
+  const prev = textarea.style.fontSize
+  textarea.style.removeProperty('font-size')
+  const px = parseFloat(getComputedStyle(textarea).fontSize)
+  if (prev) textarea.style.fontSize = prev
+  if (!Number.isFinite(px) || px <= 0) return 1
+  return px / GLASS_FONT_CSS_REF
+}
+
+function readGlassEmptyRatio(textarea: HTMLTextAreaElement): number {
+  const raw = getComputedStyle(textarea).getPropertyValue('--glass-font-empty-ratio').trim()
+  const n = parseFloat(raw)
+  return Number.isFinite(n) && n > 0 ? n : 0.72
+}
 
 function glassClearVerticalPadding(textarea: HTMLTextAreaElement) {
   textarea.style.paddingTop = '0px'
@@ -118,6 +135,9 @@ function fitGlassTextareaFontSize(textarea: HTMLTextAreaElement) {
   const h = textarea.clientHeight
   if (w < 4 || h < 4) return
 
+  const scale = readGlassFontScale(textarea)
+  const emptyRatio = readGlassEmptyRatio(textarea)
+
   const fitsStrict = () =>
     textarea.scrollHeight <= textarea.clientHeight
     && textarea.scrollWidth <= textarea.clientWidth
@@ -125,7 +145,7 @@ function fitGlassTextareaFontSize(textarea: HTMLTextAreaElement) {
   if (!textarea.value.trim()) {
     const fs = Math.min(
       GLASS_FONT_MAX_CAP,
-      Math.max(GLASS_FONT_MIN, Math.floor(h * 0.72)),
+      Math.max(GLASS_FONT_MIN, Math.floor(h * emptyRatio * scale)),
     )
     textarea.style.fontSize = `${fs}px`
     void textarea.offsetHeight
@@ -147,7 +167,7 @@ function fitGlassTextareaFontSize(textarea: HTMLTextAreaElement) {
 
   const hi = Math.min(
     GLASS_FONT_MAX_CAP,
-    Math.max(GLASS_FONT_MIN + 1, Math.ceil(Math.hypot(w, h))),
+    Math.max(GLASS_FONT_MIN + 1, Math.ceil(Math.hypot(w, h) * scale)),
   )
 
   let best = GLASS_FONT_MIN
@@ -565,9 +585,6 @@ export default function ChapterEditorPage() {
   return (
     <div className="chapter-editor-page">
       <header className="chapter-editor-header">
-        <Link to="/dashboard/chapters" className="chapter-editor-back">
-          ← К списку глав
-        </Link>
         <div className="chapter-editor-title-row">
           <h1 className="chapter-editor-title">
             {displayTitle} № {displayNumber}

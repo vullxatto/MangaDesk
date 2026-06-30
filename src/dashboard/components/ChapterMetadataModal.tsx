@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
+import { PressActionButton } from '../../components/PressActionButton'
 import type { DashboardProject } from '../pipelineTypes'
 import { isDuplicateChapterNumber } from '../context/pipelineConstants'
 import type { ChapterRow, UploadQueueItem } from '../pipelineTypes'
@@ -130,9 +131,9 @@ export default function ChapterMetadataModal({
           <button type="button" className="dashboard-reset-btn chapter-editor-meta-cancel" onClick={onClose}>
             Отмена
           </button>
-          <button type="button" className="dashboard-new-btn review-queue-submit" onClick={handleConfirm}>
+          <PressActionButton buttonClassName="review-queue-submit" onClick={handleConfirm}>
             <span>Подтвердить</span>
-          </button>
+          </PressActionButton>
         </div>
       </div>
     </div>,

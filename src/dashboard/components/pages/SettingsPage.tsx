@@ -8,7 +8,7 @@ function SettingsPage({ title = 'Настройки' }) {
       <div className="dashboard-toolbar projects-page-toolbar">
         <h1>{title}</h1>
       </div>
-      <div className="chapters-panel settings-panel">
+      <div className="chapters-panel article-mini-card settings-panel">
         <label className="settings-solo-toggle">
           <span className="settings-solo-label">Режим соло-переводчика</span>
           <span className="settings-toggle">

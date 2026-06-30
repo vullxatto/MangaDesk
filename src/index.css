@@ -498,7 +498,7 @@ a {
   height: var(--size-icon-sm);
 }
 
-.btn-press-wrap:hover .btn-press {
+.btn-press-wrap:hover .btn-press:not(:disabled) {
   transform: translate(calc(var(--space-2px) + 1px), calc(var(--space-2px) + 1px));
 }
 
@@ -513,7 +513,7 @@ a {
   background-clip: padding-box;
 }
 
-.btn-press-wrap--design:hover > .btn-press {
+.btn-press-wrap--design:hover > .btn-press:not(:disabled) {
   transform: translate(1px, 1px);
 }
 
@@ -551,8 +551,8 @@ a {
     transform 0.12s ease;
 }
 
-.btn-cabinet:hover,
-.btn-cabinet:focus-visible,
+.btn-cabinet:hover:not(:disabled),
+.btn-cabinet:focus-visible:not(:disabled),
 .btn-icon:hover,
 .btn-icon:focus-visible,
 .btn-cta:hover,

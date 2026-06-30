@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus } from 'lucide-react'
+import { BookPlus } from 'lucide-react'
+import { PressActionButton } from '../../../components/PressActionButton'
 import { usePipeline } from '../../context/usePipeline'
 import ProjectFormModal from '../ProjectFormModal'
 import ProjectsTable, { type ProjectRow } from '../ProjectsTable'
@@ -36,12 +37,12 @@ function ProjectsPage({ title }: { title: string }) {
     <div className="chapters-page projects-page">
       <div className="dashboard-toolbar projects-page-toolbar">
         <h1>{title}</h1>
-        <button type="button" className="dashboard-new-btn" onClick={() => setAddOpen(true)}>
-          <Plus className="projects-add-project-plus" size={18} strokeWidth={2.5} aria-hidden />
+        <PressActionButton onClick={() => setAddOpen(true)}>
+          <BookPlus className="projects-add-project-plus" size={18} strokeWidth={2.5} aria-hidden />
           <span>Добавить проект</span>
-        </button>
+        </PressActionButton>
       </div>
-      <div className="chapters-panel">
+      <div className="chapters-panel article-mini-card">
         <ProjectsTable
           rows={projectsData}
           onEditProject={setEditingProject}

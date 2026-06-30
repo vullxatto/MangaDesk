@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { PressActionButton } from '../../../components/PressActionButton'
 import { apiGet, apiPostJson } from '../../../lib/api'
 import { usePipeline } from '../../context/usePipeline'
 
@@ -72,57 +73,58 @@ export default function TrashPage({ title = 'Корзина' }: { title?: string
       <div className="dashboard-toolbar projects-page-toolbar">
         <h1>{title}</h1>
       </div>
-      <div className="chapters-panel settings-panel">
+      <div className="chapters-panel article-mini-card settings-panel">
         {loading ? <p className="account-muted">Загрузка корзины...</p> : null}
-        {/* Ошибки корзины намеренно не показываем в UI по запросу */}
 
         {isEmpty ? <p className="trash-empty-text">В корзине пусто</p> : null}
 
         {!isEmpty ? (
           <>
-            <section className="account-card">
-              <h2>Удаленные проекты</h2>
-              {items.projects.length === 0 ? (
-                <p className="account-muted">Пусто</p>
-              ) : (
-                <div className="trash-list">
-                  {items.projects.map((p) => (
-                    <div key={p.id} className="trash-item">
-                      <div>
-                        <div className="dashboard-user-name">{p.title}</div>
-                        <div className="account-muted">Удалено: {new Date(p.deleted_at).toLocaleString('ru-RU')}</div>
-                      </div>
-                      <button type="button" className="dashboard-new-btn" onClick={() => setRestoreProjectId(p.id)}>
-                        Восстановить
-                      </button>
-                    </div>
-                  ))}
+            <h2 className="dashboard-list-section-title">Удалённые проекты</h2>
+            {items.projects.length === 0 ? (
+              <p className="account-muted">Пусто</p>
+            ) : (
+              <div className="projects-table trash-table">
+                <div className="projects-row projects-head">
+                  <span>Название</span>
+                  <span>Удалено</span>
+                  <span className="chapters-actions-head" aria-hidden="true" />
                 </div>
-              )}
-            </section>
+                {items.projects.map((p) => (
+                  <div key={p.id} className="projects-row">
+                    <span className="projects-name">{p.title}</span>
+                    <span className="account-muted">{new Date(p.deleted_at).toLocaleString('ru-RU')}</span>
+                    <span className="chapters-actions">
+                      <PressActionButton onClick={() => setRestoreProjectId(p.id)}>Восстановить</PressActionButton>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
 
-            <section className="account-card">
-              <h2>Удаленные главы</h2>
-              {items.chapters.length === 0 ? (
-                <p className="account-muted">Пусто</p>
-              ) : (
-                <div className="trash-list">
-                  {items.chapters.map((c) => (
-                    <div key={c.id} className="trash-item">
-                      <div>
-                        <div className="dashboard-user-name">
-                          {c.project_title} · Глава № {c.chapter_number}
-                        </div>
-                        <div className="account-muted">Удалено: {new Date(c.deleted_at).toLocaleString('ru-RU')}</div>
-                      </div>
-                      <button type="button" className="dashboard-new-btn" onClick={() => void restoreChapter(c.id)}>
-                        Восстановить
-                      </button>
-                    </div>
-                  ))}
+            <h2 className="dashboard-list-section-title dashboard-list-section-title--spaced">Удалённые главы</h2>
+            {items.chapters.length === 0 ? (
+              <p className="account-muted">Пусто</p>
+            ) : (
+              <div className="projects-table trash-table">
+                <div className="projects-row projects-head">
+                  <span>Глава</span>
+                  <span>Удалено</span>
+                  <span className="chapters-actions-head" aria-hidden="true" />
                 </div>
-              )}
-            </section>
+                {items.chapters.map((c) => (
+                  <div key={c.id} className="projects-row">
+                    <span className="projects-name">
+                      {c.project_title} · Глава № {c.chapter_number}
+                    </span>
+                    <span className="account-muted">{new Date(c.deleted_at).toLocaleString('ru-RU')}</span>
+                    <span className="chapters-actions">
+                      <PressActionButton onClick={() => void restoreChapter(c.id)}>Восстановить</PressActionButton>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </>
         ) : null}
       </div>
@@ -144,13 +146,7 @@ export default function TrashPage({ title = 'Корзина' }: { title?: string
               >
                 Нет
               </button>
-              <button
-                type="button"
-                className="dashboard-new-btn"
-                onClick={() => void restoreProject(selectedProject.id, true)}
-              >
-                Да
-              </button>
+              <PressActionButton onClick={() => void restoreProject(selectedProject.id, true)}>Да</PressActionButton>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
+import { PressActionButton } from '../../components/PressActionButton'
 import { usePipeline } from '../context/usePipeline'
 import ChapterMetadataModal from './ChapterMetadataModal'
 import ChapterTable from './ChapterTable'
@@ -226,9 +227,8 @@ function ChaptersPage({ title }) {
         <div className="chapters-batch-bar">
           <span className="chapters-batch-bar-text">Выбрано: {batchWaitingSelectedCount}</span>
           <div className={`dashboard-dropdown chapters-assign-dropdown ${batchOpen ? 'is-open' : ''}`}>
-            <button
-              type="button"
-              className="dashboard-new-btn chapters-batch-assign-btn"
+            <PressActionButton
+              buttonClassName="chapters-batch-assign-btn"
               onClick={(e) => {
                 e.stopPropagation()
                 setAssignMenuKey((k) => (k === 'batch' ? null : 'batch'))
@@ -236,7 +236,7 @@ function ChaptersPage({ title }) {
               aria-expanded={batchOpen}
             >
               <span>Назначить редактора</span>
-            </button>
+            </PressActionButton>
             {batchOpen ? (
               <div className="dashboard-dropdown-menu chapters-assign-menu chapters-assign-menu--batch">
                 {teamMembers.map((m) => (
@@ -261,7 +261,7 @@ function ChaptersPage({ title }) {
           </div>
         </div>
       ) : null}
-      <div className="chapters-panel">
+      <div className="chapters-panel article-mini-card">
         <ChapterTable
           rows={filteredChapters}
           assignMenuKey={assignMenuKey}
