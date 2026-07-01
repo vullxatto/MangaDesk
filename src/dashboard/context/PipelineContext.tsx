@@ -414,14 +414,29 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
   }, [chapters, uploadQueue.length])
 
   const updateChapterMetadata = useCallback(
-    async (chapterId: string, projectId: string, chapterNumber: number, chapterTitle?: string | null) => {
+    async (
+      chapterId: string,
+      projectId: string,
+      chapterNumber: number,
+      chapterTitle?: string | null,
+      editorId?: string | null,
+    ) => {
       if (!Number.isFinite(chapterNumber) || chapterNumber < 1) return
       try {
-        await apiPatchJson(`/chapters/${chapterId}`, {
+        const payload: {
+          project_id: string
+          chapter_number: number
+          chapter_title: string | null
+          assigned_editor_id?: string | null
+        } = {
           project_id: projectId,
           chapter_number: chapterNumber,
           chapter_title: chapterTitle ?? null,
-        })
+        }
+        if (editorId !== undefined) {
+          payload.assigned_editor_id = editorId?.trim() ? editorId : null
+        }
+        await apiPatchJson(`/chapters/${chapterId}`, payload)
         await refreshDashboard()
       } catch (e) {
         console.error(e)

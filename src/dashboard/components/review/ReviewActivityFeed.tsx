@@ -20,11 +20,11 @@ function ReviewActivityFeed({ events, maxHeight = 380 }) {
         <h2 className="review-aside-title">Лента событий</h2>
         <button
           type="button"
-          className="review-aside-badge review-feed-scroll-top"
+          className="review-queue-clear review-feed-scroll-top"
           onClick={scrollToTop}
           aria-label="Прокрутить ленту наверх"
         >
-          <ArrowUp size={14} strokeWidth={2.5} aria-hidden />
+          <ArrowUp size={16} strokeWidth={1.8} aria-hidden />
         </button>
       </div>
       <div

@@ -112,6 +112,7 @@ html {
 
 html:has(.dashboard-root) {
   min-width: 1280px;
+  scrollbar-gutter: auto;
 }
 
 html:has(.app-shell--auth) {

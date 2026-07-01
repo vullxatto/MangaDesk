@@ -1,4 +1,4 @@
-import { ArrowRight, Pencil } from 'lucide-react'
+import { Pencil } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export type ProjectRow = {
@@ -32,16 +32,15 @@ function ProjectsTable({ rows, onEditProject, onOpenProjectChapters }: ProjectsT
           <span className="projects-chapters-wrap">
             <button
               type="button"
-              className="projects-chapters-cell projects-chapters-open-btn"
+              className="review-queue-clear projects-chapters-cell projects-chapters-open-btn"
               onClick={() => onOpenProjectChapters(row)}
               aria-label={`Перейти к главам проекта ${row.name}`}
             >
               <span className="projects-chapters-num">{row.chapters}</span>
-              <ArrowRight size={13} strokeWidth={2} />
             </button>
           </span>
           <span className="projects-glossary">
-            <Link className="projects-link-tag" to={`/dashboard/projects/${row.projectId}/glossary`}>
+            <Link className="review-queue-clear projects-link-tag" to={`/dashboard/projects/${row.projectId}/glossary`}>
               Открыть
             </Link>
           </span>
@@ -49,7 +48,7 @@ function ProjectsTable({ rows, onEditProject, onOpenProjectChapters }: ProjectsT
             {row.links.map((link, index) => (
               <a
                 key={`${row.projectId}-${index}`}
-                className="projects-link-tag"
+                className="review-queue-clear projects-link-tag"
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -59,8 +58,13 @@ function ProjectsTable({ rows, onEditProject, onOpenProjectChapters }: ProjectsT
             ))}
           </span>
           <span className="chapters-actions">
-            <button type="button" aria-label="Редактировать проект" onClick={() => onEditProject(row)}>
-              <Pencil size={15} strokeWidth={1.8} />
+            <button
+              type="button"
+              className="review-queue-clear"
+              aria-label="Редактировать проект"
+              onClick={() => onEditProject(row)}
+            >
+              <Pencil size={16} strokeWidth={1.8} aria-hidden />
             </button>
           </span>
         </div>

@@ -94,6 +94,7 @@ export interface PipelineContextValue {
     projectId: string,
     chapterNumber: number,
     chapterTitle?: string | null,
+    editorId?: string | null,
   ) => Promise<void>
   removeChapter: (chapterId: string) => Promise<void>
   completeEditorTask: (chapterId: string) => Promise<void>

@@ -5,9 +5,19 @@ import ReviewProcessingSection from '../review/ReviewProcessingSection'
 
 const onlineMock = [
   { id: 1, name: 'Still Rise', activity: 'Проверяет макет 14-й главы', presence: 'active' },
-  { id: 2, name: 'Роберт', activity: 'Редактура · Атака титанов', presence: 'active' },
+  { id: 2, name: 'Роберт', activity: 'Редактура · Атака титанов', presence: 'away' },
   { id: 3, name: 'Мария', activity: 'В сети', presence: 'away' },
   { id: 4, name: 'Алексей', activity: 'Не в сети', presence: 'offline' },
+  { id: 5, name: 'Елена', activity: 'Типографика · Клинок', presence: 'active' },
+  { id: 6, name: 'Дмитрий', activity: 'Вычитка главы 7', presence: 'active' },
+  { id: 7, name: 'София', activity: 'В сети', presence: 'away' },
+  { id: 8, name: 'Иван', activity: 'Загрузка сканов', presence: 'offline' },
+  { id: 9, name: 'Катя', activity: 'Глоссарий', presence: 'active' },
+  { id: 10, name: 'Никита', activity: 'В сети', presence: 'away' },
+  { id: 11, name: 'Ольга', activity: 'Редактура', presence: 'active' },
+  { id: 12, name: 'Павел', activity: 'Не в сети', presence: 'offline' },
+  { id: 13, name: 'Анна', activity: 'Проверка SFX', presence: 'active' },
+  { id: 14, name: 'Максим', activity: 'В сети', presence: 'away' },
 ]
 
 const feedMock = [

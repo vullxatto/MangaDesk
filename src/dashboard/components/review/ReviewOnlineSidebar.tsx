@@ -1,4 +1,4 @@
-import { MessageCircle } from 'lucide-react'
+import { MessageSquare } from 'lucide-react'
 
 const presenceLabel = {
   active: 'В сети',
@@ -14,7 +14,7 @@ function ReviewOnlineSidebar({ members }) {
     <div className="review-aside-block article-mini-card">
       <div className="review-aside-head">
         <h2 className="review-aside-title">Участники онлайн</h2>
-        <span className="review-aside-badge">{onlineCount}</span>
+        <span className="review-aside-count">{onlineCount}</span>
       </div>
       {onlineCount === 0 ? (
         <p className="review-online-empty">Сейчас никого в сети</p>
@@ -41,7 +41,7 @@ function ReviewOnlineSidebar({ members }) {
       )}
 
       <div className="review-chat-teaser">
-        <MessageCircle size={16} strokeWidth={2} aria-hidden className="review-chat-teaser-icon" />
+        <MessageSquare size={16} strokeWidth={2} aria-hidden className="review-chat-teaser-icon" />
         <p className="review-chat-teaser-text">Общий чат для обсуждения материалов (скоро)</p>
       </div>
     </div>

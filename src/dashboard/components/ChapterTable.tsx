@@ -1,5 +1,5 @@
 import { ChevronDown, CloudDownload, Pencil } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { usePipeline } from '../context/usePipeline'
 import type { ChapterRow } from '../pipelineTypes'
 import StatusBadge from './StatusBadge'
@@ -10,11 +10,6 @@ const STATUS_LABEL = {
   edit: 'РЕДАКТУРА',
   upload: 'ЗАГРУЗКА',
   waiting_editor: 'ЖДЁТ РЕДАКТОРА',
-}
-
-function editorInitial(name: string | null | undefined) {
-  if (!name || !name.trim()) return '—'
-  return name.trim().charAt(0).toUpperCase()
 }
 
 function AssignEditorControl({
@@ -45,7 +40,7 @@ function AssignEditorControl({
         <span className="dashboard-filter-btn-text">
           <span className="dashboard-filter-btn-value">Назначить</span>
         </span>
-        <ChevronDown size={12} className="dashboard-filter-chevron" strokeWidth={2.25} />
+        <ChevronDown size={14} className="dashboard-filter-chevron" strokeWidth={2.25} />
       </button>
       {open ? (
         <div className="dashboard-dropdown-menu chapters-assign-menu">
@@ -79,7 +74,6 @@ function ChapterTable({
   onAssignMenuKey: (key: string | null | ((prev: string | null) => string | null)) => void
   onOpenMetadataModal: (chapterId: string) => void
 }) {
-  const navigate = useNavigate()
   const { soloMode, assignEditor, selectedWaitingIds, toggleWaitingSelected, teamMembers } = usePipeline()
 
   return (
@@ -90,6 +84,7 @@ function ChapterTable({
         {!soloMode ? <span className="chapters-select-head" aria-hidden="true" /> : null}
         <span>Проект / №</span>
         <span>Статус</span>
+        <span>Перевод</span>
         <span>Дата изменения</span>
         {!soloMode ? <span>Редактор</span> : null}
         <span className="chapters-actions-head" aria-hidden="true" />
@@ -127,10 +122,18 @@ function ChapterTable({
             <span>
               <StatusBadge statusCode={row.statusCode} status={label} />
             </span>
+            <span className="chapters-translate">
+              <Link
+                className="review-queue-clear projects-link-tag"
+                to={`/dashboard/chapters/${row.id}/edit`}
+              >
+                Открыть
+              </Link>
+            </span>
             <span className="chapters-date">{row.date}</span>
             {!soloMode ? (
               <span className="chapters-editor">
-                {row.statusCode === 'waiting_editor' ? (
+                {!row.editorId ? (
                   <AssignEditorControl
                     assignMenuKey={assignMenuKey}
                     rowId={row.id}
@@ -140,7 +143,17 @@ function ChapterTable({
                   />
                 ) : (
                   <>
-                    <b>{editorInitial(row.editorName)}</b>
+                    <div className="chapters-editor-avatar-wrap">
+                      <div className="chapters-editor-avatar">
+                        <img
+                          src={`https://picsum.photos/seed/mangadesk-team-${row.editorId}/96/96`}
+                          alt=""
+                          className="chapters-editor-avatar-img"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </div>
+                    </div>
                     <span className="chapters-editor-name">{row.editorName ?? '—'}</span>
                   </>
                 )}
@@ -150,25 +163,15 @@ function ChapterTable({
               {row.statusCode === 'ready' ? (
                 <button
                   type="button"
-                  className="chapters-row-icon-btn chapters-row-download-icon"
+                  className="review-queue-clear"
                   aria-label={`Скачать главу ${row.title}, № ${row.number}`}
                 >
-                  <CloudDownload size={16} strokeWidth={2} aria-hidden />
+                  <CloudDownload size={16} strokeWidth={1.8} aria-hidden />
                 </button>
               ) : null}
               <button
                 type="button"
-                className="dashboard-reset-btn chapters-row-translate"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  navigate(`/dashboard/chapters/${row.id}/edit`)
-                }}
-              >
-                Перевод
-              </button>
-              <button
-                type="button"
-                className="chapters-row-icon-btn chapters-row-edit-icon"
+                className="review-queue-clear"
                 aria-label={`Изменить проект и номер: ${row.title}, № ${row.number}`}
                 onClick={(e) => {
                   e.stopPropagation()
