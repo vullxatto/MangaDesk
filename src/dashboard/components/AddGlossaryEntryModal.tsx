@@ -2,6 +2,7 @@ import { useEffect, useId, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { PressActionButton } from '../../components/PressActionButton'
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock'
 
 type AddGlossaryEntryModalProps = {
   open: boolean
@@ -11,6 +12,7 @@ type AddGlossaryEntryModalProps = {
   initialTarget?: string
   onClose: () => void
   onSubmit: (source: string, target: string) => void
+  onDelete?: () => void
 }
 
 export function AddGlossaryEntryModal({
@@ -21,10 +23,13 @@ export function AddGlossaryEntryModal({
   initialTarget = '',
   onClose,
   onSubmit,
+  onDelete,
 }: AddGlossaryEntryModalProps) {
   const titleId = useId()
   const [source, setSource] = useState(initialSource)
   const [target, setTarget] = useState(initialTarget)
+
+  useBodyScrollLock(open)
 
   useEffect(() => {
     if (!open) return
@@ -46,7 +51,7 @@ export function AddGlossaryEntryModal({
   return createPortal(
     <div className="team-modal-backdrop" role="presentation" onClick={onClose}>
       <div
-        className="team-modal glossary-add-modal"
+        className="team-modal project-form-modal glossary-add-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -54,35 +59,52 @@ export function AddGlossaryEntryModal({
       >
         <div className="team-modal-header">
           <h2 id={titleId} className="team-modal-title">
-            {mode === 'edit' ? 'Редактировать термин' : 'Добавить в глоссарий'} · {projectLabel}
+            {mode === 'edit' ? 'Редактировать термин' : 'Добавить в глоссарий'}: {projectLabel}
           </h2>
           <button type="button" className="team-modal-close" aria-label="Закрыть" onClick={onClose}>
             <X size={20} strokeWidth={2} />
           </button>
         </div>
-        <div className="glossary-add-modal-body">
-          <label className="glossary-add-field">
-            <span className="glossary-add-label">Оригинал</span>
-            <input
-              className="glossary-add-input"
-              value={source}
-              onChange={(e) => setSource(e.target.value)}
-              autoFocus
-            />
-          </label>
-          <label className="glossary-add-field">
-            <span className="glossary-add-label">Перевод</span>
-            <input
-              className="glossary-add-input"
-              value={target}
-              onChange={(e) => setTarget(e.target.value)}
-            />
-          </label>
+        <div className="project-form-body">
+          <div className="project-form-field review-queue-field">
+            <label className="dashboard-filter-btn review-queue-chapter-cell project-form-name-cell">
+              <span className="dashboard-filter-btn-text">
+                <span className="dashboard-filter-btn-label">Оригинал:</span>
+                <input
+                  className="review-queue-chapter-input project-form-name-input"
+                  value={source}
+                  onChange={(e) => setSource(e.target.value)}
+                  autoFocus
+                  placeholder="—"
+                  aria-label="Оригинал"
+                />
+              </span>
+            </label>
+          </div>
+          <div className="project-form-field review-queue-field">
+            <label className="dashboard-filter-btn review-queue-chapter-cell project-form-name-cell">
+              <span className="dashboard-filter-btn-text">
+                <span className="dashboard-filter-btn-label">Перевод:</span>
+                <input
+                  className="review-queue-chapter-input project-form-name-input"
+                  value={target}
+                  onChange={(e) => setTarget(e.target.value)}
+                  placeholder="—"
+                  aria-label="Перевод"
+                />
+              </span>
+            </label>
+          </div>
         </div>
-        <div className="glossary-add-modal-footer">
-          <button type="button" className="dashboard-reset-btn" onClick={onClose}>
-            Отмена
-          </button>
+        <div className="project-form-footer">
+          {mode === 'edit' ? (
+            <PressActionButton wrapClassName="project-form-delete-btn" onClick={onDelete}>
+              <span>Удалить</span>
+            </PressActionButton>
+          ) : null}
+          <PressActionButton onClick={onClose}>
+            <span>Отмена</span>
+          </PressActionButton>
           <PressActionButton
             onClick={() => {
               const s = source.trim()
@@ -92,7 +114,7 @@ export function AddGlossaryEntryModal({
               onClose()
             }}
           >
-            Сохранить
+            <span>Сохранить</span>
           </PressActionButton>
         </div>
       </div>

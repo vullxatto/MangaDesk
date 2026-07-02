@@ -1,10 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
-import { BookOpen, Pencil, Plus, Trash2 } from 'lucide-react'
+import { BookOpen, ChevronLeft, ChevronRight, Pencil, Plus } from 'lucide-react'
 import { PressActionButton } from '../../../components/PressActionButton'
 import { usePipeline } from '../../context/usePipeline'
 import type { GlossaryEntry } from '../../glossary/glossaryTypes'
 import { AddGlossaryEntryModal } from '../AddGlossaryEntryModal'
+import DashboardDropdown from '../DashboardDropdown'
+
+const DEFAULT_PAGE_SIZE = 10
+
+const pageSizeOptions = [
+  { value: '10', label: '10' },
+  { value: '25', label: '25' },
+  { value: '50', label: '50' },
+  { value: '100', label: '100' },
+]
 
 export default function GlossaryPage() {
   const { projectId: projectIdParam } = useParams<{ projectId: string }>()
@@ -25,17 +35,59 @@ export default function GlossaryPage() {
   const [addOpen, setAddOpen] = useState(false)
   const [editingEntry, setEditingEntry] = useState<GlossaryEntry | null>(null)
   const [formKey, setFormKey] = useState(0)
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
+  const [pageIndex, setPageIndex] = useState(0)
+  const [openFilterKey, setOpenFilterKey] = useState<string | null>(null)
 
   useEffect(() => {
     if (!projectIdParam) return
     void loadGlossaryForProject(projectIdParam)
   }, [projectIdParam, loadGlossaryForProject])
 
+  useEffect(() => {
+    function handleMouseDown(e: MouseEvent) {
+      if (!openFilterKey) return
+      const t = e.target as Node
+      const trigger = document.querySelector(`[data-review-queue-dd="${CSS.escape(openFilterKey)}"]`)
+      const portalMenu = document.querySelector(`[data-review-queue-portal="${CSS.escape(openFilterKey)}"]`)
+      if (trigger?.contains(t) || portalMenu?.contains(t)) return
+      setOpenFilterKey(null)
+    }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpenFilterKey(null)
+    }
+
+    document.addEventListener('mousedown', handleMouseDown)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handleMouseDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [openFilterKey])
+
   if (!projectIdParam || !project) {
     return <Navigate to="/dashboard/projects" replace />
   }
 
   const entries = glossaryByProjectId[projectIdParam] ?? []
+  const totalPages = Math.max(1, Math.ceil(entries.length / pageSize))
+  const safePageIndex = Math.min(pageIndex, totalPages - 1)
+  const paginatedEntries = useMemo(() => {
+    const start = safePageIndex * pageSize
+    return entries.slice(start, start + pageSize)
+  }, [entries, pageSize, safePageIndex])
+  const showPagination = entries.length > pageSize
+
+  useEffect(() => {
+    setPageIndex(0)
+  }, [pageSize, entries.length])
+
+  useEffect(() => {
+    if (pageIndex > totalPages - 1) {
+      setPageIndex(Math.max(0, totalPages - 1))
+    }
+  }, [pageIndex, totalPages])
 
   return (
     <div className="chapters-page projects-page glossary-page">
@@ -43,19 +95,57 @@ export default function GlossaryPage() {
         <div className="glossary-page-heading">
           <h1>
             <BookOpen className="glossary-page-title-icon" size={22} strokeWidth={2} aria-hidden />
-            Глоссарий: {project.title}
+            <span className="glossary-page-title-text">Глоссарий: {project.title}</span>
           </h1>
         </div>
-        <PressActionButton
-          onClick={() => {
-            setFormKey((n) => n + 1)
-            setEditingEntry(null)
-            setAddOpen(true)
-          }}
-        >
-          <Plus className="projects-add-project-plus" size={18} strokeWidth={2.5} aria-hidden />
-          <span>Добавить термин</span>
-        </PressActionButton>
+        <div className="projects-page-toolbar-actions">
+          <div className="dashboard-filters chapters-page-filters">
+            <DashboardDropdown
+              label="На странице"
+              options={pageSizeOptions}
+              value={String(pageSize)}
+              onChange={(value) => setPageSize(Number(value))}
+              ddKey="glossary-filter|page-size"
+              openKey={openFilterKey}
+              onOpenChange={setOpenFilterKey}
+            />
+            {showPagination ? (
+              <div className="chapters-page-pagination">
+                <button
+                  type="button"
+                  className="review-queue-clear chapters-page-pagination-btn"
+                  onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
+                  disabled={safePageIndex <= 0}
+                  aria-label="Предыдущая страница"
+                >
+                  <ChevronLeft size={16} strokeWidth={1.8} aria-hidden />
+                </button>
+                <span className="chapters-page-pagination-label">
+                  {safePageIndex + 1} / {totalPages}
+                </span>
+                <button
+                  type="button"
+                  className="review-queue-clear chapters-page-pagination-btn"
+                  onClick={() => setPageIndex((p) => Math.min(totalPages - 1, p + 1))}
+                  disabled={safePageIndex >= totalPages - 1}
+                  aria-label="Следующая страница"
+                >
+                  <ChevronRight size={16} strokeWidth={1.8} aria-hidden />
+                </button>
+              </div>
+            ) : null}
+          </div>
+          <PressActionButton
+            onClick={() => {
+              setFormKey((n) => n + 1)
+              setEditingEntry(null)
+              setAddOpen(true)
+            }}
+          >
+            <Plus className="projects-add-project-plus" size={18} strokeWidth={2.5} aria-hidden />
+            <span>Добавить термин</span>
+          </PressActionButton>
+        </div>
       </div>
 
       <div className="chapters-panel article-mini-card">
@@ -67,17 +157,17 @@ export default function GlossaryPage() {
           </div>
           {entries.length === 0 ? (
             <div className="glossary-table-empty">
-              <p className="glossary-empty">Пока нет терминов. Добавьте вручную или из редактора главы.</p>
+              <p className="glossary-empty">Термины отсутствуют. Добавьте вручную или из редактора главы.</p>
             </div>
           ) : (
-            entries.map((e) => (
+            paginatedEntries.map((e) => (
               <div key={e.id} className="glossary-table-row">
                 <span className="glossary-table-cell glossary-table-cell--source">{e.source}</span>
                 <span className="glossary-table-cell glossary-table-cell--target">{e.target}</span>
                 <span className="glossary-table-actions">
                   <button
                     type="button"
-                    className="glossary-table-edit"
+                    className="review-queue-clear"
                     aria-label="Редактировать термин"
                     onClick={() => {
                       setFormKey((n) => n + 1)
@@ -86,14 +176,6 @@ export default function GlossaryPage() {
                     }}
                   >
                     <Pencil size={16} strokeWidth={2} aria-hidden />
-                  </button>
-                  <button
-                    type="button"
-                    className="glossary-table-delete"
-                    aria-label="Удалить термин"
-                    onClick={() => void removeGlossaryEntry(projectIdParam, e.id)}
-                  >
-                    <Trash2 size={16} strokeWidth={2} aria-hidden />
                   </button>
                 </span>
               </div>
@@ -110,6 +192,12 @@ export default function GlossaryPage() {
         initialSource={editingEntry?.source ?? ''}
         initialTarget={editingEntry?.target ?? ''}
         onClose={() => {
+          setAddOpen(false)
+          setEditingEntry(null)
+        }}
+        onDelete={() => {
+          if (!editingEntry) return
+          void removeGlossaryEntry(projectIdParam, editingEntry.id)
           setAddOpen(false)
           setEditingEntry(null)
         }}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, RefreshCcw } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { PressActionButton } from '../../components/PressActionButton'
 import { usePipeline } from '../context/usePipeline'
@@ -248,6 +248,7 @@ function ChaptersPage({ title }) {
             </div>
           ) : null}
           <PressActionButton onClick={handleResetFilters}>
+            <RefreshCcw className="projects-add-project-plus" size={16} strokeWidth={2.2} aria-hidden />
             <span>Сбросить</span>
           </PressActionButton>
         </div>

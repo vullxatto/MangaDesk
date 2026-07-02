@@ -444,6 +444,7 @@ function ReviewDropzone() {
                       ddKey={`${item.id}|project`}
                       openKey={openQueueDropdownKey}
                       onOpenChange={setOpenQueueDropdownKey}
+                      maxVisibleRows={9}
                       footerAction={{
                         label: 'Добавить проект',
                         icon: <BookPlus size={12} strokeWidth={2.5} aria-hidden />,
@@ -492,6 +493,7 @@ function ReviewDropzone() {
                         ddKey={`${item.id}|editor`}
                         openKey={openQueueDropdownKey}
                         onOpenChange={setOpenQueueDropdownKey}
+                        maxVisibleRows={9}
                         footerAction={
                           isPersonalTeam
                             ? undefined

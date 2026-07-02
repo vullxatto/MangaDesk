@@ -1,11 +1,14 @@
 import { useEffect, useId, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { X } from 'lucide-react'
+import { UserPlus, X } from 'lucide-react'
 import { PressActionButton } from '../../components/PressActionButton'
+import { useAuth } from '../../context/AuthContext'
+import { apiPostJson } from '../../lib/api'
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock'
 import { isDuplicateChapterNumber } from '../context/pipelineConstants'
 import type { ChapterRow, DashboardProject, TeamMember, UploadQueueItem } from '../pipelineTypes'
 import DashboardDropdown from './DashboardDropdown'
+import TeamInviteModal from './TeamInviteModal'
 
 export default function ChapterMetadataModal({
   initialProjectId,
@@ -40,6 +43,7 @@ export default function ChapterMetadataModal({
   onDelete: () => void
 }) {
   const titleId = useId()
+  const { teams, currentTeamId } = useAuth()
   const [projectId, setProjectId] = useState(
     () => projects.find((p) => p.id === initialProjectId)?.id ?? projects[0]?.id ?? '',
   )
@@ -47,8 +51,15 @@ export default function ChapterMetadataModal({
   const [editorId, setEditorId] = useState(initialEditorId ?? '')
   const [error, setError] = useState<string | null>(null)
   const [openDropdownKey, setOpenDropdownKey] = useState<string | null>(null)
+  const [inviteOpen, setInviteOpen] = useState(false)
+  const [inviteLink, setInviteLink] = useState('')
 
   useBodyScrollLock(true)
+
+  const isPersonalTeam = useMemo(() => {
+    const team = teams.find((t) => t.id === currentTeamId)
+    return !!team?.is_personal
+  }, [teams, currentTeamId])
 
   const projectOptions = useMemo(
     () => projects.map((p) => ({ value: p.id, label: p.title })),
@@ -89,6 +100,12 @@ export default function ChapterMetadataModal({
       document.removeEventListener('keydown', handleKeyDown)
     }
   }, [openDropdownKey, onClose])
+
+  async function openInviteMemberModal() {
+    const res = await apiPostJson<{ invite_url: string }>('/team/invites', {})
+    setInviteLink(res.invite_url)
+    setInviteOpen(true)
+  }
 
   function handleConfirm() {
     const num = parseInt(String(chapterNum).trim(), 10)
@@ -174,6 +191,16 @@ export default function ChapterMetadataModal({
                 ddKey="chapter-meta|editor"
                 openKey={openDropdownKey}
                 onOpenChange={setOpenDropdownKey}
+                maxVisibleRows={9}
+                footerAction={
+                  isPersonalTeam
+                    ? undefined
+                    : {
+                        label: 'Добавить участника',
+                        icon: <UserPlus size={12} strokeWidth={2.5} aria-hidden />,
+                        onClick: () => void openInviteMemberModal(),
+                      }
+                }
               />
             </div>
           ) : null}
@@ -195,6 +222,11 @@ export default function ChapterMetadataModal({
           </PressActionButton>
         </div>
       </div>
+      <TeamInviteModal
+        open={inviteOpen}
+        inviteLink={inviteLink}
+        onClose={() => setInviteOpen(false)}
+      />
     </div>,
     document.body,
   )

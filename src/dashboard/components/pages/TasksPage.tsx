@@ -42,8 +42,9 @@ function TasksPage({ title = 'Задачи' }) {
           {editorTasks.map((row) => (
             <div key={row.id} className="chapters-row chapters-row--tasks">
               <span className="chapters-title">
-                <small>{row.title}</small>
-                <strong>№ {row.number}</strong>
+                <span className="chapters-title-main">
+                  {row.title} <strong className="chapters-title-number">№ {row.number}</strong>
+                </span>
               </span>
               <span>
                 <StatusBadge

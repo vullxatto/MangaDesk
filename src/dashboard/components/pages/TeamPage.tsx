@@ -68,10 +68,11 @@ function TeamPage({ title = 'Команда' }) {
                 {user?.id !== m.id ? (
                   <button
                     type="button"
+                    className="review-queue-clear"
                     onClick={() => void handleRemove(m.id, m.name)}
                     aria-label={`Удалить ${m.name}`}
                   >
-                    <Trash2 size={14} strokeWidth={1.8} aria-hidden /> Удалить
+                    <Trash2 size={16} strokeWidth={1.8} aria-hidden />
                   </button>
                 ) : null}
               </span>
