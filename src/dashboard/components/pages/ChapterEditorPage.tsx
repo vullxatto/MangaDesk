@@ -389,21 +389,27 @@ export default function ChapterEditorPage() {
     })
   }, [])
 
-  const onGlassOverlayClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>, rowId: number) => {
-      if ((e.target as HTMLElement).closest('textarea')) return
+  const onImagePhraseSelect = useCallback(
+    (rowId: number) => {
       setSelectedRowId(rowId)
       scrollToTableRow(rowId)
     },
     [scrollToTableRow],
   )
 
-  const onGlassTextareaFocus = useCallback(
-    (rowId: number) => {
-      setSelectedRowId(rowId)
-      scrollToTableRow(rowId)
+  const onGlassOverlayClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>, rowId: number) => {
+      if ((e.target as HTMLElement).closest('textarea')) return
+      onImagePhraseSelect(rowId)
     },
-    [scrollToTableRow],
+    [onImagePhraseSelect],
+  )
+
+  const onGlassTextareaInteract = useCallback(
+    (rowId: number) => {
+      onImagePhraseSelect(rowId)
+    },
+    [onImagePhraseSelect],
   )
 
   const onTableRowClick = useCallback(
@@ -773,8 +779,11 @@ export default function ChapterEditorPage() {
                               className="chapter-editor-glass-textarea"
                               value={row.translated}
                               onChange={(v) => onTranslationChange(row.id, v)}
-                              onClick={(e) => e.stopPropagation()}
-                              onFocus={() => onGlassTextareaFocus(row.id)}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                onGlassTextareaInteract(row.id)
+                              }}
+                              onFocus={() => onGlassTextareaInteract(row.id)}
                               ariaLabel={`Перевод фрагмента ${row.slice_id}`}
                             />
                           </div>
@@ -824,8 +833,11 @@ export default function ChapterEditorPage() {
                           className="chapter-editor-glass-textarea"
                           value={row.translated}
                           onChange={(v) => onTranslationChange(row.id, v)}
-                          onClick={(e) => e.stopPropagation()}
-                          onFocus={() => onGlassTextareaFocus(row.id)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onGlassTextareaInteract(row.id)
+                          }}
+                          onFocus={() => onGlassTextareaInteract(row.id)}
                           ariaLabel={`Перевод фрагмента ${row.slice_id} на скане`}
                         />
                       </div>

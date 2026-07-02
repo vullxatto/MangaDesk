@@ -11,7 +11,6 @@ const PAGE_LABELS: Record<string, string> = {
   projects: 'Проекты',
   chapters: 'Главы',
   team: 'Команда',
-  account: 'Личный кабинет',
   statistics: 'Статистика',
   trash: 'Корзина',
   settings: 'Настройки',

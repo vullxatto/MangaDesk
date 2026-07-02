@@ -6,7 +6,6 @@ import {
   LogOut,
   ShoppingBasket,
   SlidersHorizontal,
-  UserCircle2,
   Users,
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
@@ -92,10 +91,7 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
 
       <div className="dashboard-user-card dashboard-user-menu-wrap" ref={menuRef}>
         {menuOpen ? (
-          <div className="dashboard-user-menu" role="menu">
-            <Link className="dashboard-user-menu-item" to="/dashboard/account" onClick={() => setMenuOpen(false)}>
-              <UserCircle2 size={15} strokeWidth={1.9} aria-hidden /> Кабинет
-            </Link>
+          <div className="dashboard-user-menu article-mini-card" role="menu">
             <Link className="dashboard-user-menu-item" to="/dashboard/statistics" onClick={() => setMenuOpen(false)}>
               <SlidersHorizontal size={15} strokeWidth={1.9} aria-hidden /> Статистика
             </Link>

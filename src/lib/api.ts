@@ -28,6 +28,108 @@ export class ApiError extends Error {
 const API_ERROR_MESSAGES_RU: Record<string, string> = {
   'chapter number already exists for project':
     'Такой номер главы для этого проекта\nуже занят',
+  'missing authorization': 'Требуется авторизация',
+  'invalid token': 'Недействительный токен',
+  'authentication required': 'Требуется авторизация',
+  'invalid x-team-id': 'Некорректный идентификатор команды',
+  'x-team-id header required': 'Не указан идентификатор команды',
+  'not a member of this team': 'Вы не состоите в этой команде',
+  'no team in database; run seed or set default_team_id':
+    'Команда не найдена. Запустите seed или задайте DEFAULT_TEAM_ID',
+  'invalid default_team_id': 'Некорректный DEFAULT_TEAM_ID на сервере',
+  'user not found': 'Пользователь не найден',
+  'missing token': 'Токен не передан',
+  'chapter not found': 'Глава не найдена',
+  'project not found': 'Проект не найден',
+  'chapter not found in trash': 'Глава не найдена в корзине',
+  'project not found in trash': 'Проект не найден в корзине',
+  'insufficient tokens': 'Недостаточно токенов',
+  'file too large': 'Файл слишком большой',
+  'archive too large': 'Архив слишком большой',
+  'invalid status_code': 'Некорректный статус',
+  'pipeline already running for this chapter': 'Обработка этой главы уже запущена',
+  'only .zip or .rar': 'Допустимы только архивы .zip или .rar',
+  'no files': 'Нет файлов для загрузки',
+  'chapter has no translation_json yet (run ocr/preview first)':
+    'У главы ещё нет перевода. Сначала запустите OCR или превью.',
+  'duplicate term_source for project': 'Такой термин для проекта уже существует',
+  'entry not found': 'Запись не найдена',
+  'invalid path': 'Некорректный путь к файлу',
+  'not found': 'Не найдено',
+  'owner role required': 'Требуется роль владельца команды',
+  'cannot invite members to personal team': 'В личную команду нельзя приглашать участников',
+  'team name is required': 'Укажите название команды',
+  'team name too long': 'Название команды слишком длинное',
+  'invite not found': 'Приглашение не найдено',
+  'invite revoked': 'Приглашение отозвано',
+  'invite expired': 'Приглашение истекло',
+  'invite exhausted': 'Приглашение уже использовано',
+  'cannot remove yourself': 'Нельзя удалить себя из команды',
+  'cannot remove members from personal team': 'Нельзя удалять участников личной команды',
+  'member not found': 'Участник не найден',
+  'username is required': 'Укажите имя пользователя',
+  'username too long': 'Имя пользователя слишком длинное',
+  'unsupported provider': 'Неподдерживаемый способ входа',
+  'provider not linked': 'Аккаунт не привязан',
+  'redirect required': 'Не указан адрес перенаправления',
+  'redirect url not allowed': 'Адрес перенаправления не разрешён',
+  'invalid state': 'Сессия входа истекла. Попробуйте снова.',
+  'invalid link state': 'Сессия привязки истекла. Попробуйте снова.',
+  'job not found': 'Задача не найдена',
+  'invalid json': 'Некорректный ответ сервера',
+}
+
+const API_ERROR_PATTERNS_RU: Array<{ pattern: RegExp; message: string }> = [
+  {
+    pattern: /input should be a valid uuid.*found 0/i,
+    message: 'Не указан идентификатор. Ожидается UUID.',
+  },
+  {
+    pattern: /input should be a valid uuid/i,
+    message: 'Некорректный идентификатор. Ожидается UUID.',
+  },
+  {
+    pattern: /field required/i,
+    message: 'Не заполнено обязательное поле.',
+  },
+  {
+    pattern: /input should be a valid integer/i,
+    message: 'Укажите целое число.',
+  },
+  {
+    pattern: /input should be a valid (number|float|decimal)/i,
+    message: 'Укажите число.',
+  },
+  {
+    pattern: /value is not a valid email address/i,
+    message: 'Некорректный адрес email.',
+  },
+  {
+    pattern: /string should have at least (\d+) character/i,
+    message: 'Слишком короткое значение.',
+  },
+  {
+    pattern: /string should have at most (\d+) character/i,
+    message: 'Слишком длинное значение.',
+  },
+  {
+    pattern: /failed to fetch|networkerror|load failed/i,
+    message: 'Не удалось связаться с сервером. Проверьте подключение к интернету.',
+  },
+]
+
+function translateApiDetail(detail: string): string {
+  const trimmed = detail.trim()
+  if (!trimmed) return ''
+
+  const key = trimmed.toLowerCase()
+  if (API_ERROR_MESSAGES_RU[key]) return API_ERROR_MESSAGES_RU[key]
+
+  for (const { pattern, message } of API_ERROR_PATTERNS_RU) {
+    if (pattern.test(trimmed)) return message
+  }
+
+  return trimmed
 }
 
 function extractApiDetail(text: string): string {
@@ -50,8 +152,7 @@ function extractApiDetail(text: string): string {
 
 export function formatApiErrorMessage(raw: string): string {
   const detail = extractApiDetail(raw)
-  const key = detail.trim().toLowerCase()
-  return API_ERROR_MESSAGES_RU[key] ?? (detail || raw)
+  return translateApiDetail(detail || raw)
 }
 
 function apiErrorFromResponse(text: string, status: number, statusText: string): ApiError {

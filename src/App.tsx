@@ -7,7 +7,6 @@ import { AuthCallbackPage } from './pages/AuthCallbackPage'
 import { ExamplesPage } from './pages/ExamplesPage'
 import { HomePage } from './pages/HomePage'
 import ChaptersPage from './dashboard/components/ChaptersPage'
-import AccountPage from './dashboard/components/pages/AccountPage'
 import ChapterEditorPage from './dashboard/components/pages/ChapterEditorPage'
 import GlossaryPage from './dashboard/components/pages/GlossaryPage'
 import ProjectsPage from './dashboard/components/pages/ProjectsPage'
@@ -52,7 +51,7 @@ export default function App() {
         <Route path="chapters" element={<ChaptersPage title={dashboardTitleByPage('chapters')} />} />
         <Route path="chapters/:chapterId/edit" element={<ChapterEditorPage />} />
         <Route path="team" element={<TeamPage title={dashboardTitleByPage('team')} />} />
-        <Route path="account" element={<AccountPage title={dashboardTitleByPage('account')} />} />
+        <Route path="account" element={<Navigate to="/dashboard/settings" replace />} />
         <Route path="statistics" element={<StatisticsPage />} />
         <Route path="trash" element={<TrashPage title="Корзина" />} />
         <Route path="settings" element={<SettingsPage title="Настройки" />} />
