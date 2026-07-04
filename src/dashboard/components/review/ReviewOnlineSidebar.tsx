@@ -1,4 +1,9 @@
-import { MessageSquare } from 'lucide-react'
+import { ChevronLeft, ChevronRight, MessageSquare } from 'lucide-react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+
+const ONLINE_ROWS = 2
+const ONLINE_COLS = 6
+const ONLINE_PAGE_SIZE = ONLINE_ROWS * ONLINE_COLS
 
 const presenceLabel = {
   active: 'В сети',
@@ -6,9 +11,30 @@ const presenceLabel = {
   offline: 'Не в сети',
 }
 
-function ReviewOnlineSidebar({ members }) {
-  const onlineMembers = members.filter((m) => m.presence !== 'offline')
+type OnlineMember = {
+  id: string
+  name: string
+  activity?: string
+  presence?: string
+}
+
+function ReviewOnlineSidebar({ members }: { members: OnlineMember[] }) {
+  const onlineMembers = members
   const onlineCount = onlineMembers.length
+  const totalPages = Math.max(1, Math.ceil(onlineCount / ONLINE_PAGE_SIZE))
+  const [pageIndex, setPageIndex] = useState(0)
+  const safePageIndex = Math.min(pageIndex, totalPages - 1)
+
+  useEffect(() => {
+    setPageIndex((p) => Math.min(p, totalPages - 1))
+  }, [totalPages])
+
+  const visibleMembers = useMemo(
+    () => onlineMembers.slice(safePageIndex * ONLINE_PAGE_SIZE, (safePageIndex + 1) * ONLINE_PAGE_SIZE),
+    [onlineMembers, safePageIndex],
+  )
+
+  const showNav = totalPages > 1
 
   return (
     <div className="review-aside-block article-mini-card">
@@ -19,10 +45,17 @@ function ReviewOnlineSidebar({ members }) {
       {onlineCount === 0 ? (
         <p className="review-online-empty">Сейчас никого в сети</p>
       ) : (
-        <ul className="review-online-list">
-          {onlineMembers.map((m) => {
-            const dotClass = `team-card-avatar-dot team-card-avatar-dot--${m.presence ?? 'active'}`
-            return (
+        <div className="review-online-panel">
+          <ul
+            className="review-online-list"
+            style={
+              {
+                '--review-online-cols': ONLINE_COLS,
+                '--review-online-rows': ONLINE_ROWS,
+              } as CSSProperties
+            }
+          >
+            {visibleMembers.map((m) => (
               <li key={m.id} className="review-online-item">
                 <div className="review-online-avatar-wrap">
                   <img
@@ -32,12 +65,41 @@ function ReviewOnlineSidebar({ members }) {
                     loading="lazy"
                     title={m.name}
                   />
-                  <span className={dotClass} role="img" aria-label={presenceLabel[m.presence ?? 'active']} />
+                  <span
+                    className="team-card-avatar-dot team-card-avatar-dot--active"
+                    role="img"
+                    aria-label={presenceLabel.active}
+                  />
                 </div>
               </li>
-            )
-          })}
-        </ul>
+            ))}
+          </ul>
+          {showNav ? (
+            <div className="review-online-pager chapters-page-pagination">
+              <button
+                type="button"
+                className="review-queue-clear chapters-page-pagination-btn"
+                onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
+                disabled={safePageIndex <= 0}
+                aria-label="Предыдущие участники"
+              >
+                <ChevronLeft size={16} strokeWidth={1.8} aria-hidden />
+              </button>
+              <span className="chapters-page-pagination-label">
+                {safePageIndex + 1} / {totalPages}
+              </span>
+              <button
+                type="button"
+                className="review-queue-clear chapters-page-pagination-btn"
+                onClick={() => setPageIndex((p) => Math.min(totalPages - 1, p + 1))}
+                disabled={safePageIndex >= totalPages - 1}
+                aria-label="Следующие участники"
+              >
+                <ChevronRight size={16} strokeWidth={1.8} aria-hidden />
+              </button>
+            </div>
+          ) : null}
+        </div>
       )}
 
       <div className="review-chat-teaser">

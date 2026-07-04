@@ -43,20 +43,35 @@ export function skipAuth(): boolean {
   return import.meta.env.VITE_SKIP_AUTH === 'true'
 }
 
+/** Демо-сессия при VITE_SKIP_AUTH (совпадает с api/seed.sql). */
+export const DEMO_SESSION_USER = {
+  id: 'c0000001-0001-0001-0001-000000000001',
+  email: 'still@test.local',
+  username: 'Still Rise',
+} as const
+
+export const DEMO_SESSION_TEAM = {
+  id: import.meta.env.VITE_TEAM_ID || 'b0000001-0001-0001-0001-000000000001',
+  slug: 'still-rise-studio',
+  name: 'Студия Still Rise',
+  is_personal: false,
+  role: 'owner',
+} as const
+
 /** Текущий пользователь для UI (solo, задачи редактора) */
 export const CURRENT_USER = {
   get id(): string {
     if (typeof window === 'undefined') {
-      return import.meta.env.VITE_CURRENT_USER_ID ?? ''
+      return import.meta.env.VITE_CURRENT_USER_ID ?? DEMO_SESSION_USER.id
     }
     return (
       localStorage.getItem(USER_ID_KEY) ||
       import.meta.env.VITE_CURRENT_USER_ID ||
-      ''
+      DEMO_SESSION_USER.id
     )
   },
   get name(): string {
-    if (typeof window === 'undefined') return 'Пользователь'
-    return localStorage.getItem(USER_NAME_KEY) || 'Пользователь'
+    if (typeof window === 'undefined') return DEMO_SESSION_USER.username
+    return localStorage.getItem(USER_NAME_KEY) || DEMO_SESSION_USER.username
   },
 }

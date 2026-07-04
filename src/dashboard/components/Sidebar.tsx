@@ -27,9 +27,19 @@ const icons = {
 function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
   const location = useLocation()
   const navigate = useNavigate()
-  const { user, logout } = useAuth()
+  const { user, logout, teams, currentTeamId } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+
+  const teamRoleLabel = (() => {
+    const role = teams.find((t) => t.id === currentTeamId)?.role
+    if (role === 'owner') return 'Владелец'
+    if (role === 'member') return 'Редактор'
+    return 'Участник'
+  })()
+
+  const displayName = user?.username ?? 'Still Rise'
+  const avatarSeed = user?.id ?? 'c0000001-0001-0001-0001-000000000001'
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -117,7 +127,7 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
           <div className="dashboard-user-avatar-wrap">
             <div className="dashboard-user-avatar">
               <img
-                src="https://picsum.photos/seed/mangadesk-sidebar-user/80/80"
+                src={`https://picsum.photos/seed/mangadesk-team-${avatarSeed}/80/80`}
                 alt=""
                 className="dashboard-user-avatar-img"
                 loading="lazy"
@@ -127,8 +137,8 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
             <span className="dashboard-user-avatar-dot" role="img" aria-label="В сети" />
           </div>
           <div>
-            <div className="dashboard-user-name">{user?.username ?? 'Пользователь'}</div>
-            <div className="dashboard-user-role">Руководитель</div>
+            <div className="dashboard-user-name">{displayName}</div>
+            <div className="dashboard-user-role">{teamRoleLabel}</div>
           </div>
         </div>
         <div className="dashboard-user-meta">

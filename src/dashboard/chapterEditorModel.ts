@@ -55,55 +55,44 @@ export function bboxToPercentStyle(
   }
 }
 
-/** Демо-данные; при появлении API заменить загрузкой по chapterId */
+/** Демо-данные для локальной разработки без API */
 export function getMockChapterSlices(): ChapterTranslationSlice[] {
   return [
     {
       id: 1,
-      slice_id: 39,
+      slice_id: 1,
       type: 'bubble',
-      text: 'ATTENTION PASSENGERS, WE WILL BE STOPPING AT THE MAIN STATION IN FIVE MINUTES.',
-      bbox: [62, 124, 406, 180],
-      confidence: 0.607,
-      translated:
-        'ВНИМАНИЕ, ПАССАЖИРЫ! ЧЕРЕЗ ПЯТЬ МИНУТ ПОЕЗД ПРИБЫВАЕТ НА ЦЕНТРАЛЬНЫЙ ВОКЗАЛ.',
+      text: 'THE GATE HAS OPENED.',
+      bbox: [48, 90, 320, 160],
+      confidence: 0.91,
+      translated: 'ВРАТА ОТКРЫЛИСЬ.',
     },
     {
       id: 2,
-      slice_id: 41,
+      slice_id: 2,
       type: 'bubble',
-      text: "DON'T FORGET TO PACK Your BeloNGINGS BEFORE MAKING YOUR WAY OUT OF THE TRAIN.",
-      bbox: [365, 18, 375, 218],
-      confidence: 0.47,
-      translated: 'НЕ ЗАБУДЬТЕ ЗАБРАТЬ СВОИ ВЕЩИ ПРИ ВЫХОДЕ ИЗ ВАГОНА.',
+      text: 'E-RANK HUNTERS, STAY BACK!',
+      bbox: [360, 40, 280, 120],
+      confidence: 0.88,
+      translated: 'ОХОТНИКИ E-РАНГА, ДЕРЖИТЕСЬ ПОДАЛЬШЕ!',
     },
     {
       id: 3,
-      slice_id: 42,
+      slice_id: 3,
       type: 'bubble',
-      text: "SO HOW IS IT? I WASN'T KIDDING WheN I SAId ThIs CITY WAS OVERWHELMING.",
-      bbox: [48, 320, 660, 520],
-      confidence: 0.55,
-      translated: 'НУ КАК ТЕБЕ? Я ЖЕ НЕ ШУТИЛ, КОГДА ГОВОРИЛ, ЧТО ЭТОТ ГОРОД ОШЕЛОМЛЯЕТ.',
+      text: 'I CAN HANDLE THIS ALONE.',
+      bbox: [52, 280, 400, 200],
+      confidence: 0.84,
+      translated: 'Я СПРАВЛЮСЬ С ЭТИМ ОДИН.',
     },
     {
       id: 4,
-      slice_id: 43,
+      slice_id: 4,
       type: 'bubble',
-      text: "OVERWHELMING? THAT ISN'T THE WORD I'D USE FOR this view, ADONIS.",
-      bbox: [48, 560, 660, 780],
-      confidence: 0.52,
-      translated: '«ОШЕЛОМЛЯЕТ»? Я БЫ ПОДОБРАЛА ДРУГОЕ СЛОВО ДЛЯ ЭТОГО ВИДА, АДОС!',
-    },
-    {
-      id: 5,
-      slice_id: 44,
-      type: 'bubble',
-      text: 'A CITY WHERE Mortals, shifters, AND ENDURING LIVE IN HARMONY...',
-      bbox: [48, 820, 660, 1080],
-      confidence: 0.48,
-      translated:
-        'ГОРОД, В КОТОРОМ СМЕРТНЫЕ, ОБОРОТНИ И ВЕЧНЫЕ ЖИВУТ В МИРЕ... ОН ПРЕКРАСЕН!',
+      text: 'SHADOW SOLDIERS, RISE.',
+      bbox: [80, 520, 360, 180],
+      confidence: 0.79,
+      translated: 'СОЛДАТЫ ТЕНИ, ПОДНИМАЙТЕСЬ.',
     },
   ]
 }

@@ -299,29 +299,6 @@ function normalizeSlice(s: ChapterTranslationSlice): ChapterTranslationSlice {
   }
 }
 
-const MOCK_TRANSLATION_TABLE_ROWS = [
-  { id: 'mock-1', text: '10', translated: '10' },
-  { id: 'mock-2', text: '11', translated: '11' },
-  { id: 'mock-3', text: '12', translated: '12' },
-  { id: 'mock-4', text: '2', translated: '2' },
-  { id: 'mock-5', text: '3', translated: '3' },
-  { id: 'mock-6', text: '4', translated: '4' },
-  { id: 'mock-7', text: '5', translated: '5' },
-  { id: 'mock-8', text: '6', translated: '6' },
-  { id: 'mock-9', text: '7', translated: '7' },
-  { id: 'mock-10', text: '8', translated: '8' },
-  { id: 'mock-11', text: '13', translated: '13' },
-  { id: 'mock-12', text: '14', translated: '14' },
-  { id: 'mock-13', text: '15', translated: '15' },
-  { id: 'mock-14', text: '16', translated: '16' },
-  { id: 'mock-15', text: '17', translated: '17' },
-  { id: 'mock-16', text: '18', translated: '18' },
-  { id: 'mock-17', text: '19', translated: '19' },
-  { id: 'mock-18', text: '20', translated: '20' },
-  { id: 'mock-19', text: '21', translated: '21' },
-  { id: 'mock-20', text: '22', translated: '22' },
-]
-
 export default function ChapterEditorPage() {
   const { chapterId: chapterIdParam } = useParams<{ chapterId: string }>()
   const chapterId = chapterIdParam?.trim() ?? ''
@@ -714,16 +691,6 @@ export default function ChapterEditorPage() {
                         onFocus={() => onTableTranslationFocus(row.id)}
                         ariaLabel={`Перевод для фрагмента ${row.slice_id}`}
                       />
-                    </td>
-                  </tr>
-                ))}
-                {MOCK_TRANSLATION_TABLE_ROWS.map((row) => (
-                  <tr key={row.id} className="chapter-editor-table-row chapter-editor-table-row--mock" aria-hidden="true">
-                    <td className="chapter-editor-table-cell chapter-editor-table-cell--original">
-                      <span className="chapter-editor-original-text">{row.text}</span>
-                    </td>
-                    <td className="chapter-editor-table-cell chapter-editor-table-cell--translation">
-                      <span className="chapter-editor-original-text">{row.translated}</span>
                     </td>
                   </tr>
                 ))}

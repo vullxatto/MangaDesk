@@ -10,7 +10,8 @@ import type {
 } from '../pipelineTypes'
 import { resolveItemCreatedAt, resolveItemUpdatedAt, resolveProjectDates } from '../projectDates'
 import type { GlossaryEntry } from '../glossary/glossaryTypes'
-import { getProjectGlossary, setProjectGlossary } from '../projectGlossary'
+import { getProjectGlossary, pruneProjectGlossaryStorage, setProjectGlossary } from '../projectGlossary'
+import { pruneProjectLinksStorage } from '../projectLinks'
 import { CURRENT_USER, getNextFreeChapterNumberForProject, isDuplicateChapterNumber, SOLO_KEY } from './pipelineConstants'
 import { useAuth } from '../../context/AuthContext'
 import { PipelineReactContext } from './pipelineReactContext'
@@ -95,26 +96,6 @@ function makeQueueItemId() {
   return `q-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
-const MOCK_TEAM_MEMBERS: TeamMember[] = [
-  { id: 'mock-editor-1', name: 'Роман', role: 'editor' },
-  { id: 'mock-editor-2', name: 'Виктория', role: 'editor' },
-  { id: 'mock-editor-3', name: 'Даниил', role: 'editor' },
-  { id: 'mock-editor-4', name: 'Полина', role: 'editor' },
-  { id: 'mock-editor-5', name: 'Георгий', role: 'editor' },
-  { id: 'mock-editor-6', name: 'Ксения', role: 'editor' },
-  { id: 'mock-editor-7', name: 'Тимур', role: 'editor' },
-  { id: 'mock-editor-8', name: 'Вероника', role: 'editor' },
-  { id: 'mock-editor-9', name: 'Артём', role: 'editor' },
-  { id: 'mock-editor-10', name: 'Милана', role: 'editor' },
-]
-
-function withMockTeamMembers(teamMembers: TeamMember[]) {
-  if (teamMembers.length >= 12) return teamMembers
-  const usedIds = new Set(teamMembers.map((m) => m.id))
-  const mockTail = MOCK_TEAM_MEMBERS.filter((m) => !usedIds.has(m.id)).slice(0, 12 - teamMembers.length)
-  return [...teamMembers, ...mockTail]
-}
-
 export function PipelineProvider({ children }: PipelineProviderProps) {
   const { ready: authReady, currentTeamId } = useAuth()
   const [soloMode, setSoloModeState] = useState(
@@ -168,7 +149,10 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
           }
         }),
       )
-      setTeamMembers(withMockTeamMembers(tm.map((m) => ({ id: m.id, name: m.username, role: m.role }))))
+      const projectIds = pj.map((p) => p.id)
+      pruneProjectLinksStorage(projectIds)
+      pruneProjectGlossaryStorage(projectIds)
+      setTeamMembers(tm.map((m) => ({ id: m.id, name: m.username, role: m.role })))
       setChapters(ch.map(mapChapter))
     } catch (e) {
       setDashboardError(e instanceof Error ? e.message : 'Ошибка загрузки')

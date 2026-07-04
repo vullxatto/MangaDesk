@@ -2,6 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { apiGet } from '../lib/api'
 import {
   clearSession,
+  DEMO_SESSION_TEAM,
+  DEMO_SESSION_USER,
   getAccessToken,
   setTeamId,
   setUserProfile,
@@ -53,8 +55,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const reloadMe = useCallback(async () => {
     if (skipAuth()) {
-      setUser(null)
-      setTeams([])
+      setUser({
+        id: DEMO_SESSION_USER.id,
+        email: DEMO_SESSION_USER.email,
+        username: DEMO_SESSION_USER.username,
+      })
+      setUserProfile(DEMO_SESSION_USER.id, DEMO_SESSION_USER.username)
+      setTeams([{ ...DEMO_SESSION_TEAM }])
+      setTeamId(DEMO_SESSION_TEAM.id)
+      setCurrentTeamIdState(DEMO_SESSION_TEAM.id)
       setReady(true)
       return
     }

@@ -1,7 +1,8 @@
+import { SEED_PROJECT_IDS, SEED_PROJECT_LINKS } from './seedProjectLinks'
+
 export type ProjectLink = { label: string; href: string }
 
 export const EMPTY_PROJECT_LINKS: ProjectLink[] = []
-
 const STORAGE_KEY = 'mangadesk-project-links'
 
 function readAll(): Record<string, ProjectLink[]> {
@@ -21,7 +22,9 @@ function writeAll(data: Record<string, ProjectLink[]>) {
 }
 
 export function getProjectLinks(projectId: string): ProjectLink[] {
-  return readAll()[projectId] ?? EMPTY_PROJECT_LINKS
+  const stored = readAll()[projectId]
+  if (stored?.length) return stored
+  return SEED_PROJECT_LINKS[projectId] ?? EMPTY_PROJECT_LINKS
 }
 
 export function setProjectLinks(projectId: string, links: ProjectLink[]) {
@@ -38,6 +41,20 @@ export function removeProjectLinks(projectId: string) {
   const all = readAll()
   delete all[projectId]
   writeAll(all)
+}
+
+export function pruneProjectLinksStorage(knownProjectIds: string[]) {
+  if (typeof window === 'undefined') return
+  const allowed = new Set([...knownProjectIds, ...SEED_PROJECT_IDS])
+  const all = readAll()
+  let changed = false
+  for (const id of Object.keys(all)) {
+    if (!allowed.has(id)) {
+      delete all[id]
+      changed = true
+    }
+  }
+  if (changed) writeAll(all)
 }
 
 export function normalizeProjectLinks(links: ProjectLink[]): ProjectLink[] {

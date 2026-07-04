@@ -120,7 +120,7 @@ function SettingsPage({ title = 'Настройки' }) {
           <h2>
             <CreditCard size={16} strokeWidth={2} /> Подписка
           </h2>
-          <p className="account-muted">Текущий тариф: Pro Team (демо)</p>
+          <p className="account-muted">Текущий тариф: Студия Still Rise</p>
           <PressActionButton>Оплатить подписку</PressActionButton>
         </section>
 
@@ -160,7 +160,7 @@ function SettingsPage({ title = 'Настройки' }) {
           </h2>
           <label className="account-field">
             <span>Сумма пополнения</span>
-            <input className="account-input" defaultValue="5000" />
+            <input className="account-input" defaultValue="4500" />
           </label>
           <PressActionButton>Пополнить токены</PressActionButton>
         </section>

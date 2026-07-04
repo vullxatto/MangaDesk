@@ -1,14 +1,55 @@
-const MOCK_CREATED_AT = [
+/** Даты из api/seed.sql — стабильный fallback, если API не вернул поля. */
+const SEED_ENTITY_DATES: Record<string, { createdAt: string; updatedAt: string }> = {
+  'd0000001-0001-0001-0001-000000000001': {
+    createdAt: '2026-03-15T11:20:00.000Z',
+    updatedAt: '2026-07-04T14:30:00.000Z',
+  },
+  'd0000002-0001-0001-0001-000000000002': {
+    createdAt: '2026-04-05T08:30:00.000Z',
+    updatedAt: '2026-07-03T19:10:00.000Z',
+  },
+  'd0000003-0001-0001-0001-000000000003': {
+    createdAt: '2026-05-02T13:55:00.000Z',
+    updatedAt: '2026-06-28T10:05:00.000Z',
+  },
+  'd0000004-0001-0001-0001-000000000004': {
+    createdAt: '2026-05-18T16:40:00.000Z',
+    updatedAt: '2026-07-02T09:20:00.000Z',
+  },
+  'd0000005-0001-0001-0001-000000000005': {
+    createdAt: '2026-06-01T12:00:00.000Z',
+    updatedAt: '2026-06-25T18:45:00.000Z',
+  },
+  'd0000006-0001-0001-0001-000000000006': {
+    createdAt: '2026-02-10T09:00:00.000Z',
+    updatedAt: '2026-06-15T20:30:00.000Z',
+  },
+  'd0000007-0001-0001-0001-000000000007': {
+    createdAt: '2026-03-22T14:10:00.000Z',
+    updatedAt: '2026-06-20T11:45:00.000Z',
+  },
+  'd0000008-0001-0001-0001-000000000008': {
+    createdAt: '2026-04-14T10:25:00.000Z',
+    updatedAt: '2026-06-25T16:00:00.000Z',
+  },
+  'e0000003-0001-0001-0001-000000000003': {
+    createdAt: '2026-06-20T09:15:00.000Z',
+    updatedAt: '2026-07-04T11:30:00.000Z',
+  },
+  'e0000101-0001-0001-0001-000000000101': {
+    createdAt: '2026-05-28T11:17:51.000Z',
+    updatedAt: '2026-07-02T01:17:51.000Z',
+  },
+}
+
+const FALLBACK_CREATED_AT = [
   '2026-03-15T11:20:00.000Z',
-  '2026-03-28T16:45:00.000Z',
   '2026-04-05T08:30:00.000Z',
-  '2026-04-18T19:10:00.000Z',
   '2026-05-02T13:55:00.000Z',
-  '2026-05-21T10:05:00.000Z',
-  '2026-06-01T17:40:00.000Z',
-  '2026-06-14T09:25:00.000Z',
-  '2026-06-27T21:15:00.000Z',
-  '2026-07-03T12:00:00.000Z',
+  '2026-05-18T16:40:00.000Z',
+  '2026-06-01T12:00:00.000Z',
+  '2026-06-20T09:15:00.000Z',
+  '2026-07-01T09:00:00.000Z',
 ]
 
 function hashProjectId(projectId: string) {
@@ -26,10 +67,13 @@ export function formatRuDateTime(value: string | null | undefined) {
   return d.toLocaleString('ru-RU')
 }
 
-/** Стабильные моковые даты для локального теста, если API не вернул поля проекта. */
+/** Стабильные даты для локального теста, если API не вернул поля. */
 export function mockProjectDates(projectId: string) {
+  const seeded = SEED_ENTITY_DATES[projectId]
+  if (seeded) return seeded
+
   const hash = hashProjectId(projectId)
-  const createdAt = MOCK_CREATED_AT[hash % MOCK_CREATED_AT.length]
+  const createdAt = FALLBACK_CREATED_AT[hash % FALLBACK_CREATED_AT.length]
   const updated = new Date(createdAt)
   updated.setDate(updated.getDate() + (hash % 14) + 1)
   updated.setHours(updated.getHours() + (hash % 8))
