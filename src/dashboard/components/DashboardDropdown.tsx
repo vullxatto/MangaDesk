@@ -21,6 +21,8 @@ type DashboardDropdownProps = {
   maxVisibleRows?: number
   menuPlacement?: 'bottom' | 'top'
   menuAlign?: 'left' | 'right'
+  stableTriggerWidth?: boolean
+  truncateOptionLabels?: boolean
 }
 
 export default function DashboardDropdown({
@@ -35,6 +37,8 @@ export default function DashboardDropdown({
   maxVisibleRows,
   menuPlacement = 'bottom',
   menuAlign = 'left',
+  stableTriggerWidth = false,
+  truncateOptionLabels = false,
 }: DashboardDropdownProps) {
   const isOpen = openKey === ddKey
   const selectedLabel = options.find((o) => o.value === value)?.label ?? '—'
@@ -43,7 +47,9 @@ export default function DashboardDropdown({
   const [menuBox, setMenuBox] = useState<{
     top: number
     left: number
-    width: number
+    minWidth: number
+    width?: number
+    fitContent: boolean
     scrollMaxHeight?: number
     maxHeight?: number
   } | null>(null)
@@ -70,13 +76,9 @@ export default function DashboardDropdown({
 
     function place() {
       const r = el!.getBoundingClientRect()
-      const width = Math.max(r.width, 170)
       const gap = 4
       const viewportPadding = 12
       const footerHeight = footerAction ? DROPDOWN_FOOTER_HEIGHT : 0
-      const idealHeight = maxVisibleRows
-        ? maxVisibleRows * DROPDOWN_ROW_HEIGHT + (maxVisibleRows - 1) * DROPDOWN_ROW_GAP
-        : undefined
       let scrollMaxHeight: number | undefined
       let maxHeight: number | undefined
 
@@ -84,6 +86,8 @@ export default function DashboardDropdown({
       const availableAbove = r.top - gap - DROPDOWN_MENU_PADDING - footerHeight - viewportPadding
 
       if (maxVisibleRows) {
+        const idealHeight =
+          maxVisibleRows * DROPDOWN_ROW_HEIGHT + (maxVisibleRows - 1) * DROPDOWN_ROW_GAP
         const availableHeight = menuPlacement === 'top' ? availableAbove : availableBelow
         scrollMaxHeight = Math.min(idealHeight, Math.max(availableHeight, DROPDOWN_ROW_HEIGHT))
       } else {
@@ -98,16 +102,20 @@ export default function DashboardDropdown({
         menuPlacement === 'top'
           ? Math.max(viewportPadding, r.top - gap - DROPDOWN_MENU_PADDING - footerHeight - contentHeight)
           : r.bottom + gap
-      const maxWidth = Math.min(window.innerWidth - viewportPadding * 2, 420)
+      const maxMenuWidth = Math.min(window.innerWidth - viewportPadding * 2, 420)
+      const minWidth = Math.max(r.width, 170)
+      const menuWidth = truncateOptionLabels ? Math.min(minWidth, maxMenuWidth) : undefined
       const left =
         menuAlign === 'right'
-          ? Math.max(viewportPadding, r.right - Math.min(width, maxWidth))
-          : Math.min(r.left, window.innerWidth - viewportPadding - width)
+          ? Math.max(viewportPadding, r.right - (menuWidth ?? minWidth))
+          : Math.min(r.left, window.innerWidth - viewportPadding - (menuWidth ?? minWidth))
 
       setMenuBox({
         top,
         left,
-        width,
+        minWidth,
+        width: menuWidth,
+        fitContent: !truncateOptionLabels,
         scrollMaxHeight,
         maxHeight,
       })
@@ -120,7 +128,7 @@ export default function DashboardDropdown({
       window.removeEventListener('scroll', place, true)
       window.removeEventListener('resize', place)
     }
-  }, [Boolean(footerAction), isOpen, maxVisibleRows, menuAlign, menuPlacement])
+  }, [Boolean(footerAction), isOpen, maxVisibleRows, menuAlign, menuPlacement, truncateOptionLabels])
 
   useEffect(() => {
     if (!isOpen || !maxVisibleRows) {
@@ -140,6 +148,7 @@ export default function DashboardDropdown({
       key={option.value === '' ? `${ddKey}-empty` : option.value}
       type="button"
       className={`dashboard-dropdown-item ${option.value === value ? 'is-selected' : ''}`}
+      title={truncateOptionLabels ? option.label : undefined}
       onClick={(e) => {
         e.stopPropagation()
         onChange(option.value)
@@ -154,15 +163,17 @@ export default function DashboardDropdown({
     isOpen && menuBox
       ? createPortal(
           <div
-            className={`dashboard-dropdown-menu review-queue-dropdown-portal${maxVisibleRows ? ' dashboard-dropdown-menu--fixed-rows' : ''}${showScrollHint ? ' dashboard-dropdown-menu--scroll-hint' : ''}`}
+            className={`dashboard-dropdown-menu review-queue-dropdown-portal${maxVisibleRows ? ' dashboard-dropdown-menu--fixed-rows' : ''}${showScrollHint ? ' dashboard-dropdown-menu--scroll-hint' : ''}${truncateOptionLabels ? ' dashboard-dropdown-menu--truncate-options' : ' dashboard-dropdown-menu--fit-content'}`}
             data-review-queue-portal={ddKey}
             style={{
               position: 'fixed',
               top: menuBox.top,
               left: menuBox.left,
-              minWidth: menuBox.width,
-              width: 'max-content',
-              maxWidth: 'min(calc(100vw - 24px), 420px)',
+              minWidth: menuBox.minWidth,
+              ...(menuBox.fitContent
+                ? { width: 'max-content' }
+                : { width: menuBox.width, maxWidth: 'min(calc(100vw - 24px), 420px)' }),
+              ...(menuBox.fitContent ? { maxWidth: 'min(calc(100vw - 24px), 420px)' } : {}),
               ...(maxVisibleRows ? ({ ['--dropdown-row-height' as string]: `${DROPDOWN_ROW_HEIGHT}px` } as CSSProperties) : {}),
               ...(maxVisibleRows
                 ? {}
@@ -215,7 +226,7 @@ export default function DashboardDropdown({
     <>
       <div
         ref={triggerRef}
-        className="dashboard-dropdown review-queue-field-dropdown"
+        className={`dashboard-dropdown review-queue-field-dropdown${stableTriggerWidth ? ' dashboard-dropdown--stable-width dashboard-dropdown--label-only' : ''}`}
         data-review-queue-dd={ddKey}
       >
         <button
@@ -226,10 +237,17 @@ export default function DashboardDropdown({
             onOpenChange(isOpen ? null : ddKey)
           }}
           aria-expanded={isOpen}
+          aria-label={stableTriggerWidth ? `${label}: ${selectedLabel}` : undefined}
         >
           <span className="dashboard-filter-btn-text">
-            <span className="dashboard-filter-btn-label">{label}:</span>
-            <span className="dashboard-filter-btn-value">{selectedLabel}</span>
+            {stableTriggerWidth ? (
+              <span className="dashboard-filter-btn-label">{label}</span>
+            ) : (
+              <>
+                <span className="dashboard-filter-btn-label">{label}:</span>
+                <span className="dashboard-filter-btn-value">{selectedLabel}</span>
+              </>
+            )}
           </span>
           <ChevronDown size={14} className="dashboard-filter-chevron" strokeWidth={2.25} aria-hidden />
         </button>

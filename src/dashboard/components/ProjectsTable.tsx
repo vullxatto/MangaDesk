@@ -1,5 +1,6 @@
 import { Pencil } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { formatRuDateTime } from '../projectDates'
 
 export type ProjectRow = {
   projectId: string
@@ -7,15 +8,22 @@ export type ProjectRow = {
   chapters: number
   latestChapterId: string | null
   links: { label: string; href: string }[]
+  createdAt: string
 }
 
 type ProjectsTableProps = {
   rows: ProjectRow[]
   onEditProject: (row: ProjectRow) => void
   onOpenProjectChapters: (row: ProjectRow) => void
+  formatCreatedAt?: (value: string) => string
 }
 
-function ProjectsTable({ rows, onEditProject, onOpenProjectChapters }: ProjectsTableProps) {
+function ProjectsTable({
+  rows,
+  onEditProject,
+  onOpenProjectChapters,
+  formatCreatedAt = formatRuDateTime,
+}: ProjectsTableProps) {
   return (
     <div className="projects-table">
       <div className="projects-row projects-head">
@@ -23,6 +31,7 @@ function ProjectsTable({ rows, onEditProject, onOpenProjectChapters }: ProjectsT
         <span>Главы</span>
         <span>Глоссарий</span>
         <span>Ссылки</span>
+        <span>Дата создания</span>
         <span className="chapters-actions-head" aria-hidden="true" />
       </div>
 
@@ -57,6 +66,7 @@ function ProjectsTable({ rows, onEditProject, onOpenProjectChapters }: ProjectsT
               </a>
             ))}
           </span>
+          <span className="projects-created-date">{formatCreatedAt(row.createdAt)}</span>
           <span className="chapters-actions">
             <button
               type="button"

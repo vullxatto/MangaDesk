@@ -96,7 +96,7 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
               <SlidersHorizontal size={15} strokeWidth={1.9} aria-hidden /> Статистика
             </Link>
             <Link className="dashboard-user-menu-item" to="/dashboard/trash" onClick={() => setMenuOpen(false)}>
-              <ShoppingBasket size={15} strokeWidth={1.9} aria-hidden /> Корзина
+              <ShoppingBasket size={15} strokeWidth={1.9} aria-hidden /> Удалённое
             </Link>
             <Link className="dashboard-user-menu-item" to="/dashboard/settings" onClick={() => setMenuOpen(false)}>
               <SlidersHorizontal size={15} strokeWidth={1.9} aria-hidden /> Настройки

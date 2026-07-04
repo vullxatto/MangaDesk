@@ -12,6 +12,8 @@ export interface DashboardProject {
   id: string
   title: string
   slug: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface TeamMember {
@@ -27,6 +29,8 @@ export interface ChapterRow {
   number: number
   statusCode: ChapterStatusCode
   date: string
+  createdAt: string
+  updatedAt: string
   editorId: string | null
   editorName: string | null
   assignedAt: string | null
@@ -99,11 +103,9 @@ export interface PipelineContextValue {
   removeChapter: (chapterId: string) => Promise<void>
   completeEditorTask: (chapterId: string) => Promise<void>
   editorTasks: ChapterRow[]
-  selectedWaitingIds: Set<string>
-  toggleWaitingSelected: (chapterId: string) => void
   formatStartedAt: (ts: number) => string
   glossaryByProjectId: Record<string, GlossaryEntry[]>
-  loadGlossaryForProject: (projectId: string) => Promise<void>
+  loadGlossaryForProject: (projectId: string) => Promise<GlossaryEntry[]>
   addGlossaryEntry: (projectId: string, entry: Omit<GlossaryEntry, 'id'>) => Promise<void>
   updateGlossaryEntry: (
     projectId: string,

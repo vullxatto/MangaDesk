@@ -53,7 +53,7 @@ export default function App() {
         <Route path="team" element={<TeamPage title={dashboardTitleByPage('team')} />} />
         <Route path="account" element={<Navigate to="/dashboard/settings" replace />} />
         <Route path="statistics" element={<StatisticsPage />} />
-        <Route path="trash" element={<TrashPage title="Корзина" />} />
+        <Route path="trash" element={<TrashPage title="Удалённое" />} />
         <Route path="settings" element={<SettingsPage title="Настройки" />} />
       </Route>
     </Routes>

@@ -8,7 +8,9 @@ import type {
   TeamMember,
   UploadQueueItem,
 } from '../pipelineTypes'
+import { resolveItemCreatedAt, resolveItemUpdatedAt, resolveProjectDates } from '../projectDates'
 import type { GlossaryEntry } from '../glossary/glossaryTypes'
+import { getProjectGlossary, setProjectGlossary } from '../projectGlossary'
 import { CURRENT_USER, getNextFreeChapterNumberForProject, isDuplicateChapterNumber, SOLO_KEY } from './pipelineConstants'
 import { useAuth } from '../../context/AuthContext'
 import { PipelineReactContext } from './pipelineReactContext'
@@ -29,6 +31,7 @@ type ChapterApi = {
   status_code: string
   editor_id: string | null
   editor_name: string | null
+  created_at: string
   updated_at: string
   restored_from_trash?: boolean
 }
@@ -42,6 +45,8 @@ type ProjectApi = {
   source_language: string | null
   target_language: string | null
   cover_storage_key: string | null
+  created_at: string
+  updated_at: string
 }
 
 type TeamMemberApi = {
@@ -68,16 +73,20 @@ function formatNowRuFromIso(iso: string) {
 
 function mapChapter(c: ChapterApi): ChapterRow {
   const st = c.status_code as ChapterRow['statusCode']
+  const createdAt = resolveItemCreatedAt(c.id, c.created_at)
+  const updatedAt = resolveItemUpdatedAt(c.id, c.updated_at, c.created_at)
   return {
     id: c.id,
     projectId: c.project_id,
     title: c.project_title,
     number: c.chapter_number,
     statusCode: st,
-    date: formatNowRuFromIso(c.updated_at),
+    date: formatNowRuFromIso(updatedAt),
+    createdAt,
+    updatedAt,
     editorId: c.editor_id,
     editorName: c.editor_name,
-    assignedAt: c.editor_id ? formatNowRuFromIso(c.updated_at) : null,
+    assignedAt: c.editor_id ? formatNowRuFromIso(updatedAt) : null,
     restoredFromTrash: !!c.restored_from_trash,
   }
 }
@@ -115,7 +124,6 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [chapters, setChapters] = useState<ChapterRow[]>([])
   const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([])
-  const [selectedWaitingIds, setSelectedWaitingIds] = useState<Set<string>>(() => new Set())
   const [glossaryByProjectId, setGlossaryByProjectId] = useState<Record<string, GlossaryEntry[]>>(
     () => ({}),
   )
@@ -148,7 +156,18 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
         apiGet<TeamMemberApi[]>('/team/members'),
         apiGet<ChapterApi[]>('/chapters'),
       ])
-      setProjects(pj.map((p) => ({ id: p.id, title: p.title, slug: p.slug })))
+      setProjects(
+        pj.map((p) => {
+          const dates = resolveProjectDates(p.id, p.created_at, p.updated_at)
+          return {
+            id: p.id,
+            title: p.title,
+            slug: p.slug,
+            createdAt: dates.createdAt,
+            updatedAt: dates.updatedAt,
+          }
+        }),
+      )
       setTeamMembers(withMockTeamMembers(tm.map((m) => ({ id: m.id, name: m.username, role: m.role }))))
       setChapters(ch.map(mapChapter))
     } catch (e) {
@@ -250,7 +269,6 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
               })
             }
             await refreshDashboard()
-            setSelectedWaitingIds(new Set())
           } catch (e) {
             console.error(e)
             setDashboardError(e instanceof Error ? e.message : 'Ошибка solo-режима')
@@ -279,10 +297,13 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
         target_language: payload.target_language ?? null,
       })
       await refreshDashboard()
+      const dates = resolveProjectDates(created.id, created.created_at, created.updated_at)
       return {
         id: created.id,
         title: created.title,
         slug: created.slug,
+        createdAt: dates.createdAt,
+        updatedAt: dates.updatedAt,
       }
     },
     [refreshDashboard],
@@ -470,12 +491,6 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
     async (chapterId: string) => {
       await apiDelete(`/chapters/${chapterId}`)
       await refreshDashboard()
-      setSelectedWaitingIds((prev) => {
-        if (!prev.has(chapterId)) return prev
-        const next = new Set(prev)
-        next.delete(chapterId)
-        return next
-      })
     },
     [refreshDashboard],
   )
@@ -492,7 +507,6 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
           })
         }
         await refreshDashboard()
-        setSelectedWaitingIds(new Set())
       } catch (e) {
         console.error(e)
         setDashboardError(e instanceof Error ? e.message : 'Ошибка назначения')
@@ -514,23 +528,30 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
     [refreshDashboard],
   )
 
-  const toggleWaitingSelected = useCallback((chapterId: string) => {
-    setSelectedWaitingIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(chapterId)) next.delete(chapterId)
-      else next.add(chapterId)
-      return next
-    })
-  }, [])
-
   const loadGlossaryForProject = useCallback(async (projectId: string) => {
-    const rows = await apiGet<GlossaryApi[]>(`/glossary/${projectId}`)
-    const mapped: GlossaryEntry[] = rows.map((r) => ({
-      id: String(r.id),
-      source: r.term_source,
-      target: r.term_target,
-    }))
-    setGlossaryByProjectId((prev) => ({ ...prev, [projectId]: mapped }))
+    try {
+      const rows = await apiGet<GlossaryApi[]>(`/glossary/${projectId}`)
+      const mapped: GlossaryEntry[] = rows.map((r) => ({
+        id: String(r.id),
+        source: r.term_source,
+        target: r.term_target,
+      }))
+      setProjectGlossary(projectId, mapped)
+      setGlossaryByProjectId((prev) => ({ ...prev, [projectId]: mapped }))
+      return mapped
+    } catch (e) {
+      console.error(e)
+      const cached = getProjectGlossary(projectId)
+      if (cached.length > 0) {
+        setGlossaryByProjectId((prev) => ({ ...prev, [projectId]: cached }))
+        return cached
+      }
+      setGlossaryByProjectId((prev) => {
+        if (prev[projectId] !== undefined) return prev
+        return { ...prev, [projectId]: [] }
+      })
+      throw e
+    }
   }, [])
 
   const addGlossaryEntry = useCallback(
@@ -622,8 +643,6 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       removeChapter,
       completeEditorTask,
       editorTasks,
-      selectedWaitingIds,
-      toggleWaitingSelected,
       formatStartedAt,
       glossaryByProjectId,
       loadGlossaryForProject,
@@ -659,8 +678,6 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       removeChapter,
       completeEditorTask,
       editorTasks,
-      selectedWaitingIds,
-      toggleWaitingSelected,
       formatStartedAt,
       glossaryByProjectId,
       loadGlossaryForProject,

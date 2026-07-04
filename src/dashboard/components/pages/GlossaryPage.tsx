@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Navigate, useParams } from 'react-router-dom'
+import { Navigate, useLocation, useParams } from 'react-router-dom'
 import { BookOpen, ChevronLeft, ChevronRight, Pencil, Plus } from 'lucide-react'
 import { PressActionButton } from '../../../components/PressActionButton'
+import { apiGet } from '../../../lib/api'
+import { getProjectGlossary } from '../../projectGlossary'
 import { usePipeline } from '../../context/usePipeline'
 import type { GlossaryEntry } from '../../glossary/glossaryTypes'
 import { AddGlossaryEntryModal } from '../AddGlossaryEntryModal'
@@ -16,8 +18,12 @@ const pageSizeOptions = [
   { value: '100', label: '100' },
 ]
 
+type TrashProjectRef = { id: string; title: string }
+
 export default function GlossaryPage() {
   const { projectId: projectIdParam } = useParams<{ projectId: string }>()
+  const location = useLocation()
+  const locationState = location.state as { projectTitle?: string; fromTrash?: boolean } | null
   const {
     projects,
     glossaryByProjectId,
@@ -32,17 +38,61 @@ export default function GlossaryPage() {
     [projectIdParam, projects],
   )
 
+  const [deletedProjectTitle, setDeletedProjectTitle] = useState<string | null>(
+    locationState?.projectTitle?.trim() || null,
+  )
+  const [projectResolving, setProjectResolving] = useState(!project && !!projectIdParam && !locationState?.projectTitle)
   const [addOpen, setAddOpen] = useState(false)
   const [editingEntry, setEditingEntry] = useState<GlossaryEntry | null>(null)
   const [formKey, setFormKey] = useState(0)
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
   const [pageIndex, setPageIndex] = useState(0)
   const [openFilterKey, setOpenFilterKey] = useState<string | null>(null)
+  const [glossaryLoading, setGlossaryLoading] = useState(false)
+  const [glossaryLoadError, setGlossaryLoadError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!projectIdParam) return
+    setGlossaryLoading(true)
+    setGlossaryLoadError(null)
     void loadGlossaryForProject(projectIdParam)
+      .catch(() => {
+        if (getProjectGlossary(projectIdParam).length === 0) {
+          setGlossaryLoadError('Не удалось загрузить глоссарий')
+        }
+      })
+      .finally(() => setGlossaryLoading(false))
   }, [projectIdParam, loadGlossaryForProject])
+
+  useEffect(() => {
+    if (!projectIdParam || project) {
+      setProjectResolving(false)
+      return
+    }
+    if (deletedProjectTitle) {
+      setProjectResolving(false)
+      return
+    }
+
+    let cancelled = false
+    setProjectResolving(true)
+    void apiGet<{ projects: TrashProjectRef[] }>('/trash')
+      .then((data) => {
+        if (cancelled) return
+        const found = data.projects.find((p) => p.id === projectIdParam)
+        setDeletedProjectTitle(found?.title ?? null)
+      })
+      .catch(() => {
+        if (!cancelled) setDeletedProjectTitle(null)
+      })
+      .finally(() => {
+        if (!cancelled) setProjectResolving(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [deletedProjectTitle, project, projectIdParam])
 
   useEffect(() => {
     function handleMouseDown(e: MouseEvent) {
@@ -66,18 +116,33 @@ export default function GlossaryPage() {
     }
   }, [openFilterKey])
 
-  if (!projectIdParam || !project) {
+  const projectTitle = project?.title ?? deletedProjectTitle
+
+  if (!projectIdParam) {
     return <Navigate to="/dashboard/projects" replace />
   }
 
-  const entries = glossaryByProjectId[projectIdParam] ?? []
+  if (projectResolving) {
+    return (
+      <div className="chapters-page projects-page glossary-page">
+        <div className="chapters-panel article-mini-card">
+          <p className="glossary-empty">Загрузка…</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!projectTitle) {
+    return <Navigate to="/dashboard/projects" replace />
+  }
+
+  const entries = glossaryByProjectId[projectIdParam] ?? getProjectGlossary(projectIdParam)
   const totalPages = Math.max(1, Math.ceil(entries.length / pageSize))
   const safePageIndex = Math.min(pageIndex, totalPages - 1)
   const paginatedEntries = useMemo(() => {
     const start = safePageIndex * pageSize
     return entries.slice(start, start + pageSize)
   }, [entries, pageSize, safePageIndex])
-  const showPagination = entries.length > pageSize
 
   useEffect(() => {
     setPageIndex(0)
@@ -95,45 +160,44 @@ export default function GlossaryPage() {
         <div className="glossary-page-heading">
           <h1>
             <BookOpen className="glossary-page-title-icon" size={22} strokeWidth={2} aria-hidden />
-            <span className="glossary-page-title-text">Глоссарий: {project.title}</span>
+            <span className="glossary-page-title-text">Глоссарий: {projectTitle}</span>
           </h1>
         </div>
         <div className="projects-page-toolbar-actions">
           <div className="dashboard-filters chapters-page-filters">
             <DashboardDropdown
-              label="На странице"
+              label="Число строк"
               options={pageSizeOptions}
               value={String(pageSize)}
               onChange={(value) => setPageSize(Number(value))}
               ddKey="glossary-filter|page-size"
               openKey={openFilterKey}
               onOpenChange={setOpenFilterKey}
+              stableTriggerWidth
             />
-            {showPagination ? (
-              <div className="chapters-page-pagination">
-                <button
-                  type="button"
-                  className="review-queue-clear chapters-page-pagination-btn"
-                  onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
-                  disabled={safePageIndex <= 0}
-                  aria-label="Предыдущая страница"
-                >
-                  <ChevronLeft size={16} strokeWidth={1.8} aria-hidden />
-                </button>
-                <span className="chapters-page-pagination-label">
-                  {safePageIndex + 1} / {totalPages}
-                </span>
-                <button
-                  type="button"
-                  className="review-queue-clear chapters-page-pagination-btn"
-                  onClick={() => setPageIndex((p) => Math.min(totalPages - 1, p + 1))}
-                  disabled={safePageIndex >= totalPages - 1}
-                  aria-label="Следующая страница"
-                >
-                  <ChevronRight size={16} strokeWidth={1.8} aria-hidden />
-                </button>
-              </div>
-            ) : null}
+            <div className="chapters-page-pagination">
+              <button
+                type="button"
+                className="review-queue-clear chapters-page-pagination-btn"
+                onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
+                disabled={safePageIndex <= 0}
+                aria-label="Предыдущая страница"
+              >
+                <ChevronLeft size={16} strokeWidth={1.8} aria-hidden />
+              </button>
+              <span className="chapters-page-pagination-label">
+                {safePageIndex + 1} / {totalPages}
+              </span>
+              <button
+                type="button"
+                className="review-queue-clear chapters-page-pagination-btn"
+                onClick={() => setPageIndex((p) => Math.min(totalPages - 1, p + 1))}
+                disabled={safePageIndex >= totalPages - 1}
+                aria-label="Следующая страница"
+              >
+                <ChevronRight size={16} strokeWidth={1.8} aria-hidden />
+              </button>
+            </div>
           </div>
           <PressActionButton
             onClick={() => {
@@ -155,7 +219,15 @@ export default function GlossaryPage() {
             <span>Перевод</span>
             <span className="glossary-table-actions-head" aria-hidden />
           </div>
-          {entries.length === 0 ? (
+          {glossaryLoading && entries.length === 0 ? (
+            <div className="glossary-table-empty">
+              <p className="glossary-empty">Загрузка…</p>
+            </div>
+          ) : glossaryLoadError && entries.length === 0 ? (
+            <div className="glossary-table-empty">
+              <p className="glossary-empty">{glossaryLoadError}</p>
+            </div>
+          ) : entries.length === 0 ? (
             <div className="glossary-table-empty">
               <p className="glossary-empty">Термины отсутствуют. Добавьте вручную или из редактора главы.</p>
             </div>
@@ -188,7 +260,7 @@ export default function GlossaryPage() {
         key={formKey}
         open={addOpen}
         mode={editingEntry ? 'edit' : 'add'}
-        projectLabel={project.title}
+        projectLabel={projectTitle}
         initialSource={editingEntry?.source ?? ''}
         initialTarget={editingEntry?.target ?? ''}
         onClose={() => {

@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
 import { PressActionButton } from '../../../components/PressActionButton'
 import { usePipeline } from '../../context/usePipeline'
 import { getSelectionTextInContainer } from '../../glossary/getSelectionInContainer'
@@ -21,6 +21,14 @@ import {
 } from '../../chapterEditorModel'
 import { apiDownloadFile, apiFileUrl, apiGet, apiPostJson, apiPutJson } from '../../../lib/api'
 import scanPlaceholder from '../../../assets/projects - titles/title.png'
+
+type ChapterEditorNavState = {
+  fromTrash?: boolean
+  projectId?: string
+  projectTitle?: string
+  chapterNumber?: number
+  returnTo?: string
+}
 
 function scrollTableRowToCenterClamped(
   scrollParent: HTMLElement,
@@ -317,6 +325,8 @@ const MOCK_TRANSLATION_TABLE_ROWS = [
 export default function ChapterEditorPage() {
   const { chapterId: chapterIdParam } = useParams<{ chapterId: string }>()
   const chapterId = chapterIdParam?.trim() ?? ''
+  const location = useLocation()
+  const navState = (location.state ?? null) as ChapterEditorNavState | null
   const { chapters, addGlossaryEntry } = usePipeline()
 
   const chapter = useMemo(() => {
@@ -448,8 +458,8 @@ export default function ChapterEditorPage() {
   }, [])
 
   const glossaryProjectId = useMemo(
-    () => chapter?.projectId ?? editorHead?.project_id ?? null,
-    [chapter?.projectId, editorHead?.project_id],
+    () => chapter?.projectId ?? editorHead?.project_id ?? navState?.projectId ?? null,
+    [chapter?.projectId, editorHead?.project_id, navState?.projectId],
   )
 
   const onGlossaryPaneContextMenu = useCallback(
@@ -602,8 +612,9 @@ export default function ChapterEditorPage() {
     return <Navigate to="/dashboard/chapters" replace />
   }
 
-  const displayTitle = (chapter?.title ?? editorHead?.chapter_title ?? '').trim() || 'Глава'
-  const displayNumber = chapter?.number ?? editorHead?.chapter_number ?? 0
+  const displayTitle =
+    (chapter?.title ?? navState?.projectTitle ?? editorHead?.chapter_title ?? '').trim() || 'Глава'
+  const displayNumber = chapter?.number ?? navState?.chapterNumber ?? editorHead?.chapter_number ?? 0
 
   const nw = imgNatural.w
   const nh = imgNatural.h
@@ -625,7 +636,13 @@ export default function ChapterEditorPage() {
                 <Link
                   className="btn-cabinet btn-press dashboard-press-btn review-queue-submit chapter-editor-action-btn chapter-editor-glossary-btn"
                   to={`/dashboard/projects/${glossaryProjectId}/glossary`}
-                  state={{ returnTo: `/dashboard/chapters/${chapterId}/edit` }}
+                  state={{
+                    returnTo: `/dashboard/chapters/${chapterId}/edit`,
+                    fromTrash: navState?.fromTrash,
+                    projectTitle: navState?.projectTitle ?? chapter?.title,
+                    chapterNumber: navState?.chapterNumber ?? chapter?.number ?? editorHead?.chapter_number,
+                    projectId: glossaryProjectId ?? undefined,
+                  }}
                 >
                   Глоссарий
                 </Link>

@@ -9,7 +9,7 @@ import DashboardDropdown from './DashboardDropdown'
 
 const DEFAULT_TITLE_FILTER = 'all'
 const DEFAULT_STATUS_FILTER = 'all'
-const DEFAULT_SORT = 'date-desc'
+const DEFAULT_SORT = 'updated-desc'
 const DEFAULT_PAGE_SIZE = 10
 
 const pageSizeOptions = [
@@ -20,8 +20,10 @@ const pageSizeOptions = [
 ]
 
 const sortOptions = [
-  { value: 'date-desc', label: 'Дата — новые сверху' },
-  { value: 'date-asc', label: 'Дата — старые сверху' },
+  { value: 'updated-desc', label: 'Дата изменения — новые сверху' },
+  { value: 'updated-asc', label: 'Дата изменения — старые сверху' },
+  { value: 'created-desc', label: 'Дата создания — новые сверху' },
+  { value: 'created-asc', label: 'Дата создания — старые сверху' },
   { value: 'number-desc', label: 'Номер — по убыванию' },
   { value: 'number-asc', label: 'Номер — по возрастанию' },
 ]
@@ -35,19 +37,14 @@ const statusOptions = [
   { value: 'upload', label: 'Загрузка' },
 ]
 
-function parseChapterDate(str) {
-  const [datePart, timePart] = str.trim().split(/\s+/)
-  const [d, m, y] = datePart.split('.').map(Number)
-  const [hh, mm] = timePart ? timePart.split(':').map(Number) : [0, 0]
-  return new Date(y, m - 1, d, hh, mm, 0, 0).getTime()
+function parseChapterDate(iso: string) {
+  return new Date(iso).getTime()
 }
 
 function ChaptersPage({ title }) {
   const [searchParams] = useSearchParams()
   const {
     chapters,
-    assignEditor,
-    selectedWaitingIds,
     soloMode,
     updateChapterMetadata,
     removeChapter,
@@ -83,15 +80,6 @@ function ChaptersPage({ title }) {
     }
   }, [searchParams, titleOptions])
 
-  const batchWaitingSelectedCount = useMemo(() => {
-    let n = 0
-    for (const id of selectedWaitingIds) {
-      const row = chapters.find((c) => c.id === id)
-      if (row?.statusCode === 'waiting_editor') n += 1
-    }
-    return n
-  }, [chapters, selectedWaitingIds])
-
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
       const target = event.target as Node
@@ -102,8 +90,12 @@ function ChaptersPage({ title }) {
           setOpenFilterKey(null)
         }
       }
-      if (!pageRootRef.current?.contains(target)) {
-        setAssignMenuKey(null)
+      if (assignMenuKey) {
+        const trigger = document.querySelector(`[data-review-queue-dd="${CSS.escape(assignMenuKey)}"]`)
+        const portalMenu = document.querySelector(`[data-review-queue-portal="${CSS.escape(assignMenuKey)}"]`)
+        if (!trigger?.contains(target) && !portalMenu?.contains(target)) {
+          setAssignMenuKey(null)
+        }
       }
     }
 
@@ -120,7 +112,7 @@ function ChaptersPage({ title }) {
       window.removeEventListener('mousedown', handleOutsideClick)
       window.removeEventListener('keydown', handleEscape)
     }
-  }, [openFilterKey])
+  }, [assignMenuKey, openFilterKey])
 
   const filteredChapters = useMemo(() => {
     const filtered = chapters.filter((row) => {
@@ -130,11 +122,17 @@ function ChaptersPage({ title }) {
     })
 
     const sorted = [...filtered].sort((a, b) => {
-      if (sortBy === 'date-desc') {
-        return parseChapterDate(b.date) - parseChapterDate(a.date)
+      if (sortBy === 'updated-desc') {
+        return parseChapterDate(b.updatedAt) - parseChapterDate(a.updatedAt)
       }
-      if (sortBy === 'date-asc') {
-        return parseChapterDate(a.date) - parseChapterDate(b.date)
+      if (sortBy === 'updated-asc') {
+        return parseChapterDate(a.updatedAt) - parseChapterDate(b.updatedAt)
+      }
+      if (sortBy === 'created-desc') {
+        return parseChapterDate(b.createdAt) - parseChapterDate(a.createdAt)
+      }
+      if (sortBy === 'created-asc') {
+        return parseChapterDate(a.createdAt) - parseChapterDate(b.createdAt)
       }
       if (sortBy === 'number-desc') {
         return b.number - a.number
@@ -155,8 +153,6 @@ function ChaptersPage({ title }) {
     return filteredChapters.slice(start, start + pageSize)
   }, [filteredChapters, pageSize, safePageIndex])
 
-  const showPagination = filteredChapters.length > pageSize
-
   useEffect(() => {
     setPageIndex(0)
   }, [titleFilter, statusFilter, sortBy, pageSize])
@@ -176,8 +172,6 @@ function ChaptersPage({ title }) {
     setOpenFilterKey(null)
   }
 
-  const batchOpen = assignMenuKey === 'batch'
-
   const metadataChapter =
     metadataChapterId != null ? chapters.find((c) => c.id === metadataChapterId) : undefined
 
@@ -194,6 +188,8 @@ function ChaptersPage({ title }) {
             ddKey="chapters-filter|title"
             openKey={openFilterKey}
             onOpenChange={setOpenFilterKey}
+            stableTriggerWidth
+            truncateOptionLabels
           />
           <DashboardDropdown
             label="Статус"
@@ -203,6 +199,7 @@ function ChaptersPage({ title }) {
             ddKey="chapters-filter|status"
             openKey={openFilterKey}
             onOpenChange={setOpenFilterKey}
+            stableTriggerWidth
           />
           <DashboardDropdown
             label="Сортировка"
@@ -212,85 +209,47 @@ function ChaptersPage({ title }) {
             ddKey="chapters-filter|sort"
             openKey={openFilterKey}
             onOpenChange={setOpenFilterKey}
+            stableTriggerWidth
           />
           <DashboardDropdown
-            label="На странице"
+            label="Число строк"
             options={pageSizeOptions}
             value={String(pageSize)}
             onChange={(value) => setPageSize(Number(value))}
             ddKey="chapters-filter|page-size"
             openKey={openFilterKey}
             onOpenChange={setOpenFilterKey}
+            stableTriggerWidth
           />
-          {showPagination ? (
-            <div className="chapters-page-pagination">
-              <button
-                type="button"
-                className="review-queue-clear chapters-page-pagination-btn"
-                onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
-                disabled={safePageIndex <= 0}
-                aria-label="Предыдущая страница"
-              >
-                <ChevronLeft size={16} strokeWidth={1.8} aria-hidden />
-              </button>
-              <span className="chapters-page-pagination-label">
-                {safePageIndex + 1} / {totalPages}
-              </span>
-              <button
-                type="button"
-                className="review-queue-clear chapters-page-pagination-btn"
-                onClick={() => setPageIndex((p) => Math.min(totalPages - 1, p + 1))}
-                disabled={safePageIndex >= totalPages - 1}
-                aria-label="Следующая страница"
-              >
-                <ChevronRight size={16} strokeWidth={1.8} aria-hidden />
-              </button>
-            </div>
-          ) : null}
+          <div className="chapters-page-pagination">
+            <button
+              type="button"
+              className="review-queue-clear chapters-page-pagination-btn"
+              onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
+              disabled={safePageIndex <= 0}
+              aria-label="Предыдущая страница"
+            >
+              <ChevronLeft size={16} strokeWidth={1.8} aria-hidden />
+            </button>
+            <span className="chapters-page-pagination-label">
+              {safePageIndex + 1} / {totalPages}
+            </span>
+            <button
+              type="button"
+              className="review-queue-clear chapters-page-pagination-btn"
+              onClick={() => setPageIndex((p) => Math.min(totalPages - 1, p + 1))}
+              disabled={safePageIndex >= totalPages - 1}
+              aria-label="Следующая страница"
+            >
+              <ChevronRight size={16} strokeWidth={1.8} aria-hidden />
+            </button>
+          </div>
           <PressActionButton onClick={handleResetFilters}>
             <RefreshCcw className="projects-add-project-plus" size={16} strokeWidth={2.2} aria-hidden />
             <span>Сбросить</span>
           </PressActionButton>
         </div>
       </div>
-      {!soloMode && batchWaitingSelectedCount >= 2 ? (
-        <div className="chapters-batch-bar">
-          <span className="chapters-batch-bar-text">Выбрано: {batchWaitingSelectedCount}</span>
-          <div className={`dashboard-dropdown chapters-assign-dropdown ${batchOpen ? 'is-open' : ''}`}>
-            <PressActionButton
-              buttonClassName="chapters-batch-assign-btn"
-              onClick={(e) => {
-                e.stopPropagation()
-                setAssignMenuKey((k) => (k === 'batch' ? null : 'batch'))
-              }}
-              aria-expanded={batchOpen}
-            >
-              <span>Назначить редактора</span>
-            </PressActionButton>
-            {batchOpen ? (
-              <div className="dashboard-dropdown-menu chapters-assign-menu chapters-assign-menu--batch">
-                {teamMembers.map((m) => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    className="dashboard-dropdown-item"
-                    onClick={() => {
-                      const ids = [...selectedWaitingIds].filter((id) => {
-                        const row = chapters.find((c) => c.id === id)
-                        return row?.statusCode === 'waiting_editor'
-                      })
-                      void assignEditor(ids, m.id)
-                      setAssignMenuKey(null)
-                    }}
-                  >
-                    {m.name}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
       <div className="chapters-panel article-mini-card">
         <ChapterTable
           rows={paginatedChapters}

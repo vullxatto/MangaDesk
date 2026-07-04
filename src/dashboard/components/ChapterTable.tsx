@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { apiPostJson } from '../../lib/api'
 import { usePipeline } from '../context/usePipeline'
+import { formatRuDateTime } from '../projectDates'
 import type { ChapterRow } from '../pipelineTypes'
 import DashboardDropdown from './DashboardDropdown'
 import StatusBadge from './StatusBadge'
@@ -78,7 +79,7 @@ function ChapterTable({
   onAssignMenuKey: (key: string | null | ((prev: string | null) => string | null)) => void
   onOpenMetadataModal: (chapterId: string) => void
 }) {
-  const { soloMode, assignEditor, selectedWaitingIds, toggleWaitingSelected, teamMembers } = usePipeline()
+  const { soloMode, assignEditor, teamMembers } = usePipeline()
   const { teams, currentTeamId } = useAuth()
   const [inviteOpen, setInviteOpen] = useState(false)
   const [inviteLink, setInviteLink] = useState('')
@@ -98,12 +99,12 @@ function ChapterTable({
     <>
       <div className="chapters-table">
         <div
-          className={`chapters-row chapters-head ${soloMode ? 'chapters-row--solo' : 'chapters-row--with-select'}`}
+          className={`chapters-row chapters-head${soloMode ? ' chapters-row--solo' : ''}`}
         >
-          {!soloMode ? <span className="chapters-select-head" aria-hidden="true" /> : null}
           <span>Проект / №</span>
           <span>Статус</span>
           <span>Перевод</span>
+          <span>Дата создания</span>
           <span>Дата изменения</span>
           {!soloMode ? <span>Редактор</span> : null}
           <span className="chapters-actions-head" aria-hidden="true" />
@@ -111,27 +112,12 @@ function ChapterTable({
 
         {rows.map((row) => {
           const label = STATUS_LABEL[row.statusCode] ?? row.statusCode
-          const showCheckbox = !soloMode && row.statusCode === 'waiting_editor'
-          const checked = selectedWaitingIds.has(row.id)
 
           return (
             <div
               key={row.id}
-              className={`chapters-row ${soloMode ? 'chapters-row--solo' : 'chapters-row--with-select'}`}
+              className={`chapters-row${soloMode ? ' chapters-row--solo' : ''}`}
             >
-              {!soloMode ? (
-                <span className="chapters-select-cell">
-                  {showCheckbox ? (
-                    <input
-                      type="checkbox"
-                      className="chapters-select-checkbox"
-                      checked={checked}
-                      onChange={() => toggleWaitingSelected(row.id)}
-                      aria-label={`Выбрать главу № ${row.number}`}
-                    />
-                  ) : null}
-                </span>
-              ) : null}
               <span className="chapters-title">
                 <span className="chapters-title-main">
                   {row.title} <strong className="chapters-title-number">№ {row.number}</strong>
@@ -149,7 +135,8 @@ function ChapterTable({
                   Открыть
                 </Link>
               </span>
-              <span className="chapters-date">{row.date}</span>
+              <span className="chapters-date">{formatRuDateTime(row.createdAt)}</span>
+              <span className="chapters-date">{formatRuDateTime(row.updatedAt)}</span>
               {!soloMode ? (
                 <span className="chapters-editor">
                   {!row.editorId ? (
