@@ -8,6 +8,39 @@ const DROPDOWN_ROW_HEIGHT = 28
 const DROPDOWN_ROW_GAP = 2
 const DROPDOWN_MENU_PADDING = 12
 const DROPDOWN_FOOTER_HEIGHT = 44
+const SORT_MENU_WIDTH_REFERENCE_LABELS = [
+  'Дата удаления — новые сверху',
+  'Дата изменения — новые сверху',
+  'Дата создания — новые сверху',
+]
+
+let filterMenuMeasureEl: HTMLSpanElement | null = null
+
+function measureFilterMenuLabelWidth(label: string) {
+  if (typeof document === 'undefined') return label.length * 7
+  if (!filterMenuMeasureEl) {
+    filterMenuMeasureEl = document.createElement('span')
+    filterMenuMeasureEl.style.cssText =
+      'position:absolute;left:-9999px;top:-9999px;visibility:hidden;white-space:nowrap;pointer-events:none;'
+    document.body.appendChild(filterMenuMeasureEl)
+  }
+  filterMenuMeasureEl.style.fontFamily = 'var(--font-shonen)'
+  filterMenuMeasureEl.style.fontSize = '11px'
+  filterMenuMeasureEl.style.fontWeight = '400'
+  filterMenuMeasureEl.style.letterSpacing = '0.04em'
+  filterMenuMeasureEl.style.textTransform = 'uppercase'
+  filterMenuMeasureEl.textContent = label.toUpperCase()
+  return filterMenuMeasureEl.getBoundingClientRect().width
+}
+
+function measureFilterMenuWidth(labels: string[]) {
+  const contentWidth = labels.reduce((max, label) => Math.max(max, measureFilterMenuLabelWidth(label)), 0)
+  return Math.ceil(contentWidth) + 28
+}
+
+function sortFilterMenuWidth() {
+  return measureFilterMenuWidth(SORT_MENU_WIDTH_REFERENCE_LABELS)
+}
 
 type DashboardDropdownProps = {
   label: string
@@ -104,7 +137,9 @@ export default function DashboardDropdown({
           : r.bottom + gap
       const maxMenuWidth = Math.min(window.innerWidth - viewportPadding * 2, 420)
       const minWidth = Math.max(r.width, 170)
-      const menuWidth = truncateOptionLabels ? Math.min(minWidth, maxMenuWidth) : undefined
+      const menuWidth = truncateOptionLabels
+        ? Math.min(Math.max(minWidth, sortFilterMenuWidth()), maxMenuWidth)
+        : undefined
       const left =
         menuAlign === 'right'
           ? Math.max(viewportPadding, r.right - (menuWidth ?? minWidth))
