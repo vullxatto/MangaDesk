@@ -46,59 +46,58 @@ function ReviewOnlineSidebar({ members }: { members: OnlineMember[] }) {
         <p className="review-online-empty">Сейчас никого в сети</p>
       ) : (
         <div className="review-online-panel">
-          <ul
-            className="review-online-list"
-            style={
-              {
-                '--review-online-cols': ONLINE_COLS,
-                '--review-online-rows': ONLINE_ROWS,
-              } as CSSProperties
-            }
-          >
-            {visibleMembers.map((m) => (
-              <li key={m.id} className="review-online-item">
-                <div className="review-online-avatar-wrap">
-                  <img
-                    src={`https://picsum.photos/seed/review-side-${m.id}/64/64`}
-                    alt={m.name}
-                    className="review-online-avatar"
-                    loading="lazy"
-                    title={m.name}
-                  />
-                  <span
-                    className="team-card-avatar-dot team-card-avatar-dot--active"
-                    role="img"
-                    aria-label={presenceLabel.active}
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
-          {showNav ? (
-            <div className="review-online-pager chapters-page-pagination">
+          <div className="review-online-grid-row">
+            {showNav ? (
               <button
                 type="button"
-                className="review-queue-clear chapters-page-pagination-btn"
+                className="review-queue-clear chapters-page-pagination-btn review-online-nav-btn"
                 onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
                 disabled={safePageIndex <= 0}
                 aria-label="Предыдущие участники"
               >
                 <ChevronLeft size={16} strokeWidth={1.8} aria-hidden />
               </button>
-              <span className="chapters-page-pagination-label">
-                {safePageIndex + 1} / {totalPages}
-              </span>
+            ) : null}
+            <ul
+              className="review-online-list"
+              style={
+                {
+                  '--review-online-cols': ONLINE_COLS,
+                  '--review-online-rows': ONLINE_ROWS,
+                } as CSSProperties
+              }
+            >
+              {visibleMembers.map((m) => (
+                <li key={m.id} className="review-online-item">
+                  <div className="review-online-avatar-wrap">
+                    <img
+                      src={`https://picsum.photos/seed/review-side-${m.id}/64/64`}
+                      alt={m.name}
+                      className="review-online-avatar"
+                      loading="lazy"
+                      title={m.name}
+                    />
+                    <span
+                      className="team-card-avatar-dot team-card-avatar-dot--active"
+                      role="img"
+                      aria-label={presenceLabel.active}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+            {showNav ? (
               <button
                 type="button"
-                className="review-queue-clear chapters-page-pagination-btn"
+                className="review-queue-clear chapters-page-pagination-btn review-online-nav-btn"
                 onClick={() => setPageIndex((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={safePageIndex >= totalPages - 1}
                 aria-label="Следующие участники"
               >
                 <ChevronRight size={16} strokeWidth={1.8} aria-hidden />
               </button>
-            </div>
-          ) : null}
+            ) : null}
+          </div>
         </div>
       )}
 

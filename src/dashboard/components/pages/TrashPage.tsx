@@ -9,6 +9,8 @@ import { getProjectLinks } from '../../projectLinks'
 import { formatRuDateTime, resolveItemCreatedAt, resolveItemUpdatedAt, resolveProjectCreatedAt } from '../../projectDates'
 import DashboardDropdown from '../DashboardDropdown'
 import StatusBadge from '../StatusBadge'
+import TableColumnsDropdown from '../TableColumnsDropdown'
+import { useTrashChaptersTableColumns, useTrashProjectsTableColumns } from '../../tableColumns'
 
 type TrashProject = {
   id: string
@@ -45,6 +47,11 @@ const DEFAULT_PROJECTS_SORT = 'deleted-desc'
 const DEFAULT_CHAPTERS_TITLE_FILTER = 'all'
 const DEFAULT_CHAPTERS_STATUS_FILTER = 'all'
 const DEFAULT_CHAPTERS_SORT = 'deleted-desc'
+
+const trashViewOptions = [
+  { value: 'projects', label: 'Удалённые проекты' },
+  { value: 'chapters', label: 'Удалённые главы' },
+]
 
 const pageSizeOptions = [
   { value: '10', label: '10' },
@@ -88,6 +95,7 @@ const STATUS_LABEL: Record<string, string> = {
   edit: 'РЕДАКТУРА',
   upload: 'ЗАГРУЗКА',
   waiting_editor: 'ЖДЁТ РЕДАКТОРА',
+  review: 'ПРОВЕРКА',
 }
 
 function formatDeletedAt(value: string) {
@@ -130,6 +138,9 @@ export default function TrashPage({ title = 'Удалённое' }: { title?: st
   const [chaptersSort, setChaptersSort] = useState(DEFAULT_CHAPTERS_SORT)
   const [chaptersPageSize, setChaptersPageSize] = useState(DEFAULT_PAGE_SIZE)
   const [chaptersPageIndex, setChaptersPageIndex] = useState(0)
+
+  const trashProjectsColumns = useTrashProjectsTableColumns()
+  const trashChaptersColumns = useTrashChaptersTableColumns(soloMode)
 
   const loadTrash = useCallback(async () => {
     setLoading(true)
@@ -381,33 +392,31 @@ export default function TrashPage({ title = 'Удалённое' }: { title?: st
   const isEmpty = !loading && items.projects.length === 0 && items.chapters.length === 0
   const showProjects = view === 'projects'
   const showChapters = view === 'chapters'
+  const trashProjectsRowStyle = { gridTemplateColumns: trashProjectsColumns.gridTemplate }
+  const trashChaptersRowStyle = { gridTemplateColumns: trashChaptersColumns.gridTemplate }
 
   return (
     <div className="chapters-page projects-page trash-page">
       <div className="dashboard-toolbar projects-page-toolbar">
-        <h1>{title}</h1>
+        <div className="trash-page-toolbar-start">
+          <h1>{title}</h1>
+          {!loading && !isEmpty ? (
+            <div className="dashboard-filters chapters-page-filters trash-page-view-filter">
+              <DashboardDropdown
+                label="Раздел"
+                options={trashViewOptions}
+                value={view}
+                onChange={(value) => setTrashView(value as TrashView)}
+                ddKey="trash-filter|view"
+                openKey={openFilterKey}
+                onOpenChange={setOpenFilterKey}
+                stableTriggerWidth
+              />
+            </div>
+          ) : null}
+        </div>
         {!loading && !isEmpty ? (
           <div className="projects-page-toolbar-actions trash-page-toolbar-actions">
-            <div className="trash-view-switch" role="tablist" aria-label="Тип удалённых элементов">
-              <button
-                type="button"
-                role="tab"
-                className={`trash-view-switch-btn${showProjects ? ' is-active' : ''}`}
-                aria-selected={showProjects}
-                onClick={() => setTrashView('projects')}
-              >
-                Удалённые проекты
-              </button>
-              <button
-                type="button"
-                role="tab"
-                className={`trash-view-switch-btn${showChapters ? ' is-active' : ''}`}
-                aria-selected={showChapters}
-                onClick={() => setTrashView('chapters')}
-              >
-                Удалённые главы
-              </button>
-            </div>
             <div className="dashboard-filters chapters-page-filters">
               {showProjects ? (
                 <>
@@ -430,6 +439,14 @@ export default function TrashPage({ title = 'Удалённое' }: { title?: st
                     openKey={openFilterKey}
                     onOpenChange={setOpenFilterKey}
                     stableTriggerWidth
+                  />
+                  <TableColumnsDropdown
+                    columns={trashProjectsColumns.columns}
+                    isVisible={trashProjectsColumns.isVisible}
+                    onToggle={trashProjectsColumns.toggleColumn}
+                    ddKey="trash-projects-filter|columns"
+                    openKey={openFilterKey}
+                    onOpenChange={setOpenFilterKey}
                   />
                   <div className="chapters-page-pagination">
                     <button
@@ -502,6 +519,14 @@ export default function TrashPage({ title = 'Удалённое' }: { title?: st
                     onOpenChange={setOpenFilterKey}
                     stableTriggerWidth
                   />
+                  <TableColumnsDropdown
+                    columns={trashChaptersColumns.columns}
+                    isVisible={trashChaptersColumns.isVisible}
+                    onToggle={trashChaptersColumns.toggleColumn}
+                    ddKey="trash-chapters-filter|columns"
+                    openKey={openFilterKey}
+                    onOpenChange={setOpenFilterKey}
+                  />
                   <div className="chapters-page-pagination">
                     <button
                       type="button"
@@ -552,57 +577,69 @@ export default function TrashPage({ title = 'Удалённое' }: { title?: st
         <TrashTableSection emptyLabel="Нет удалённых проектов">
           {sortedProjects.length > 0 ? (
             <div className="projects-table trash-projects-table">
-              <div className="projects-row projects-head">
-                <span>Название</span>
-                <span>Главы</span>
-                <span>Глоссарий</span>
-                <span>Ссылки</span>
-                <span>Дата создания</span>
-                <span>Дата удаления</span>
+              <div className="projects-row projects-head" style={trashProjectsRowStyle}>
+                {trashProjectsColumns.isVisible('name') ? <span>Название</span> : null}
+                {trashProjectsColumns.isVisible('chapters') ? <span>Главы</span> : null}
+                {trashProjectsColumns.isVisible('glossary') ? <span>Глоссарий</span> : null}
+                {trashProjectsColumns.isVisible('links') ? <span>Ссылки</span> : null}
+                {trashProjectsColumns.isVisible('createdAt') ? <span>Дата создания</span> : null}
+                {trashProjectsColumns.isVisible('deletedAt') ? <span>Дата удаления</span> : null}
                 <span className="chapters-actions-head" aria-hidden="true" />
               </div>
               {paginatedProjects.map((p) => {
                 const links = getProjectLinks(p.id)
                 const chaptersCount = getDeletedProjectChaptersCount(p)
                 return (
-                  <div key={p.id} className="projects-row">
-                    <span className="projects-name">{p.title}</span>
-                    <span className="projects-chapters-wrap">
-                      <button
-                        type="button"
-                        className="review-queue-clear projects-chapters-cell projects-chapters-open-btn"
-                        onClick={() => openDeletedProjectChapters(p.title)}
-                        aria-label={`Перейти к удалённым главам проекта ${p.title}`}
-                      >
-                        <span className="projects-chapters-num">{chaptersCount}</span>
-                      </button>
-                    </span>
-                    <span className="projects-glossary">
-                      <Link
-                        className="review-queue-clear projects-link-tag"
-                        to={`/dashboard/projects/${p.id}/glossary`}
-                        state={{ projectTitle: p.title, fromTrash: true }}
-                      >
-                        Открыть
-                      </Link>
-                    </span>
-                    <span className="projects-links">
-                      {links.map((link, index) => (
-                        <a
-                          key={`${p.id}-${index}`}
-                          className="review-queue-clear projects-link-tag"
-                          href={link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                  <div key={p.id} className="projects-row" style={trashProjectsRowStyle}>
+                    {trashProjectsColumns.isVisible('name') ? (
+                      <span className="projects-name">{p.title}</span>
+                    ) : null}
+                    {trashProjectsColumns.isVisible('chapters') ? (
+                      <span className="projects-chapters-wrap">
+                        <button
+                          type="button"
+                          className="review-queue-clear projects-chapters-cell projects-chapters-open-btn"
+                          onClick={() => openDeletedProjectChapters(p.title)}
+                          aria-label={`Перейти к удалённым главам проекта ${p.title}`}
                         >
-                          {link.label}
-                        </a>
-                      ))}
-                    </span>
-                    <span className="projects-created-date">
-                      {formatDeletedAt(resolveProjectCreatedAt(p.id, p.created_at))}
-                    </span>
-                    <span className="trash-date">{formatDeletedAt(p.deleted_at)}</span>
+                          <span className="projects-chapters-num">{chaptersCount}</span>
+                        </button>
+                      </span>
+                    ) : null}
+                    {trashProjectsColumns.isVisible('glossary') ? (
+                      <span className="projects-glossary">
+                        <Link
+                          className="review-queue-clear projects-link-tag"
+                          to={`/dashboard/projects/${p.id}/glossary`}
+                          state={{ projectTitle: p.title, fromTrash: true }}
+                        >
+                          Открыть
+                        </Link>
+                      </span>
+                    ) : null}
+                    {trashProjectsColumns.isVisible('links') ? (
+                      <span className="projects-links">
+                        {links.map((link, index) => (
+                          <a
+                            key={`${p.id}-${index}`}
+                            className="review-queue-clear projects-link-tag"
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {link.label}
+                          </a>
+                        ))}
+                      </span>
+                    ) : null}
+                    {trashProjectsColumns.isVisible('createdAt') ? (
+                      <span className="projects-created-date">
+                        {formatDeletedAt(resolveProjectCreatedAt(p.id, p.created_at))}
+                      </span>
+                    ) : null}
+                    {trashProjectsColumns.isVisible('deletedAt') ? (
+                      <span className="trash-date">{formatDeletedAt(p.deleted_at)}</span>
+                    ) : null}
                     <span className="chapters-actions">
                       <button
                         type="button"
@@ -625,51 +662,70 @@ export default function TrashPage({ title = 'Удалённое' }: { title?: st
         <TrashTableSection emptyLabel="Нет удалённых глав">
           {filteredChapters.length > 0 ? (
             <div className="chapters-table trash-chapters-table">
-              <div className={`chapters-row chapters-head${soloMode ? ' chapters-row--solo' : ''}`}>
-                <span>Проект / №</span>
-                <span>Статус</span>
-                <span>Перевод</span>
-                <span>Дата создания</span>
-                <span>Дата изменения</span>
-                <span>Дата удаления</span>
-                {!soloMode ? <span>Редактор</span> : null}
+              <div
+                className={`chapters-row chapters-head${soloMode ? ' chapters-row--solo' : ''}`}
+                style={trashChaptersRowStyle}
+              >
+                {trashChaptersColumns.isVisible('title') ? <span>Проект / №</span> : null}
+                {trashChaptersColumns.isVisible('status') ? <span>Статус</span> : null}
+                {trashChaptersColumns.isVisible('translate') ? <span>Перевод</span> : null}
+                {trashChaptersColumns.isVisible('createdAt') ? <span>Дата создания</span> : null}
+                {trashChaptersColumns.isVisible('updatedAt') ? <span>Дата изменения</span> : null}
+                {trashChaptersColumns.isVisible('deletedAt') ? <span>Дата удаления</span> : null}
+                {trashChaptersColumns.isVisible('editor') ? <span>Редактор</span> : null}
                 <span className="chapters-actions-head" aria-hidden="true" />
               </div>
               {paginatedChapters.map((c) => {
                 const statusLabel = STATUS_LABEL[c.status_code] ?? c.status_code
                 return (
-                  <div key={c.id} className={`chapters-row${soloMode ? ' chapters-row--solo' : ''}`}>
-                    <span className="chapters-title">
-                      <span className="chapters-title-main">
-                        {c.project_title} <strong className="chapters-title-number">№ {c.chapter_number}</strong>
+                  <div
+                    key={c.id}
+                    className={`chapters-row${soloMode ? ' chapters-row--solo' : ''}`}
+                    style={trashChaptersRowStyle}
+                  >
+                    {trashChaptersColumns.isVisible('title') ? (
+                      <span className="chapters-title">
+                        <span className="chapters-title-main">
+                          {c.project_title} <strong className="chapters-title-number">№ {c.chapter_number}</strong>
+                        </span>
+                        {c.restored_from_trash ? <span className="chapters-title-note">(восстановленная)</span> : null}
                       </span>
-                      {c.restored_from_trash ? <span className="chapters-title-note">(восстановленная)</span> : null}
-                    </span>
-                    <span>
-                      <StatusBadge statusCode={c.status_code} status={statusLabel} />
-                    </span>
-                    <span className="chapters-translate">
-                      <Link
-                        className="review-queue-clear projects-link-tag"
-                        to={`/dashboard/chapters/${c.id}/edit`}
-                        state={{
-                          fromTrash: true,
-                          projectId: c.project_id,
-                          projectTitle: c.project_title,
-                          chapterNumber: c.chapter_number,
-                        }}
-                      >
-                        Открыть
-                      </Link>
-                    </span>
-                    <span className="projects-created-date">
-                      {formatDeletedAt(resolveItemCreatedAt(c.id, c.created_at))}
-                    </span>
-                    <span className="chapters-date">
-                      {formatDeletedAt(resolveItemUpdatedAt(c.id, c.updated_at, c.created_at))}
-                    </span>
-                    <span className="trash-date">{formatDeletedAt(c.deleted_at)}</span>
-                    {!soloMode ? (
+                    ) : null}
+                    {trashChaptersColumns.isVisible('status') ? (
+                      <span>
+                        <StatusBadge statusCode={c.status_code} status={statusLabel} />
+                      </span>
+                    ) : null}
+                    {trashChaptersColumns.isVisible('translate') ? (
+                      <span className="chapters-translate">
+                        <Link
+                          className="review-queue-clear projects-link-tag"
+                          to={`/dashboard/chapters/${c.id}/edit`}
+                          state={{
+                            fromTrash: true,
+                            projectId: c.project_id,
+                            projectTitle: c.project_title,
+                            chapterNumber: c.chapter_number,
+                          }}
+                        >
+                          Открыть
+                        </Link>
+                      </span>
+                    ) : null}
+                    {trashChaptersColumns.isVisible('createdAt') ? (
+                      <span className="projects-created-date">
+                        {formatDeletedAt(resolveItemCreatedAt(c.id, c.created_at))}
+                      </span>
+                    ) : null}
+                    {trashChaptersColumns.isVisible('updatedAt') ? (
+                      <span className="chapters-date">
+                        {formatDeletedAt(resolveItemUpdatedAt(c.id, c.updated_at, c.created_at))}
+                      </span>
+                    ) : null}
+                    {trashChaptersColumns.isVisible('deletedAt') ? (
+                      <span className="trash-date">{formatDeletedAt(c.deleted_at)}</span>
+                    ) : null}
+                    {trashChaptersColumns.isVisible('editor') ? (
                       <span className="chapters-editor">
                         {c.editor_id ? (
                           <>

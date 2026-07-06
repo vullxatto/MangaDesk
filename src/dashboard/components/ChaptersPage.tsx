@@ -6,6 +6,8 @@ import { usePipeline } from '../context/usePipeline'
 import ChapterMetadataModal from './ChapterMetadataModal'
 import ChapterTable from './ChapterTable'
 import DashboardDropdown from './DashboardDropdown'
+import TableColumnsDropdown from './TableColumnsDropdown'
+import { useChaptersTableColumns } from '../tableColumns'
 
 const DEFAULT_TITLE_FILTER = 'all'
 const DEFAULT_STATUS_FILTER = 'all'
@@ -31,6 +33,7 @@ const sortOptions = [
 const statusOptions = [
   { value: 'all', label: 'Все' },
   { value: 'ready', label: 'Готово' },
+  { value: 'review', label: 'Проверка' },
   { value: 'waiting_editor', label: 'Ждёт редактора' },
   { value: 'ai', label: 'Обработка' },
   { value: 'edit', label: 'Редактура' },
@@ -63,6 +66,7 @@ function ChaptersPage({ title }) {
   const filtersRef = useRef<HTMLDivElement>(null)
   const pageRootRef = useRef<HTMLDivElement>(null)
   const appliedUrlProjectRef = useRef<string | null>(null)
+  const chaptersColumns = useChaptersTableColumns(soloMode)
 
   const titleOptions = useMemo(() => {
     const titles = [...new Set(chapters.map((c) => c.title))].sort()
@@ -221,6 +225,14 @@ function ChaptersPage({ title }) {
             onOpenChange={setOpenFilterKey}
             stableTriggerWidth
           />
+          <TableColumnsDropdown
+            columns={chaptersColumns.columns}
+            isVisible={chaptersColumns.isVisible}
+            onToggle={chaptersColumns.toggleColumn}
+            ddKey="chapters-filter|columns"
+            openKey={openFilterKey}
+            onOpenChange={setOpenFilterKey}
+          />
           <div className="chapters-page-pagination">
             <button
               type="button"
@@ -256,6 +268,8 @@ function ChaptersPage({ title }) {
           assignMenuKey={assignMenuKey}
           onAssignMenuKey={setAssignMenuKey}
           onOpenMetadataModal={setMetadataChapterId}
+          isColumnVisible={chaptersColumns.isVisible}
+          gridTemplate={chaptersColumns.gridTemplate}
         />
       </div>
       {metadataChapter ? (

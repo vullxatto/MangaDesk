@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
-import { CloudDownload, Pencil, UserPlus } from 'lucide-react'
+import { Check, CloudDownload, Pencil, RotateCcw, UserPlus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { apiPostJson } from '../../lib/api'
 import { usePipeline } from '../context/usePipeline'
 import { formatRuDateTime } from '../projectDates'
 import type { ChapterRow } from '../pipelineTypes'
+import ChapterReviewModal from './ChapterReviewModal'
 import DashboardDropdown from './DashboardDropdown'
 import StatusBadge from './StatusBadge'
 import TeamInviteModal from './TeamInviteModal'
@@ -16,6 +17,7 @@ const STATUS_LABEL = {
   edit: 'РЕДАКТУРА',
   upload: 'ЗАГРУЗКА',
   waiting_editor: 'ЖДЁТ РЕДАКТОРА',
+  review: 'ПРОВЕРКА',
 }
 
 function AssignEditorControl({
@@ -73,20 +75,31 @@ function ChapterTable({
   assignMenuKey,
   onAssignMenuKey: setAssignMenuKey,
   onOpenMetadataModal,
+  isColumnVisible,
+  gridTemplate,
 }: {
   rows: ChapterRow[]
   assignMenuKey: string | null
   onAssignMenuKey: (key: string | null | ((prev: string | null) => string | null)) => void
   onOpenMetadataModal: (chapterId: string) => void
+  isColumnVisible: (id: string) => boolean
+  gridTemplate: string
 }) {
-  const { soloMode, assignEditor, teamMembers } = usePipeline()
+  const { soloMode, assignEditor, teamMembers, reviewChapter, downloadChapterDeliverables } = usePipeline()
   const { teams, currentTeamId } = useAuth()
   const [inviteOpen, setInviteOpen] = useState(false)
   const [inviteLink, setInviteLink] = useState('')
+  const [rejectChapter, setRejectChapter] = useState<ChapterRow | null>(null)
+  const [reviewBusyId, setReviewBusyId] = useState<string | null>(null)
 
   const isPersonalTeam = useMemo(() => {
     const team = teams.find((t) => t.id === currentTeamId)
     return !!team?.is_personal
+  }, [teams, currentTeamId])
+
+  const isTeamOwner = useMemo(() => {
+    const team = teams.find((t) => t.id === currentTeamId)
+    return team?.role === 'owner'
   }, [teams, currentTeamId])
 
   async function openInviteMemberModal() {
@@ -95,18 +108,18 @@ function ChapterTable({
     setInviteOpen(true)
   }
 
+  const rowStyle = { gridTemplateColumns: gridTemplate }
+
   return (
     <>
       <div className="chapters-table">
-        <div
-          className={`chapters-row chapters-head${soloMode ? ' chapters-row--solo' : ''}`}
-        >
-          <span>Проект / №</span>
-          <span>Статус</span>
-          <span>Перевод</span>
-          <span>Дата создания</span>
-          <span>Дата изменения</span>
-          {!soloMode ? <span>Редактор</span> : null}
+        <div className={`chapters-row chapters-head${soloMode ? ' chapters-row--solo' : ''}`} style={rowStyle}>
+          {isColumnVisible('title') ? <span>Проект / №</span> : null}
+          {isColumnVisible('status') ? <span>Статус</span> : null}
+          {isColumnVisible('translate') ? <span>Перевод</span> : null}
+          {isColumnVisible('createdAt') ? <span>Дата создания</span> : null}
+          {isColumnVisible('updatedAt') ? <span>Дата изменения</span> : null}
+          {isColumnVisible('editor') ? <span>Редактор</span> : null}
           <span className="chapters-actions-head" aria-hidden="true" />
         </div>
 
@@ -117,27 +130,38 @@ function ChapterTable({
             <div
               key={row.id}
               className={`chapters-row${soloMode ? ' chapters-row--solo' : ''}`}
+              style={rowStyle}
             >
-              <span className="chapters-title">
-                <span className="chapters-title-main">
-                  {row.title} <strong className="chapters-title-number">№ {row.number}</strong>
+              {isColumnVisible('title') ? (
+                <span className="chapters-title">
+                  <span className="chapters-title-main">
+                    {row.title} <strong className="chapters-title-number">№ {row.number}</strong>
+                  </span>
+                  {row.restoredFromTrash ? <span className="chapters-title-note">(восстановленная)</span> : null}
                 </span>
-                {row.restoredFromTrash ? <span className="chapters-title-note">(восстановленная)</span> : null}
-              </span>
-              <span>
-                <StatusBadge statusCode={row.statusCode} status={label} />
-              </span>
-              <span className="chapters-translate">
-                <Link
-                  className="review-queue-clear projects-link-tag"
-                  to={`/dashboard/chapters/${row.id}/edit`}
-                >
-                  Открыть
-                </Link>
-              </span>
-              <span className="chapters-date">{formatRuDateTime(row.createdAt)}</span>
-              <span className="chapters-date">{formatRuDateTime(row.updatedAt)}</span>
-              {!soloMode ? (
+              ) : null}
+              {isColumnVisible('status') ? (
+                <span>
+                  <StatusBadge statusCode={row.statusCode} status={label} />
+                </span>
+              ) : null}
+              {isColumnVisible('translate') ? (
+                <span className="chapters-translate">
+                  <Link
+                    className="review-queue-clear projects-link-tag"
+                    to={`/dashboard/chapters/${row.id}/edit`}
+                  >
+                    Открыть
+                  </Link>
+                </span>
+              ) : null}
+              {isColumnVisible('createdAt') ? (
+                <span className="chapters-date">{formatRuDateTime(row.createdAt)}</span>
+              ) : null}
+              {isColumnVisible('updatedAt') ? (
+                <span className="chapters-date">{formatRuDateTime(row.updatedAt)}</span>
+              ) : null}
+              {isColumnVisible('editor') ? (
                 <span className="chapters-editor">
                   {!row.editorId ? (
                     <AssignEditorControl
@@ -168,14 +192,40 @@ function ChapterTable({
                 </span>
               ) : null}
               <span className="chapters-actions">
-                {row.statusCode === 'ready' ? (
+                {row.statusCode === 'ready' || row.statusCode === 'review' ? (
                   <button
                     type="button"
                     className="review-queue-clear"
                     aria-label={`Скачать главу ${row.title}, № ${row.number}`}
+                    onClick={() => void downloadChapterDeliverables(row.id)}
                   >
                     <CloudDownload size={16} strokeWidth={1.8} aria-hidden />
                   </button>
+                ) : null}
+                {isTeamOwner && row.statusCode === 'review' ? (
+                  <>
+                    <button
+                      type="button"
+                      className="review-queue-clear chapters-review-approve"
+                      aria-label={`Принять главу ${row.title}, № ${row.number}`}
+                      disabled={reviewBusyId === row.id}
+                      onClick={() => {
+                        setReviewBusyId(row.id)
+                        void reviewChapter(row.id, 'approve').finally(() => setReviewBusyId(null))
+                      }}
+                    >
+                      <Check size={16} strokeWidth={2} aria-hidden />
+                    </button>
+                    <button
+                      type="button"
+                      className="review-queue-clear chapters-review-reject"
+                      aria-label={`Вернуть главу редактору ${row.title}, № ${row.number}`}
+                      disabled={reviewBusyId === row.id}
+                      onClick={() => setRejectChapter(row)}
+                    >
+                      <RotateCcw size={16} strokeWidth={1.8} aria-hidden />
+                    </button>
+                  </>
                 ) : null}
                 <button
                   type="button"
@@ -197,6 +247,24 @@ function ChapterTable({
         open={inviteOpen}
         inviteLink={inviteLink}
         onClose={() => setInviteOpen(false)}
+      />
+      <ChapterReviewModal
+        open={!!rejectChapter}
+        chapterLabel={
+          rejectChapter ? `${rejectChapter.title} № ${rejectChapter.number}` : ''
+        }
+        onClose={() => setRejectChapter(null)}
+        submitting={!!rejectChapter && reviewBusyId === rejectChapter.id}
+        onConfirm={async (comment) => {
+          if (!rejectChapter) return
+          setReviewBusyId(rejectChapter.id)
+          try {
+            await reviewChapter(rejectChapter.id, 'reject', comment)
+            setRejectChapter(null)
+          } finally {
+            setReviewBusyId(null)
+          }
+        }}
       />
     </>
   )

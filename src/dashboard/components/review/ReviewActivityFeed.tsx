@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useCallback, useLayoutEffect, useRef, useState } from 'react'
 import { ArrowUp } from 'lucide-react'
 
 const dotClassByType = {
@@ -9,6 +9,17 @@ const dotClassByType = {
 
 function ReviewActivityFeed({ events, maxHeight = 380 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [showScrollTop, setShowScrollTop] = useState(false)
+
+  const updateScrollTopVisibility = useCallback(() => {
+    const el = scrollRef.current
+    if (!el) return
+    setShowScrollTop(el.scrollTop > 8)
+  }, [])
+
+  useLayoutEffect(() => {
+    updateScrollTopVisibility()
+  }, [events, maxHeight, updateScrollTopVisibility])
 
   const scrollToTop = () => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
@@ -20,9 +31,11 @@ function ReviewActivityFeed({ events, maxHeight = 380 }) {
         <h2 className="review-aside-title">Лента событий</h2>
         <button
           type="button"
-          className="review-queue-clear review-feed-scroll-top"
+          className={`review-queue-clear review-feed-scroll-top${showScrollTop ? ' review-feed-scroll-top--visible' : ''}`}
           onClick={scrollToTop}
           aria-label="Прокрутить ленту наверх"
+          aria-hidden={!showScrollTop}
+          tabIndex={showScrollTop ? 0 : -1}
         >
           <ArrowUp size={16} strokeWidth={1.8} aria-hidden />
         </button>
@@ -31,6 +44,7 @@ function ReviewActivityFeed({ events, maxHeight = 380 }) {
         ref={scrollRef}
         className="review-feed-scroll"
         style={{ ['--review-feed-max-height' as string]: `${maxHeight}px` }}
+        onScroll={updateScrollTopVisibility}
       >
         <ul className="review-feed-list">
           {events.map((ev) => (

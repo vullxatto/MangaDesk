@@ -841,7 +841,7 @@ export default function ChapterEditorPage() {
           initialSource={glossaryModal.initialSource}
           onClose={() => setGlossaryModal({ open: false, initialSource: '' })}
           onSubmit={(source, target) => {
-            void addGlossaryEntry(glossaryProjectId, { source, target })
+            void addGlossaryEntry(glossaryProjectId, { source, target, chapterId })
           }}
         />
       ) : null}

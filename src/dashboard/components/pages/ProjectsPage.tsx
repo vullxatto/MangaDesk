@@ -7,6 +7,8 @@ import { getProjectLinks } from '../../projectLinks'
 import DashboardDropdown from '../DashboardDropdown'
 import ProjectFormModal from '../ProjectFormModal'
 import ProjectsTable, { type ProjectRow } from '../ProjectsTable'
+import TableColumnsDropdown from '../TableColumnsDropdown'
+import { useProjectsTableColumns } from '../../tableColumns'
 
 const DEFAULT_PAGE_SIZE = 10
 const DEFAULT_SORT = 'date-desc'
@@ -39,6 +41,7 @@ function ProjectsPage({ title }: { title: string }) {
   const [pageIndex, setPageIndex] = useState(0)
   const [sortBy, setSortBy] = useState(DEFAULT_SORT)
   const [openFilterKey, setOpenFilterKey] = useState<string | null>(null)
+  const projectsColumns = useProjectsTableColumns()
 
   const projectsData = useMemo(() => {
     const rows = projects.map((p) => {
@@ -140,6 +143,14 @@ function ProjectsPage({ title }: { title: string }) {
               onOpenChange={setOpenFilterKey}
               stableTriggerWidth
             />
+            <TableColumnsDropdown
+              columns={projectsColumns.columns}
+              isVisible={projectsColumns.isVisible}
+              onToggle={projectsColumns.toggleColumn}
+              ddKey="projects-filter|columns"
+              openKey={openFilterKey}
+              onOpenChange={setOpenFilterKey}
+            />
             <div className="chapters-page-pagination">
               <button
                 type="button"
@@ -178,6 +189,8 @@ function ProjectsPage({ title }: { title: string }) {
             const params = new URLSearchParams({ project: row.name })
             navigate(`/dashboard/chapters?${params.toString()}`)
           }}
+          isColumnVisible={projectsColumns.isVisible}
+          gridTemplate={projectsColumns.gridTemplate}
         />
       </div>
 

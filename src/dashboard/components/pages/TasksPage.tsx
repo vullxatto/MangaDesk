@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { PressActionButton } from '../../../components/PressActionButton'
 import { usePipeline } from '../../context/usePipeline'
 import StatusBadge from '../StatusBadge'
+import TaskSubmitPanel from '../TaskSubmitPanel'
 
 const STATUS_LABEL = {
   ready: 'ГОТОВО',
@@ -9,11 +10,12 @@ const STATUS_LABEL = {
   edit: 'РЕДАКТУРА',
   upload: 'ЗАГРУЗКА',
   waiting_editor: 'ЖДЁТ РЕДАКТОРА',
+  review: 'ПРОВЕРКА',
 }
 
 function TasksPage({ title = 'Задачи' }) {
   const navigate = useNavigate()
-  const { editorTasks, completeEditorTask } = usePipeline()
+  const { editorTasks } = usePipeline()
 
   if (editorTasks.length === 0) {
     return (
@@ -40,31 +42,30 @@ function TasksPage({ title = 'Задачи' }) {
             <span>Действие</span>
           </div>
           {editorTasks.map((row) => (
-            <div key={row.id} className="chapters-row chapters-row--tasks">
-              <span className="chapters-title">
-                <span className="chapters-title-main">
-                  {row.title} <strong className="chapters-title-number">№ {row.number}</strong>
+            <div key={row.id} className="tasks-table-block">
+              <div className="chapters-row chapters-row--tasks">
+                <span className="chapters-title">
+                  <span className="chapters-title-main">
+                    {row.title} <strong className="chapters-title-number">№ {row.number}</strong>
+                  </span>
                 </span>
-              </span>
-              <span>
-                <StatusBadge
-                  statusCode={row.statusCode}
-                  status={STATUS_LABEL[row.statusCode] ?? row.statusCode}
-                />
-              </span>
-              <span className="chapters-date">{row.assignedAt ?? row.date}</span>
-              <span className="tasks-actions-cell">
-                <button
-                  type="button"
-                  className="projects-link-tag tasks-open-btn"
-                  onClick={() => navigate(`/dashboard/chapters/${row.id}/edit`)}
-                >
-                  Открыть
-                </button>
-                <PressActionButton buttonClassName="review-queue-submit" onClick={() => void completeEditorTask(row.id)}>
-                  <span>Завершить</span>
-                </PressActionButton>
-              </span>
+                <span>
+                  <StatusBadge
+                    statusCode={row.statusCode}
+                    status={STATUS_LABEL[row.statusCode] ?? row.statusCode}
+                  />
+                </span>
+                <span className="chapters-date">{row.assignedAt ?? row.date}</span>
+                <span className="tasks-actions-cell">
+                  <PressActionButton
+                    buttonClassName="review-queue-submit"
+                    onClick={() => navigate(`/dashboard/chapters/${row.id}/edit`)}
+                  >
+                    <span>Открыть</span>
+                  </PressActionButton>
+                </span>
+              </div>
+              <TaskSubmitPanel chapterId={row.id} reviewFeedback={row.reviewFeedback} />
             </div>
           ))}
         </div>

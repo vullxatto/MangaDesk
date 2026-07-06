@@ -77,6 +77,14 @@ const API_ERROR_MESSAGES_RU: Record<string, string> = {
   'invalid link state': 'Сессия привязки истекла. Попробуйте снова.',
   'job not found': 'Задача не найдена',
   'invalid json': 'Некорректный ответ сервера',
+  'bad gateway': 'Сбой шлюза. Сервер временно недоступен — попробуйте позже.',
+  'no deliverables for review': 'Сначала загрузите файлы главы (архив, PSD или изображения).',
+  'not assigned to this chapter': 'Эта глава назначена другому редактору.',
+  'chapter not in editing status': 'Главу нельзя отправить на проверку в текущем статусе.',
+  'chapter not in review': 'Глава не ожидает проверки.',
+  'review comment required': 'Укажите комментарий для редактора.',
+  'chapter not available for download': 'Скачивание доступно только для глав на проверке или готовых.',
+  'no deliverables': 'Нет загруженных файлов для скачивания.',
 }
 
 const API_ERROR_PATTERNS_RU: Array<{ pattern: RegExp; message: string }> = [
@@ -288,6 +296,40 @@ export async function apiDownloadFile(storageKey: string, suggestedName?: string
   }
 }
 
+export async function apiDownloadChapterArchive(chapterId: string): Promise<void> {
+  const url = `${baseUrl}/chapters/${encodeURIComponent(chapterId)}/deliverables/archive`
+  const h = new Headers()
+  const token = getAccessToken()
+  if (token) h.set('Authorization', `Bearer ${token}`)
+  const team = getTeamId() || teamIdEnv
+  if (team) h.set('X-Team-Id', team)
+  h.set('Accept', 'application/zip')
+
+  const res = await fetch(url, { headers: h })
+  if (!res.ok) {
+    const t = await res.text()
+    throw apiErrorFromResponse(t, res.status, res.statusText)
+  }
+  const blob = await res.blob()
+  const disposition = res.headers.get('Content-Disposition') ?? ''
+  const match = disposition.match(/filename="([^"]+)"/i)
+  const name = match?.[1] ?? `chapter-${chapterId}.zip`
+  const objectUrl = URL.createObjectURL(blob)
+  try {
+    const a = document.createElement('a')
+    a.href = objectUrl
+    a.download = name
+    a.rel = 'noopener'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+  } finally {
+    URL.revokeObjectURL(objectUrl)
+  }
+}
+
 export function getApiBaseUrl(): string {
-  return baseUrl
+  if (baseUrl) return baseUrl
+  if (typeof window !== 'undefined') return window.location.origin
+  return ''
 }

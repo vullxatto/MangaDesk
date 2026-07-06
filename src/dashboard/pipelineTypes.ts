@@ -7,6 +7,7 @@ export type ChapterStatusCode =
   | 'edit'
   | 'upload'
   | 'waiting_editor'
+  | 'review'
 
 export interface DashboardProject {
   id: string
@@ -35,6 +36,7 @@ export interface ChapterRow {
   editorName: string | null
   assignedAt: string | null
   restoredFromTrash?: boolean
+  reviewFeedback?: string | null
 }
 
 export interface UploadQueueItem {
@@ -101,7 +103,10 @@ export interface PipelineContextValue {
     editorId?: string | null,
   ) => Promise<void>
   removeChapter: (chapterId: string) => Promise<void>
-  completeEditorTask: (chapterId: string) => Promise<void>
+  uploadTaskDeliverables: (chapterId: string, files: File[]) => Promise<void>
+  submitTaskForReview: (chapterId: string) => Promise<void>
+  reviewChapter: (chapterId: string, action: 'approve' | 'reject', comment?: string) => Promise<void>
+  downloadChapterDeliverables: (chapterId: string) => Promise<void>
   editorTasks: ChapterRow[]
   formatStartedAt: (ts: number) => string
   glossaryByProjectId: Record<string, GlossaryEntry[]>

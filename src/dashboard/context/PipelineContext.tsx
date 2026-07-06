@@ -17,6 +17,7 @@ import { useAuth } from '../../context/AuthContext'
 import { PipelineReactContext } from './pipelineReactContext'
 import {
   apiDelete,
+  apiDownloadChapterArchive,
   apiGet,
   apiPatchJson,
   apiPostJson,
@@ -35,6 +36,7 @@ type ChapterApi = {
   created_at: string
   updated_at: string
   restored_from_trash?: boolean
+  review_feedback?: string | null
 }
 
 type ProjectApi = {
@@ -60,6 +62,8 @@ type TeamMemberApi = {
 type GlossaryApi = {
   id: number
   project_id: string
+  chapter_id: string | null
+  chapter_number: number | null
   term_source: string
   term_target: string
   notes: string | null
@@ -89,6 +93,7 @@ function mapChapter(c: ChapterApi): ChapterRow {
     editorName: c.editor_name,
     assignedAt: c.editor_id ? formatNowRuFromIso(updatedAt) : null,
     restoredFromTrash: !!c.restored_from_trash,
+    reviewFeedback: c.review_feedback ?? null,
   }
 }
 
@@ -499,18 +504,60 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
     [teamMembers, refreshDashboard],
   )
 
-  const completeEditorTask = useCallback(
+  const uploadTaskDeliverables = useCallback(async (chapterId: string, files: File[]) => {
+    const archives = files.filter((f) => /\.(zip|rar)$/i.test(f.name))
+    const others = files.filter((f) => !/\.(zip|rar)$/i.test(f.name))
+
+    for (const arch of archives) {
+      const fd = new FormData()
+      fd.append('file', arch)
+      await apiPostMultipart(`/chapters/${chapterId}/archive`, fd)
+    }
+
+    if (others.length > 0) {
+      const fd = new FormData()
+      for (const f of others) fd.append('files', f)
+      await apiPostMultipart(`/chapters/${chapterId}/upload`, fd)
+    }
+  }, [])
+
+  const submitTaskForReview = useCallback(
     async (chapterId: string) => {
       try {
-        await apiPatchJson(`/chapters/${chapterId}`, { status_code: 'ready' })
+        await apiPostJson(`/chapters/${chapterId}/submit-for-review`, {})
         await refreshDashboard()
       } catch (e) {
         console.error(e)
-        setDashboardError(e instanceof Error ? e.message : 'Ошибка')
+        setDashboardError(e instanceof Error ? e.message : 'Ошибка отправки на проверку')
+        throw e
       }
     },
     [refreshDashboard],
   )
+
+  const reviewChapter = useCallback(
+    async (chapterId: string, action: 'approve' | 'reject', comment?: string) => {
+      try {
+        await apiPostJson(`/chapters/${chapterId}/review`, { action, comment: comment ?? null })
+        await refreshDashboard()
+      } catch (e) {
+        console.error(e)
+        setDashboardError(e instanceof Error ? e.message : 'Ошибка проверки')
+        throw e
+      }
+    },
+    [refreshDashboard],
+  )
+
+  const downloadChapterDeliverables = useCallback(async (chapterId: string) => {
+    try {
+      await apiDownloadChapterArchive(chapterId)
+    } catch (e) {
+      console.error(e)
+      setDashboardError(e instanceof Error ? e.message : 'Ошибка скачивания')
+      throw e
+    }
+  }, [])
 
   const loadGlossaryForProject = useCallback(async (projectId: string) => {
     try {
@@ -519,6 +566,8 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
         id: String(r.id),
         source: r.term_source,
         target: r.term_target,
+        chapterId: r.chapter_id,
+        chapterNumber: r.chapter_number,
       }))
       setProjectGlossary(projectId, mapped)
       setGlossaryByProjectId((prev) => ({ ...prev, [projectId]: mapped }))
@@ -547,6 +596,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
         term_source: source,
         term_target: target,
         notes: null,
+        chapter_id: entry.chapterId ?? null,
       })
       await loadGlossaryForProject(projectId)
     },
@@ -625,7 +675,10 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       assignEditor,
       updateChapterMetadata,
       removeChapter,
-      completeEditorTask,
+      uploadTaskDeliverables,
+      submitTaskForReview,
+      reviewChapter,
+      downloadChapterDeliverables,
       editorTasks,
       formatStartedAt,
       glossaryByProjectId,
@@ -660,7 +713,10 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       assignEditor,
       updateChapterMetadata,
       removeChapter,
-      completeEditorTask,
+      uploadTaskDeliverables,
+      submitTaskForReview,
+      reviewChapter,
+      downloadChapterDeliverables,
       editorTasks,
       formatStartedAt,
       glossaryByProjectId,

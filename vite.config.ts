@@ -7,7 +7,17 @@ function faviconHrefFromBase(): string {
   return withSlash === '/' ? '/favicon.svg' : `${withSlash}favicon.svg`
 }
 
+const apiProxyPattern = '^/(projects|chapters|team|auth|glossary|files|trash|health)'
+
 export default defineConfig({
+  server: {
+    proxy: {
+      [apiProxyPattern]: {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    },
+  },
   plugins: [
     react(),
     {

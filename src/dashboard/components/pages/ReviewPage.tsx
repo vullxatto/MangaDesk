@@ -15,7 +15,8 @@ const onlineMock = [
   { id: 'c0000009-0001-0001-0001-000000000009', name: 'София', activity: 'Дандадан · глава 122', presence: 'active' },
   { id: 'c0000010-0001-0001-0001-000000000010', name: 'Артём', activity: 'Кайдзю №8 · глава 3', presence: 'active' },
   { id: 'c0000011-0001-0001-0001-000000000011', name: 'Полина', activity: 'Наруто · глава 702', presence: 'active' },
-
+  { id: 'c0000010-0001-0001-0001-000000000012', name: 'Артём', activity: 'Кайдзю №8 · глава 3', presence: 'active' },
+  { id: 'c0000011-0001-0001-0001-000000000013', name: 'Полина', activity: 'Наруто · глава 702', presence: 'active' },
 ]
 
 const feedMock = [

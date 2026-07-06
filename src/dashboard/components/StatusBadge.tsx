@@ -1,5 +1,6 @@
 function badgeModifier(statusCode) {
   if (statusCode === 'waiting_editor') return 'waiting'
+  if (statusCode === 'review') return 'review'
   return statusCode
 }
 
