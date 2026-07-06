@@ -29,11 +29,13 @@ export default function DashboardBreadcrumbs() {
   const locationState = location.state as {
     returnTo?: string
     fromTrash?: boolean
+    fromTasks?: boolean
     projectTitle?: string
     chapterNumber?: number
   } | null
   const returnTo = locationState?.returnTo
   const fromTrash = locationState?.fromTrash
+  const fromTasks = locationState?.fromTasks
   const projectTitle = locationState?.projectTitle
   const chapterNumber = locationState?.chapterNumber
   const trashView = resolveTrashView(
@@ -48,11 +50,12 @@ export default function DashboardBreadcrumbs() {
       buildDashboardBreadcrumbs(location.pathname, projects, chapters, {
         returnTo,
         fromTrash,
+        fromTasks,
         projectTitle,
         chapterNumber,
         trashView,
       }),
-    [location.pathname, projects, chapters, returnTo, fromTrash, projectTitle, chapterNumber, trashView],
+    [location.pathname, projects, chapters, returnTo, fromTrash, fromTasks, projectTitle, chapterNumber, trashView],
   )
 
   if (crumbs.length === 0) return null

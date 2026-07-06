@@ -24,10 +24,28 @@ const pageSizeOptions = [
 const sortOptions = [
   { value: 'source-asc', label: 'Оригинал А—Я' },
   { value: 'source-desc', label: 'Оригинал Я—А' },
+  { value: 'chapter-asc', label: 'Глава добавления 1—99' },
+  { value: 'chapter-desc', label: 'Глава добавления 99—1' },
 ]
 
 function compareGlossarySource(a: GlossaryEntry, b: GlossaryEntry) {
   return a.source.localeCompare(b.source, 'ru', { sensitivity: 'base' })
+}
+
+function glossaryChapterSortKey(value: number | null | undefined) {
+  if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
+    return value
+  }
+  return Number.POSITIVE_INFINITY
+}
+
+function compareGlossaryChapter(a: GlossaryEntry, b: GlossaryEntry, desc: boolean) {
+  const ka = glossaryChapterSortKey(a.chapterNumber)
+  const kb = glossaryChapterSortKey(b.chapterNumber)
+  if (ka !== kb) {
+    return desc ? kb - ka : ka - kb
+  }
+  return compareGlossarySource(a, b)
 }
 
 function formatGlossaryChapterNumber(value: number | null | undefined) {
@@ -81,6 +99,12 @@ export default function GlossaryPage() {
     rows.sort((a, b) => {
       if (sortBy === 'source-desc') {
         return compareGlossarySource(b, a)
+      }
+      if (sortBy === 'chapter-asc') {
+        return compareGlossaryChapter(a, b, false)
+      }
+      if (sortBy === 'chapter-desc') {
+        return compareGlossaryChapter(a, b, true)
       }
       return compareGlossarySource(a, b)
     })

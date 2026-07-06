@@ -64,6 +64,7 @@ export function buildDashboardBreadcrumbs(
   options?: {
     returnTo?: string
     fromTrash?: boolean
+    fromTasks?: boolean
     projectTitle?: string
     chapterNumber?: number
     trashView?: 'projects' | 'chapters'
@@ -100,14 +101,17 @@ export function buildDashboardBreadcrumbs(
     const project = projects.find((p) => p.id === projectId)
     const projectTitle = options?.projectTitle?.trim() || project?.title || 'Проект'
     const fromTrash = options?.fromTrash === true || (projectId != null && project == null)
+    const chapterEditMatch =
+      subPage === 'glossary'
+        ? options?.returnTo?.match(/^\/dashboard\/chapters\/([^/]+)\/edit$/)
+        : null
+    const glossaryFromTasks = chapterEditMatch != null && options?.fromTasks === true
 
-    if (!fromTrash) {
+    if (!fromTrash && !glossaryFromTasks) {
       crumbs.push({ label: PAGE_LABELS.projects, to: '/dashboard/projects' })
     }
 
     if (subPage === 'glossary') {
-      const chapterEditMatch = options?.returnTo?.match(/^\/dashboard\/chapters\/([^/]+)\/edit$/)
-
       if (fromTrash && chapterEditMatch) {
         const chapterId = chapterEditMatch[1]
         const chapter = chapters.find((c) => c.id === chapterId)
@@ -129,6 +133,18 @@ export function buildDashboardBreadcrumbs(
       if (chapterEditMatch) {
         const chapterId = chapterEditMatch[1]
         const chapter = chapters.find((c) => c.id === chapterId)
+
+        if (options?.fromTasks) {
+          crumbs.push({ label: PAGE_LABELS.tasks, to: '/dashboard/tasks' })
+          crumbs.push({
+            label: chapterLabel(chapter),
+            to: `/dashboard/chapters/${chapterId}/edit`,
+            state: { fromTasks: true },
+          })
+          crumbs.push({ label: 'Глоссарий' })
+          return crumbs
+        }
+
         crumbs.push({ label: PAGE_LABELS.chapters, to: '/dashboard/chapters' })
         crumbs.push({
           label: chapterLabel(chapter),
@@ -166,8 +182,11 @@ export function buildDashboardBreadcrumbs(
     }
     const chapter = chapters.find((c) => c.id === chapterId)
     const fromTrash = options?.fromTrash === true
+    const fromTasks = options?.fromTasks === true
 
-    if (!fromTrash) {
+    if (fromTasks) {
+      crumbs.push({ label: PAGE_LABELS.tasks, to: '/dashboard/tasks' })
+    } else if (!fromTrash) {
       crumbs.push({ label: PAGE_LABELS.chapters, to: '/dashboard/chapters' })
     }
 

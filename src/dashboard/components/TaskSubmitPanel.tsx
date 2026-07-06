@@ -25,9 +25,10 @@ function isAllowedDeliverable(file: File) {
 type TaskSubmitPanelProps = {
   chapterId: string
   reviewFeedback?: string | null
+  onOpen: () => void
 }
 
-export default function TaskSubmitPanel({ chapterId, reviewFeedback }: TaskSubmitPanelProps) {
+export default function TaskSubmitPanel({ chapterId, reviewFeedback, onOpen }: TaskSubmitPanelProps) {
   const { uploadTaskDeliverables, submitTaskForReview } = usePipeline()
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -88,95 +89,110 @@ export default function TaskSubmitPanel({ chapterId, reviewFeedback }: TaskSubmi
     }
   }
 
+  const canSubmit = pendingFiles.length > 0
+
   return (
-    <div className="task-submit-panel">
-      {reviewFeedback ? (
-        <blockquote className="task-submit-feedback">
-          <span className="task-submit-feedback-label">Комментарий проверяющего</span>
-          {reviewFeedback}
-        </blockquote>
-      ) : null}
-
-      <div
-        className={`review-dropzone task-submit-dropzone${isDragging ? ' review-dropzone--active' : ''}`}
-        onDragOver={(e) => {
-          e.preventDefault()
-          setIsDragging(true)
-        }}
-        onDragLeave={() => setIsDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault()
-          setIsDragging(false)
-          if (e.dataTransfer.files.length > 0) addFiles(e.dataTransfer.files)
-        }}
-        onClick={() => inputRef.current?.click()}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            inputRef.current?.click()
-          }
-        }}
-        role="button"
-        tabIndex={0}
-      >
-        <input
-          ref={inputRef}
-          type="file"
-          multiple
-          className="review-dropzone-input"
-          accept=".zip,.rar,.png,.jpg,.jpeg,.webp,.psd"
-          onChange={(e) => {
-            if (e.target.files?.length) addFiles(e.target.files)
-            e.target.value = ''
-          }}
-        />
-        <Upload className="review-dropzone-icon" size={22} strokeWidth={1.8} aria-hidden />
-        <p className="review-dropzone-text">
-          Перетащите архив .zip / .rar, изображения или PSD с итоговой работой
-        </p>
-      </div>
-
-      {pendingFiles.length > 0 ? (
-        <ul className="task-submit-files">
-          {pendingFiles.map((f) => (
-            <li key={f.name}>
-              <span>
-                {f.name} · {formatBytes(f.size)}
-                {uploaded ? ' · загружено' : ''}
-              </span>
-              <button
-                type="button"
-                className="review-queue-clear task-submit-file-remove"
-                onClick={() => removeFile(f.name)}
-                aria-label={`Убрать ${f.name}`}
-              >
-                <X size={14} strokeWidth={2} aria-hidden />
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-
-      {error ? <p className="review-queue-field-error">{error}</p> : null}
-
-      <div className="task-submit-actions">
-        {pendingFiles.length > 0 && !uploaded ? (
-          <PressActionButton
-            buttonClassName="review-queue-submit"
-            disabled={uploading}
-            onClick={() => void handleUpload()}
-          >
-            <span>{uploading ? 'Загрузка…' : 'Загрузить'}</span>
-          </PressActionButton>
-        ) : null}
-        <PressActionButton
-          buttonClassName="review-queue-submit"
-          disabled={submitting || uploading}
-          onClick={() => void handleSubmit()}
-        >
-          <span>{submitting ? 'Отправка…' : 'Отправить'}</span>
+    <>
+      <div className="tasks-table-actions">
+        <PressActionButton buttonClassName="review-queue-submit tasks-action-btn" onClick={onOpen}>
+          <span>Открыть перевод</span>
         </PressActionButton>
       </div>
-    </div>
+
+      <div className="task-submit-panel">
+        {reviewFeedback ? (
+          <blockquote className="task-submit-feedback">
+            <span className="task-submit-feedback-label">Комментарий проверяющего</span>
+            {reviewFeedback}
+          </blockquote>
+        ) : null}
+
+        <div className="task-submit-row">
+          <div className="task-submit-main">
+            <div
+              className={`review-dropzone task-submit-dropzone${isDragging ? ' review-dropzone--active' : ''}`}
+              onDragOver={(e) => {
+                e.preventDefault()
+                setIsDragging(true)
+              }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={(e) => {
+                e.preventDefault()
+                setIsDragging(false)
+                if (e.dataTransfer.files.length > 0) addFiles(e.dataTransfer.files)
+              }}
+              onClick={() => inputRef.current?.click()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  inputRef.current?.click()
+                }
+              }}
+              role="button"
+              tabIndex={0}
+            >
+              <input
+                ref={inputRef}
+                type="file"
+                multiple
+                className="review-dropzone-input"
+                accept=".zip,.rar,.png,.jpg,.jpeg,.webp,.psd"
+                onChange={(e) => {
+                  if (e.target.files?.length) addFiles(e.target.files)
+                  e.target.value = ''
+                }}
+              />
+              <Upload className="review-dropzone-icon" size={18} strokeWidth={1.8} aria-hidden />
+              <p className="review-dropzone-text">
+                Перетащите архив .zip / .rar, изображения или PSD с итоговой работой
+              </p>
+            </div>
+
+            {pendingFiles.length > 0 ? (
+              <ul className="task-submit-files">
+                {pendingFiles.map((f) => (
+                  <li key={f.name}>
+                    <span className="task-submit-file-name">
+                      {f.name} · {formatBytes(f.size)}
+                      {uploaded ? ' · загружено' : ''}
+                    </span>
+                    <button
+                      type="button"
+                      className="review-queue-clear task-submit-file-remove"
+                      onClick={() => removeFile(f.name)}
+                      aria-label={`Убрать ${f.name}`}
+                    >
+                      <X size={14} strokeWidth={2} aria-hidden />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+
+            {pendingFiles.length > 0 && !uploaded ? (
+              <div className="task-submit-upload-wrap">
+                <PressActionButton
+                  buttonClassName="review-queue-submit"
+                  disabled={uploading}
+                  onClick={() => void handleUpload()}
+                >
+                  <span>{uploading ? 'Загрузка…' : 'Загрузить'}</span>
+                </PressActionButton>
+              </div>
+            ) : null}
+          </div>
+
+          <PressActionButton
+            buttonClassName="review-queue-submit tasks-action-btn"
+            disabled={!canSubmit || submitting || uploading}
+            onClick={() => void handleSubmit()}
+          >
+            <span>{submitting ? 'Отправка…' : 'Отправить на проверку'}</span>
+          </PressActionButton>
+        </div>
+
+        {error ? <p className="review-queue-field-error task-submit-error">{error}</p> : null}
+      </div>
+    </>
   )
 }

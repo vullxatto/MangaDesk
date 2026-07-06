@@ -8,10 +8,10 @@ import Sidebar from './components/Sidebar'
 import TeamSwitcher from './components/TeamSwitcher'
 import { DASHBOARD_MENU_ITEMS } from './dashboardMenu'
 
-function segmentFromPath(pathname: string): string {
+function segmentFromPath(pathname: string, fromTasks?: boolean): string {
   const normalized = pathname.replace(/\/+$/, '')
-  if (/\/chapters\/[^/]+\/edit$/.test(normalized)) return 'chapters'
-  if (/\/projects\/[^/]+\/glossary\/?$/.test(normalized)) return 'projects'
+  if (/\/chapters\/[^/]+\/edit$/.test(normalized)) return fromTasks ? 'tasks' : 'chapters'
+  if (/\/projects\/[^/]+\/glossary\/?$/.test(normalized)) return fromTasks ? 'tasks' : 'projects'
   const parts = normalized.split('/')
   const last = parts[parts.length - 1] ?? 'review'
   return last === 'dashboard' ? 'review' : last
@@ -34,7 +34,8 @@ export default function DashboardLayout() {
     [hideTasks],
   )
 
-  const segment = segmentFromPath(location.pathname)
+  const fromTasks = (location.state as { fromTasks?: boolean } | null)?.fromTasks === true
+  const segment = segmentFromPath(location.pathname, fromTasks)
 
   if (hideTasks && segment === 'tasks') {
     return <Navigate to="/dashboard/review" replace />

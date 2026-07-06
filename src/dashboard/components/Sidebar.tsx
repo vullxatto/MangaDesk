@@ -84,11 +84,23 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
               key={item.key}
               to={`/dashboard/${item.key}`}
               className={({ isActive }) => {
-                const chaptersNested =
-                  item.key === 'chapters' && location.pathname.startsWith('/dashboard/chapters/')
-                const projectsNested =
-                  item.key === 'projects' && location.pathname.startsWith('/dashboard/projects/')
-                const active = isActive || chaptersNested || projectsNested
+                const locationState = location.state as { fromTasks?: boolean } | null
+                const fromTasks = locationState?.fromTasks === true
+                const onChapterEditor = /^\/dashboard\/chapters\/[^/]+/.test(location.pathname)
+                const onGlossaryFromTasks =
+                  fromTasks && /^\/dashboard\/projects\/[^/]+\/glossary\/?$/.test(location.pathname)
+
+                let active = isActive
+
+                if (fromTasks && (onChapterEditor || onGlossaryFromTasks)) {
+                  if (item.key === 'tasks') active = true
+                  if (item.key === 'chapters' || item.key === 'projects') active = false
+                } else {
+                  const projectsNested =
+                    item.key === 'projects' && location.pathname.startsWith('/dashboard/projects/')
+                  active = active || projectsNested
+                }
+
                 return `dashboard-nav-item${active ? ' is-active' : ''}`
               }}
             >

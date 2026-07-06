@@ -24,6 +24,7 @@ import scanPlaceholder from '../../../assets/projects - titles/title.png'
 
 type ChapterEditorNavState = {
   fromTrash?: boolean
+  fromTasks?: boolean
   projectId?: string
   projectTitle?: string
   chapterNumber?: number
@@ -616,6 +617,7 @@ export default function ChapterEditorPage() {
                   state={{
                     returnTo: `/dashboard/chapters/${chapterId}/edit`,
                     fromTrash: navState?.fromTrash,
+                    fromTasks: navState?.fromTasks,
                     projectTitle: navState?.projectTitle ?? chapter?.title,
                     chapterNumber: navState?.chapterNumber ?? chapter?.number ?? editorHead?.chapter_number,
                     projectId: glossaryProjectId ?? undefined,

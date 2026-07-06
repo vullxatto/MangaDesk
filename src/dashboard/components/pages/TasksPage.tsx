@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom'
-import { PressActionButton } from '../../../components/PressActionButton'
 import { usePipeline } from '../../context/usePipeline'
 import StatusBadge from '../StatusBadge'
 import TaskSubmitPanel from '../TaskSubmitPanel'
@@ -56,16 +55,14 @@ function TasksPage({ title = 'Задачи' }) {
                   />
                 </span>
                 <span className="chapters-date">{row.assignedAt ?? row.date}</span>
-                <span className="tasks-actions-cell">
-                  <PressActionButton
-                    buttonClassName="review-queue-submit"
-                    onClick={() => navigate(`/dashboard/chapters/${row.id}/edit`)}
-                  >
-                    <span>Открыть</span>
-                  </PressActionButton>
-                </span>
               </div>
-              <TaskSubmitPanel chapterId={row.id} reviewFeedback={row.reviewFeedback} />
+              <TaskSubmitPanel
+                chapterId={row.id}
+                reviewFeedback={row.reviewFeedback}
+                onOpen={() =>
+                  navigate(`/dashboard/chapters/${row.id}/edit`, { state: { fromTasks: true } })
+                }
+              />
             </div>
           ))}
         </div>

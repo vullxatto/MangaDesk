@@ -3773,10 +3773,20 @@ button.review-feed-scroll-top.review-queue-clear svg {
 
 .projects-page .chapters-table.tasks-table {
   font-size: 11px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1.1fr) minmax(0, 1.15fr) minmax(0, 1.45fr);
+  column-gap: 12px;
+  row-gap: 0;
 }
 
 .projects-page .chapters-table.tasks-table .chapters-row.chapters-head {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
   font-size: 12px;
+  gap: 12px;
+  padding-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .projects-page .chapters-table.tasks-table .chapters-title strong,
@@ -3787,47 +3797,122 @@ button.review-feed-scroll-top.review-queue-clear svg {
   color: var(--fg);
 }
 
-.tasks-actions-cell {
-  display: flex;
-  flex-wrap: wrap;
+.tasks-table-block {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  column-gap: 12px;
+  row-gap: 6px;
   align-items: center;
-  gap: 8px;
+  padding: 8px 0;
+}
+
+.tasks-table-block > .chapters-row.chapters-row--tasks {
+  display: contents;
+}
+
+.tasks-table-block > .tasks-table-actions {
+  grid-column: 4;
+  grid-row: 1;
+  align-self: center;
+}
+
+.tasks-table-block > .task-submit-panel {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: subgrid;
 }
 
 .tasks-table-block + .tasks-table-block {
-  padding-top: 12px;
-  margin-top: 12px;
-  border-top: 1px solid rgba(var(--fg-rgb), 0.12);
+  padding-top: 8px;
+  margin-top: 0;
+  border-top: 1px solid rgba(var(--fg-rgb), 0.1);
+}
+
+.tasks-table-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.tasks-action-btn.dashboard-press-btn.review-queue-submit {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
 }
 
 .task-submit-panel {
-  margin-top: 12px;
+  gap: 6px;
+  min-width: 0;
+}
+
+.task-submit-feedback,
+.task-submit-error {
+  grid-column: 1 / -1;
+}
+
+.task-submit-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: center;
+  min-width: 0;
+}
+
+.task-submit-main {
+  grid-column: 1 / 4;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.task-submit-row > .tasks-action-btn {
+  grid-column: 4;
 }
 
 .task-submit-dropzone {
-  padding: 16px 14px;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  text-align: left;
+  border-width: 1px;
+}
+
+.task-submit-dropzone .review-dropzone-icon {
+  flex-shrink: 0;
+  margin-bottom: 0;
 }
 
 .task-submit-dropzone .review-dropzone-text {
+  margin: 0;
   font-size: 11px;
+  line-height: 1.35;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .task-submit-feedback {
   margin: 0;
-  padding: 10px 12px;
+  padding: 6px 10px;
   border-left: 3px solid color-mix(in srgb, var(--purple) 55%, var(--fg));
   background: color-mix(in srgb, var(--fg) 4%, var(--bg));
   font-size: 11px;
-  line-height: 1.45;
+  line-height: 1.4;
   color: var(--fg);
 }
 
 .task-submit-feedback-label {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -3840,29 +3925,46 @@ button.review-feed-scroll-top.review-queue-clear svg {
   padding: 0;
   list-style: none;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 4px;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: min(28%, 220px);
 }
 
 .task-submit-files li {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 4px;
+  max-width: 100%;
+  padding: 3px 6px 3px 8px;
+  border: 1px solid rgba(var(--fg-rgb), 0.14);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--fg) 4%, var(--bg));
   font-size: 11px;
   color: var(--fg);
 }
 
-.task-submit-file-remove {
-  flex-shrink: 0;
-  padding: 4px;
+.task-submit-file-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.task-submit-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: flex-end;
+.task-submit-file-remove {
+  flex-shrink: 0;
+  padding: 2px;
+}
+
+.task-submit-upload-wrap {
+  flex-shrink: 0;
+}
+
+.task-submit-error {
+  margin: 0;
 }
 
 .status-review {
