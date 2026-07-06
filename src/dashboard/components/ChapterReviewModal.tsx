@@ -43,10 +43,12 @@ export default function ChapterReviewModal({
         aria-labelledby="chapter-review-modal-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 id="chapter-review-modal-title" className="team-modal-title">
-          Вернуть редактору
-        </h2>
-        <p className="chapter-review-modal-subtitle">{chapterLabel}</p>
+        <div className="chapter-review-modal-head">
+          <h2 id="chapter-review-modal-title" className="chapter-review-modal-title">
+            Вернуть редактору
+          </h2>
+          <span className="chapter-review-modal-chapter">{chapterLabel}</span>
+        </div>
         <label className="chapter-review-modal-label">
           Комментарий для редактора
           <textarea
@@ -59,11 +61,10 @@ export default function ChapterReviewModal({
           />
         </label>
         <div className="chapter-review-modal-actions">
-          <PressActionButton buttonClassName="review-queue-submit" onClick={onClose} disabled={submitting}>
+          <PressActionButton onClick={onClose} disabled={submitting}>
             <span>Отмена</span>
           </PressActionButton>
           <PressActionButton
-            buttonClassName="review-queue-submit"
             disabled={submitting || !comment.trim()}
             onClick={() => void onConfirm(comment.trim())}
           >

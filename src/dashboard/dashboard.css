@@ -1755,10 +1755,12 @@
   display: inline-flex;
   justify-content: flex-end;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-wrap: nowrap;
+  gap: 6px;
   position: relative;
   overflow: visible;
+  width: 100%;
+  min-width: 0;
 }
 
 .chapters-actions .review-queue-clear {
@@ -3885,6 +3887,12 @@ button.review-feed-scroll-top.review-queue-clear svg {
   border-width: 1px;
 }
 
+.task-submit-dropzone--disabled {
+  opacity: 0.65;
+  cursor: wait;
+  pointer-events: none;
+}
+
 .task-submit-dropzone .review-dropzone-icon {
   flex-shrink: 0;
   margin-bottom: 0;
@@ -3926,20 +3934,20 @@ button.review-feed-scroll-top.review-queue-clear svg {
   list-style: none;
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   gap: 4px;
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   min-width: 0;
-  max-width: min(28%, 220px);
 }
 
 .task-submit-files li {
+  --task-submit-chip-inset: 8px;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--task-submit-chip-inset);
   max-width: 100%;
-  padding: 3px 6px 3px 8px;
+  padding: 4px var(--task-submit-chip-inset);
   border: 1px solid rgba(var(--fg-rgb), 0.14);
   border-radius: var(--radius);
   background: color-mix(in srgb, var(--fg) 4%, var(--bg));
@@ -3948,15 +3956,32 @@ button.review-feed-scroll-top.review-queue-clear svg {
 }
 
 .task-submit-file-name {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
 }
 
-.task-submit-file-remove {
+.task-submit-files .task-submit-file-remove {
   flex-shrink: 0;
-  padding: 2px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  color: rgba(var(--fg-rgb), 0.72);
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: 4px;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.task-submit-files .task-submit-file-remove:hover {
+  color: color-mix(in srgb, var(--purple) 88%, transparent);
+  background: rgba(var(--fg-rgb), 0.02);
+}
+
+.task-submit-files .task-submit-file-remove:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .task-submit-upload-wrap {
@@ -3965,6 +3990,7 @@ button.review-feed-scroll-top.review-queue-clear svg {
 
 .task-submit-error {
   margin: 0;
+  text-transform: none;
 }
 
 .status-review {
@@ -3979,25 +4005,54 @@ button.review-feed-scroll-top.review-queue-clear svg {
   color: color-mix(in srgb, var(--purple) 88%, var(--fg));
 }
 
-.chapter-review-modal {
-  padding: 16px;
+.chapter-review-modal.team-modal {
+  border: var(--border-main);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  background-color: var(--bg);
+  background-image: var(--wallpaper-layer);
+  background-repeat: repeat, repeat;
+  background-size: var(--paper-size);
+  padding: var(--space-3);
+  font-family: var(--font-shonen);
 }
 
-.chapter-review-modal-subtitle {
-  margin: 0 0 12px;
-  font-size: 11px;
-  color: color-mix(in srgb, var(--fg) 62%, transparent);
+.chapter-review-modal-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.chapter-review-modal-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.chapter-review-modal-chapter {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-transform: uppercase;
+  color: var(--fg);
 }
 
 .chapter-review-modal-label {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--fg) 62%, transparent);
+  color: var(--fg);
 }
 
 .chapter-review-modal-textarea {
@@ -4006,20 +4061,29 @@ button.review-feed-scroll-top.review-queue-clear svg {
   resize: vertical;
   border: 1px solid rgba(var(--fg-rgb), 0.14);
   border-radius: var(--radius);
-  padding: 10px 12px;
+  padding: 8px 10px;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.45;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--fg);
   background: var(--bg);
   box-sizing: border-box;
+}
+
+.chapter-review-modal-textarea::placeholder {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fg) 45%, transparent);
 }
 
 .chapter-review-modal-actions {
   margin-top: 14px;
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 10px;
 }
 
 .review-processing-section {

@@ -137,7 +137,7 @@ export default function ChapterMetadataModal({
       >
         <div className="team-modal-header">
           <h2 id={titleId} className="team-modal-title">
-            Изменить проект и номер главы
+            Изменить главу
           </h2>
           <button type="button" className="team-modal-close" aria-label="Закрыть" onClick={onClose}>
             <X size={20} strokeWidth={2} />

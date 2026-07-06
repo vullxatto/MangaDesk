@@ -5,7 +5,7 @@ export type TableColumnConfig<T extends string> = {
   label: string
 }
 
-const ACTIONS_COL = 'minmax(0, 0.52fr)'
+const ACTIONS_COL = 'minmax(7.5rem, 0.52fr)'
 
 const PROJECTS_COL_WIDTHS: Record<string, string> = {
   name: 'minmax(0, 1.15fr)',

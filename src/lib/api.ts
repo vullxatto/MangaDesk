@@ -49,6 +49,20 @@ const API_ERROR_MESSAGES_RU: Record<string, string> = {
   'invalid status_code': 'Некорректный статус',
   'pipeline already running for this chapter': 'Обработка этой главы уже запущена',
   'only .zip or .rar': 'Допустимы только архивы .zip или .rar',
+  'zip has no images': 'В архиве ZIP нет изображений',
+  'rar has no images': 'В архиве RAR нет изображений',
+  'zip must not contain nested folders': 'Архив ZIP не должен содержать вложенные папки',
+  'rar must not contain nested folders': 'Архив RAR не должен содержать вложенные папки',
+  'zip must not contain folders': 'Архив ZIP не должен содержать папки',
+  'rar must not contain folders': 'Архив RAR не должен содержать папки',
+  'zip must contain images only (.png, .jpg, .jpeg, .webp)':
+    'Архив ZIP должен содержать только изображения (.png, .jpg, .jpeg, .webp)',
+  'rar must contain images only (.png, .jpg, .jpeg, .webp)':
+    'Архив RAR должен содержать только изображения (.png, .jpg, .jpeg, .webp)',
+  'too many files in archive': 'Слишком много файлов в архиве',
+  'file in archive too large': 'Файл в архиве слишком большой',
+  'invalid file path in archive': 'Некорректный путь к файлу в архиве',
+  'unsupported archive type; use .zip or .rar': 'Неподдерживаемый тип архива. Используйте .zip или .rar',
   'no files': 'Нет файлов для загрузки',
   'chapter has no translation_json yet (run ocr/preview first)':
     'У главы ещё нет перевода. Сначала запустите OCR или превью.',

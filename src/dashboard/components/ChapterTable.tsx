@@ -197,6 +197,7 @@ function ChapterTable({
                     type="button"
                     className="review-queue-clear"
                     aria-label={`Скачать главу ${row.title}, № ${row.number}`}
+                    title="Скачать"
                     onClick={() => void downloadChapterDeliverables(row.id)}
                   >
                     <CloudDownload size={16} strokeWidth={1.8} aria-hidden />
@@ -208,6 +209,7 @@ function ChapterTable({
                       type="button"
                       className="review-queue-clear chapters-review-approve"
                       aria-label={`Принять главу ${row.title}, № ${row.number}`}
+                      title="Принять"
                       disabled={reviewBusyId === row.id}
                       onClick={() => {
                         setReviewBusyId(row.id)
@@ -220,6 +222,7 @@ function ChapterTable({
                       type="button"
                       className="review-queue-clear chapters-review-reject"
                       aria-label={`Вернуть главу редактору ${row.title}, № ${row.number}`}
+                      title="Вернуть редактору"
                       disabled={reviewBusyId === row.id}
                       onClick={() => setRejectChapter(row)}
                     >
@@ -230,7 +233,8 @@ function ChapterTable({
                 <button
                   type="button"
                   className="review-queue-clear"
-                  aria-label={`Изменить проект и номер: ${row.title}, № ${row.number}`}
+                  aria-label={`Изменить главу: ${row.title}, № ${row.number}`}
+                  title="Изменить главу"
                   onClick={(e) => {
                     e.stopPropagation()
                     onOpenMetadataModal(row.id)
