@@ -64,7 +64,13 @@ export function formatRuDateTime(value: string | null | undefined) {
   if (!value) return '—'
   const d = new Date(value)
   if (Number.isNaN(d.getTime())) return '—'
-  return d.toLocaleString('ru-RU')
+  return d.toLocaleString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
 
 /** Стабильные даты для локального теста, если API не вернул поля. */

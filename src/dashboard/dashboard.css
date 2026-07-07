@@ -1345,6 +1345,11 @@
   font-weight: 800;
 }
 
+.dashboard-filter-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
 .dashboard-dropdown-menu {
   position: absolute;
   top: calc(100% + 4px);
@@ -3832,6 +3837,21 @@ button.review-feed-scroll-top.review-queue-clear svg {
   border-top: 1px solid rgba(var(--fg-rgb), 0.1);
 }
 
+.tasks-empty-panel {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tasks-empty-text {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fg) 50%, transparent);
+}
+
 .tasks-table-actions {
   display: flex;
   flex-direction: column;
@@ -3882,7 +3902,7 @@ button.review-feed-scroll-top.review-queue-clear svg {
   flex-direction: row;
   align-items: center;
   gap: 8px;
-  padding: 7px 10px;
+  padding: 4px 10px;
   text-align: left;
   border-width: 1px;
 }
@@ -3916,6 +3936,9 @@ button.review-feed-scroll-top.review-queue-clear svg {
   font-size: 11px;
   line-height: 1.4;
   color: var(--fg);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .task-submit-feedback-label {
@@ -4006,6 +4029,8 @@ button.review-feed-scroll-top.review-queue-clear svg {
 }
 
 .chapter-review-modal.team-modal {
+  width: min(100%, 420px);
+  min-height: 340px;
   border: var(--border-main);
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
@@ -4057,8 +4082,11 @@ button.review-feed-scroll-top.review-queue-clear svg {
 
 .chapter-review-modal-textarea {
   width: 100%;
-  min-height: 96px;
-  resize: vertical;
+  min-height: 190px;
+  resize: none;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   border: 1px solid rgba(var(--fg-rgb), 0.14);
   border-radius: var(--radius);
   padding: 8px 10px;
@@ -4070,6 +4098,11 @@ button.review-feed-scroll-top.review-queue-clear svg {
   color: var(--fg);
   background: var(--bg);
   box-sizing: border-box;
+}
+
+.chapter-review-modal-textarea::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .chapter-review-modal-textarea::placeholder {
@@ -4097,6 +4130,288 @@ button.review-feed-scroll-top.review-queue-clear svg {
 .review-processing-group.article-mini-card {
   min-height: auto;
   padding: var(--space-3);
+}
+
+.review-assignments-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--review-block-gap);
+}
+
+.review-assignments-card.article-mini-card {
+  min-height: auto;
+  height: auto;
+  padding: var(--space-3);
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+}
+
+.review-assignments-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.review-queue-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-assignments-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.review-assignments-count {
+  flex-shrink: 0;
+}
+
+.review-assignments-empty {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--fg) 56%, transparent);
+}
+
+.review-assignments-table {
+  width: 100%;
+  min-width: 0;
+  font-size: 11px;
+  color: var(--fg);
+}
+
+.review-assignments-table-head,
+.review-assignments-table-row {
+  display: grid;
+  gap: 12px;
+  align-items: center;
+  justify-items: start;
+  text-align: left;
+}
+
+.review-assignments-table-row--review {
+  position: relative;
+  padding-right: 72px;
+}
+
+.review-assignments-table-head {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(var(--fg-rgb), 0.1);
+  align-items: center;
+}
+
+.review-assignments-table-head span {
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: normal;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.review-assignments-table-head > :nth-child(2),
+.review-assignments-table-head > :nth-child(3),
+.review-assignments-table-head > :nth-child(4),
+.review-assignments-table-head > :nth-child(5),
+.review-assignments-table-row > :nth-child(2),
+.review-assignments-table-row > :nth-child(3),
+.review-assignments-table-row > :nth-child(4),
+.review-assignments-table-row > :nth-child(5) {
+  justify-self: start;
+  text-align: left;
+}
+
+.review-assignments-table-body {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.review-assignments-table-row {
+  background: transparent;
+  padding: 0;
+  min-width: 0;
+  align-items: center;
+}
+
+.review-assignments-table-row + .review-assignments-table-row {
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid rgba(var(--fg-rgb), 0.1);
+}
+
+.review-assignments-chapter-name,
+.review-assignments-review-editor,
+.review-assignments-chapter-meta {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.review-assignments-chapter-name {
+  color: var(--fg);
+}
+
+.review-assignments-chapter-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.review-assignments-review-editor,
+.review-assignments-chapter-meta {
+  color: var(--fg);
+}
+
+.review-assignments-review-editor {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.review-assignments-table .chapters-editor {
+  min-width: 0;
+  justify-content: flex-start;
+}
+
+.review-assignments-table .chapters-editor-name,
+.review-assignments-table .review-assignments-review-editor {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.review-assignments-review-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.review-assignments-assign .dashboard-filter-btn,
+.review-assignments-assign .dashboard-filter-btn-text,
+.review-assignments-assign .dashboard-filter-btn-label,
+.review-assignments-assign .dashboard-filter-btn-value {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.review-assignments-assign {
+  width: max-content;
+  max-width: 100%;
+}
+
+.review-assignments-assign .dashboard-filter-btn {
+  width: max-content;
+  max-width: 100%;
+  height: auto;
+  min-height: 0;
+  padding: 4px 8px;
+  gap: 6px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  font-family: var(--font-shonen);
+  font-size: 11px;
+  line-height: 1.45;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: uppercase;
+}
+
+.review-assignments-assign .dashboard-filter-btn-text {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 0 1 auto;
+  overflow: visible;
+  gap: 0.35em;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+.review-assignments-assign .dashboard-filter-btn-label,
+.review-assignments-assign .dashboard-filter-btn-value {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.review-assignments-assign .dashboard-filter-btn-label {
+  color: color-mix(in srgb, var(--fg) 52%, transparent);
+}
+
+.review-assignments-assign .dashboard-filter-btn-value {
+  color: var(--fg);
+}
+
+.review-assignments-actions.chapters-actions {
+  gap: 4px;
+  justify-content: flex-start;
+}
+
+.review-assignments-table-row--review .review-assignments-actions.chapters-actions {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  justify-content: flex-end;
+}
+
+.review-assignments-pagination {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.review-assignments-pagination--head {
+  margin-top: 0;
+}
+
+.review-assignments-page-indicator {
+  font-size: 11px;
+  line-height: 1;
+  color: color-mix(in srgb, var(--fg) 58%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+  .review-assignments-table-head,
+  .review-assignments-table-row,
+  .review-assignments-table-head--review,
+  .review-assignments-table-row--review {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .review-assignments-actions.chapters-actions {
+    justify-content: flex-start;
+  }
 }
 
 .review-processing-group-list {
@@ -4131,7 +4446,7 @@ button.review-feed-scroll-top.review-queue-clear svg {
 
 .review-processing-phase {
   margin: 0;
-  font-size: 11px;
+  font-size: 11px !important;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -4176,7 +4491,7 @@ button.review-feed-scroll-top.review-queue-clear svg {
 
 .review-processing-counter {
   margin: 0;
-  font-size: 11px;
+  font-size: 11px !important;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;

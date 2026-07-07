@@ -1,7 +1,22 @@
+import { useEffect, useState } from 'react'
+import { usePipeline } from '../../context/usePipeline'
+import { useReviewAssignmentsTableColumns } from '../../tableColumns'
+import DashboardDropdown from '../DashboardDropdown'
+import TableColumnsDropdown from '../TableColumnsDropdown'
 import ReviewActivityFeed from '../review/ReviewActivityFeed'
+import ReviewAssignmentsSummary from '../review/ReviewAssignmentsSummary'
 import ReviewDropzone from '../review/ReviewDropzone'
 import ReviewOnlineSidebar from '../review/ReviewOnlineSidebar'
 import ReviewProcessingSection from '../review/ReviewProcessingSection'
+
+const DEFAULT_PAGE_SIZE = 5
+
+const pageSizeOptions = [
+  { value: '5', label: '5' },
+  { value: '10', label: '10' },
+  { value: '15', label: '15' },
+  { value: '20', label: '20' },
+]
 
 const onlineMock = [
   { id: 'c0000001-0001-0001-0001-000000000001', name: 'Still Rise', activity: 'Редактура · глава 47', presence: 'active' },
@@ -147,20 +162,72 @@ const feedMock = [
 ]
 
 function ReviewPage({ title = 'Обзор' }) {
+  const { soloMode } = usePipeline()
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
+  const [openFilterKey, setOpenFilterKey] = useState<string | null>(null)
+  const reviewColumns = useReviewAssignmentsTableColumns(soloMode)
+
+  useEffect(() => {
+    function handleMouseDown(e: MouseEvent) {
+      if (!openFilterKey) return
+      const t = e.target as Node
+      const trigger = document.querySelector(`[data-review-queue-dd="${CSS.escape(openFilterKey)}"]`)
+      const portalMenu = document.querySelector(`[data-review-queue-portal="${CSS.escape(openFilterKey)}"]`)
+      if (trigger?.contains(t) || portalMenu?.contains(t)) return
+      setOpenFilterKey(null)
+    }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpenFilterKey(null)
+    }
+
+    document.addEventListener('mousedown', handleMouseDown)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handleMouseDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [openFilterKey])
+
   return (
     <div className="chapters-page projects-page review-page">
       <div className="dashboard-toolbar projects-page-toolbar review-page-toolbar">
         <h1>{title}</h1>
+        <div className="dashboard-filters chapters-page-filters">
+          <DashboardDropdown
+            label="Число строк"
+            options={pageSizeOptions}
+            value={String(pageSize)}
+            onChange={(value) => setPageSize(Number(value))}
+            ddKey="review-filter|page-size"
+            openKey={openFilterKey}
+            onOpenChange={setOpenFilterKey}
+            stableTriggerWidth
+          />
+          <TableColumnsDropdown
+            columns={reviewColumns.columns}
+            isVisible={reviewColumns.isVisible}
+            onToggle={reviewColumns.toggleColumn}
+            ddKey="review-filter|columns"
+            openKey={openFilterKey}
+            onOpenChange={setOpenFilterKey}
+          />
+        </div>
       </div>
 
       <div className="review-layout">
         <div className="review-main">
-          <ReviewDropzone />
-          <ReviewProcessingSection />
+          <ReviewDropzone pageSize={pageSize} />
+          <ReviewProcessingSection pageSize={pageSize} />
+          <ReviewAssignmentsSummary
+            pageSize={pageSize}
+            isColumnVisible={reviewColumns.isVisible}
+            gridTemplate={reviewColumns.gridTemplate}
+          />
         </div>
         <aside className="review-aside">
           <ReviewOnlineSidebar members={onlineMock} />
-          <ReviewActivityFeed events={feedMock} maxHeight={380} />
+          <ReviewActivityFeed events={feedMock} maxHeight={480} />
         </aside>
       </div>
     </div>

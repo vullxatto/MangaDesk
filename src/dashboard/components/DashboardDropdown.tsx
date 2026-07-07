@@ -56,6 +56,7 @@ type DashboardDropdownProps = {
   menuAlign?: 'left' | 'right'
   stableTriggerWidth?: boolean
   truncateOptionLabels?: boolean
+  disabled?: boolean
 }
 
 export default function DashboardDropdown({
@@ -72,6 +73,7 @@ export default function DashboardDropdown({
   menuAlign = 'left',
   stableTriggerWidth = false,
   truncateOptionLabels = false,
+  disabled = false,
 }: DashboardDropdownProps) {
   const isOpen = openKey === ddKey
   const selectedLabel = options.find((o) => o.value === value)?.label ?? '—'
@@ -268,9 +270,11 @@ export default function DashboardDropdown({
           type="button"
           className="dashboard-filter-btn"
           onClick={(e) => {
+            if (disabled) return
             e.stopPropagation()
             onOpenChange(isOpen ? null : ddKey)
           }}
+          disabled={disabled}
           aria-expanded={isOpen}
           aria-label={stableTriggerWidth ? `${label}: ${selectedLabel}` : undefined}
         >

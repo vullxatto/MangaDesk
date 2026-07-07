@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { BookPlus, Upload, UserPlus, X } from 'lucide-react'
+import { BookPlus, ChevronLeft, ChevronRight, Upload, UserPlus, X } from 'lucide-react'
 import { PressActionButton } from '../../../components/PressActionButton'
 import { useAuth } from '../../../context/AuthContext'
 import { isDuplicateChapterNumber } from '../../context/pipelineConstants'
@@ -173,7 +173,7 @@ function itemCanSubmit(
   return !isDuplicateChapterNumber(item.projectId, num, chapters, uploadQueue, item.id)
 }
 
-function ReviewDropzone() {
+function ReviewDropzone({ pageSize = 4 }: { pageSize?: number }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [openQueueDropdownKey, setOpenQueueDropdownKey] = useState<string | null>(null)
@@ -187,6 +187,7 @@ function ReviewDropzone() {
   const [addProjectForQueueItemId, setAddProjectForQueueItemId] = useState<string | null>(null)
   const [inviteOpen, setInviteOpen] = useState(false)
   const [inviteLink, setInviteLink] = useState('')
+  const [queuePageIndex, setQueuePageIndex] = useState(0)
   const { teams, currentTeamId } = useAuth()
   const {
     chapters,
@@ -196,7 +197,6 @@ function ReviewDropzone() {
     addFilesToUploadQueue,
     updateUploadQueueItem,
     removeUploadQueueItem,
-    clearUploadQueue,
     submitUploadQueueItem,
     soloMode,
   } = usePipeline()
@@ -257,6 +257,17 @@ function ReviewDropzone() {
     { value: '', label: 'Не назначен' },
     ...teamMembers.map((m) => ({ value: m.id, label: m.name })),
   ]
+
+  const queueTotalPages = Math.max(1, Math.ceil(uploadQueue.length / pageSize))
+  const queueSafePageIndex = Math.min(queuePageIndex, queueTotalPages - 1)
+  const visibleQueue = useMemo(() => {
+    const start = queueSafePageIndex * pageSize
+    return uploadQueue.slice(start, start + pageSize)
+  }, [pageSize, queueSafePageIndex, uploadQueue])
+
+  useEffect(() => {
+    setQueuePageIndex((page) => Math.min(page, queueTotalPages - 1))
+  }, [queueTotalPages])
 
   const addFiles = useCallback(
     (fileList: FileList | File[]) => {
@@ -403,13 +414,37 @@ function ReviewDropzone() {
             <p className="review-section-title review-queue-section-title">
               В очереди на обработку ({uploadQueue.length})
             </p>
-            <button type="button" className="review-queue-clear" onClick={clearUploadQueue}>
-              Очистить
-            </button>
+            <div className="review-queue-head-actions">
+              {queueTotalPages > 1 ? (
+                <div className="review-assignments-pagination review-assignments-pagination--head">
+                  <button
+                    type="button"
+                    className="review-queue-clear chapters-page-pagination-btn"
+                    onClick={() => setQueuePageIndex((page) => Math.max(0, page - 1))}
+                    disabled={queueSafePageIndex <= 0}
+                    aria-label="Предыдущая страница очереди на обработку"
+                  >
+                    <ChevronLeft size={16} strokeWidth={1.8} aria-hidden />
+                  </button>
+                  <span className="review-assignments-page-indicator">
+                    {queueSafePageIndex + 1} / {queueTotalPages}
+                  </span>
+                  <button
+                    type="button"
+                    className="review-queue-clear chapters-page-pagination-btn"
+                    onClick={() => setQueuePageIndex((page) => Math.min(queueTotalPages - 1, page + 1))}
+                    disabled={queueSafePageIndex >= queueTotalPages - 1}
+                    aria-label="Следующая страница очереди на обработку"
+                  >
+                    <ChevronRight size={16} strokeWidth={1.8} aria-hidden />
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </div>
           <div className="article-mini-card review-queue-group">
             <ul className="review-queue-group-list">
-            {uploadQueue.map((item) => {
+            {visibleQueue.map((item) => {
               const project = projects.find((p) => p.id === item.projectId)
               const num = parseInt(String(item.chapterNumber).trim(), 10)
               const duplicate =

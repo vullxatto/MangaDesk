@@ -1,3 +1,5 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import type { OverviewPipelineJob } from '../../pipelineTypes'
 import { usePipeline } from '../../context/usePipeline'
 
@@ -71,8 +73,20 @@ function ProcessingJobRow({
   )
 }
 
-export default function ReviewProcessingSection() {
-  const { overviewJobs, dismissOverviewJob, clearOverviewJobs } = usePipeline()
+export default function ReviewProcessingSection({ pageSize = 4 }: { pageSize?: number }) {
+  const { overviewJobs, dismissOverviewJob } = usePipeline()
+  const [pageIndex, setPageIndex] = useState(0)
+
+  const totalPages = Math.max(1, Math.ceil(overviewJobs.length / pageSize))
+  const safePageIndex = Math.min(pageIndex, totalPages - 1)
+  const visibleJobs = useMemo(() => {
+    const start = safePageIndex * pageSize
+    return overviewJobs.slice(start, start + pageSize)
+  }, [overviewJobs, pageSize, safePageIndex])
+
+  useEffect(() => {
+    setPageIndex((page) => Math.min(page, totalPages - 1))
+  }, [totalPages])
 
   if (overviewJobs.length === 0) {
     return (
@@ -94,13 +108,37 @@ export default function ReviewProcessingSection() {
         <h2 id="review-processing-heading" className="review-section-title review-queue-section-title">
           Обработка ({overviewJobs.length})
         </h2>
-        <button type="button" className="review-queue-clear" onClick={clearOverviewJobs}>
-          Очистить
-        </button>
+        <div className="review-queue-head-actions">
+          {totalPages > 1 ? (
+            <div className="review-assignments-pagination review-assignments-pagination--head">
+              <button
+                type="button"
+                className="review-queue-clear chapters-page-pagination-btn"
+                onClick={() => setPageIndex((page) => Math.max(0, page - 1))}
+                disabled={safePageIndex <= 0}
+                aria-label="Предыдущая страница обработки"
+              >
+                <ChevronLeft size={16} strokeWidth={1.8} aria-hidden />
+              </button>
+              <span className="review-assignments-page-indicator">
+                {safePageIndex + 1} / {totalPages}
+              </span>
+              <button
+                type="button"
+                className="review-queue-clear chapters-page-pagination-btn"
+                onClick={() => setPageIndex((page) => Math.min(totalPages - 1, page + 1))}
+                disabled={safePageIndex >= totalPages - 1}
+                aria-label="Следующая страница обработки"
+              >
+                <ChevronRight size={16} strokeWidth={1.8} aria-hidden />
+              </button>
+            </div>
+          ) : null}
+        </div>
       </div>
       <div className="article-mini-card review-processing-group">
         <ul className="review-processing-group-list">
-          {overviewJobs.map((job) => (
+          {visibleJobs.map((job) => (
             <ProcessingJobRow key={job.chapterId} job={job} onDismiss={dismissOverviewJob} />
           ))}
         </ul>

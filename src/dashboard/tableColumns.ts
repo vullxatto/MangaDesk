@@ -49,6 +49,13 @@ const GLOSSARY_COL_WIDTHS: Record<string, string> = {
   chapterNumber: 'minmax(0, 0.85fr)',
 }
 
+const REVIEW_ASSIGNMENTS_COL_WIDTHS: Record<string, string> = {
+  title: 'minmax(0, 1.2fr)',
+  createdAt: '150px',
+  updatedAt: '150px',
+  editor: 'minmax(220px, 1fr)',
+}
+
 function loadVisibleColumns<T extends string>(storageKey: string, fallback: T[]): T[] {
   if (typeof window === 'undefined') return fallback
   try {
@@ -73,6 +80,11 @@ function buildGridTemplate(visibleIds: string[], widths: Record<string, string>)
   const cols = visibleIds.map((id) => widths[id]).filter(Boolean)
   cols.push(ACTIONS_COL)
   return cols.join(' ')
+}
+
+function buildOverviewGridTemplate(visibleIds: string[], widths: Record<string, string>) {
+  const cols = visibleIds.map((id) => widths[id]).filter(Boolean)
+  return cols.length > 0 ? cols.join(' ') : 'minmax(0, 1fr)'
 }
 
 export function useTableColumnVisibility<T extends string>(
@@ -207,6 +219,27 @@ export function useGlossaryTableColumns() {
   const visibility = useTableColumnVisibility('mangadesk.table-columns.glossary', columns)
   const gridTemplate = useMemo(
     () => buildGridTemplate(visibility.visibleIds, GLOSSARY_COL_WIDTHS),
+    [visibility.visibleIds],
+  )
+  return { ...visibility, gridTemplate }
+}
+
+export function useReviewAssignmentsTableColumns(soloMode: boolean) {
+  const columns = useMemo<TableColumnConfig<string>[]>(() => {
+    const base: TableColumnConfig<string>[] = [
+      { id: 'title', label: 'Проект / №' },
+      { id: 'createdAt', label: 'Дата создания' },
+      { id: 'updatedAt', label: 'Дата изменения' },
+    ]
+    if (!soloMode) {
+      base.push({ id: 'editor', label: 'Редактор' })
+    }
+    return base
+  }, [soloMode])
+
+  const visibility = useTableColumnVisibility('mangadesk.table-columns.review-assignments', columns)
+  const gridTemplate = useMemo(
+    () => buildOverviewGridTemplate(visibility.visibleIds, REVIEW_ASSIGNMENTS_COL_WIDTHS),
     [visibility.visibleIds],
   )
   return { ...visibility, gridTemplate }

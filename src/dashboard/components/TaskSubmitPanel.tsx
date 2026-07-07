@@ -93,7 +93,7 @@ export default function TaskSubmitPanel({ chapterId, reviewFeedback, onOpen }: T
       <div className="task-submit-panel">
         {reviewFeedback ? (
           <blockquote className="task-submit-feedback">
-            <span className="task-submit-feedback-label">Комментарий проверяющего</span>
+            <span className="task-submit-feedback-label">Комментарий проверяющего:</span>
             {reviewFeedback}
           </blockquote>
         ) : null}

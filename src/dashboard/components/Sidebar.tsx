@@ -2,7 +2,7 @@ import {
   BookOpen,
   Check,
   FileStack,
-  LayoutGrid,
+  House,
   LogOut,
   ShoppingBasket,
   SlidersHorizontal,
@@ -17,7 +17,7 @@ import { DASHBOARD_MENU_ITEMS } from '../dashboardMenu'
 type MenuItem = (typeof DASHBOARD_MENU_ITEMS)[number]
 
 const icons = {
-  review: LayoutGrid,
+  review: House,
   tasks: Check,
   projects: BookOpen,
   chapters: FileStack,
