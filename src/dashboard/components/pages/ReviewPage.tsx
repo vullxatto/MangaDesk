@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useAuth } from '../../../context/AuthContext'
 import { usePipeline } from '../../context/usePipeline'
+import { canReviewChapters } from '../../teamRoles'
 import { useReviewAssignmentsTableColumns } from '../../tableColumns'
 import DashboardDropdown from '../DashboardDropdown'
 import TableColumnsDropdown from '../TableColumnsDropdown'
@@ -163,9 +165,14 @@ const feedMock = [
 
 function ReviewPage({ title = 'Обзор' }) {
   const { soloMode } = usePipeline()
+  const { teams, currentTeamId } = useAuth()
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
   const [openFilterKey, setOpenFilterKey] = useState<string | null>(null)
   const reviewColumns = useReviewAssignmentsTableColumns(soloMode)
+  const canUploadScans = useMemo(() => {
+    const role = teams.find((t) => t.id === currentTeamId)?.role
+    return canReviewChapters(role)
+  }, [teams, currentTeamId])
 
   useEffect(() => {
     function handleMouseDown(e: MouseEvent) {
@@ -217,7 +224,7 @@ function ReviewPage({ title = 'Обзор' }) {
 
       <div className="review-layout">
         <div className="review-main">
-          <ReviewDropzone pageSize={pageSize} />
+          {canUploadScans ? <ReviewDropzone pageSize={pageSize} /> : null}
           <ReviewProcessingSection pageSize={pageSize} />
           <ReviewAssignmentsSummary
             pageSize={pageSize}

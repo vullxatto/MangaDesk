@@ -85,17 +85,17 @@ const chaptersStatusOptions = [
   { value: 'ready', label: 'Готово' },
   { value: 'waiting_editor', label: 'Ждёт редактора' },
   { value: 'ai', label: 'Обработка' },
-  { value: 'edit', label: 'Редактура' },
+  { value: 'edit', label: 'В редактуре' },
   { value: 'upload', label: 'Загрузка' },
 ]
 
 const STATUS_LABEL: Record<string, string> = {
   ready: 'ГОТОВО',
   ai: 'ОБРАБОТКА',
-  edit: 'РЕДАКТУРА',
+  edit: 'В РЕДАКТУРЕ',
   upload: 'ЗАГРУЗКА',
   waiting_editor: 'ЖДЁТ РЕДАКТОРА',
-  review: 'ПРОВЕРКА',
+  review: 'ОЖИДАЕТ ПРОВЕРКИ',
 }
 
 function formatDeletedAt(value: string) {
@@ -395,26 +395,23 @@ export default function TrashPage({ title = 'Удалённое' }: { title?: st
   const trashProjectsRowStyle = { gridTemplateColumns: trashProjectsColumns.gridTemplate }
   const trashChaptersRowStyle = { gridTemplateColumns: trashChaptersColumns.gridTemplate }
 
+  const trashViewDropdown = (
+    <DashboardDropdown
+      label="Раздел"
+      options={trashViewOptions}
+      value={view}
+      onChange={(value) => setTrashView(value as TrashView)}
+      ddKey="trash-filter|view"
+      openKey={openFilterKey}
+      onOpenChange={setOpenFilterKey}
+      stableTriggerWidth
+    />
+  )
+
   return (
     <div className="chapters-page projects-page trash-page">
       <div className="dashboard-toolbar projects-page-toolbar">
-        <div className="trash-page-toolbar-start">
-          <h1>{title}</h1>
-          {!loading && !isEmpty ? (
-            <div className="dashboard-filters chapters-page-filters trash-page-view-filter">
-              <DashboardDropdown
-                label="Раздел"
-                options={trashViewOptions}
-                value={view}
-                onChange={(value) => setTrashView(value as TrashView)}
-                ddKey="trash-filter|view"
-                openKey={openFilterKey}
-                onOpenChange={setOpenFilterKey}
-                stableTriggerWidth
-              />
-            </div>
-          ) : null}
-        </div>
+        <h1>{title}</h1>
         {!loading && !isEmpty ? (
           <div className="projects-page-toolbar-actions trash-page-toolbar-actions">
             <div className="dashboard-filters chapters-page-filters">
@@ -448,6 +445,7 @@ export default function TrashPage({ title = 'Удалённое' }: { title?: st
                     openKey={openFilterKey}
                     onOpenChange={setOpenFilterKey}
                   />
+                  {trashViewDropdown}
                   <div className="chapters-page-pagination">
                     <button
                       type="button"
@@ -479,7 +477,7 @@ export default function TrashPage({ title = 'Удалённое' }: { title?: st
               ) : (
                 <>
                   <DashboardDropdown
-                    label="Тайтл"
+                    label="Проект"
                     options={chaptersTitleOptions}
                     value={chaptersTitleFilter}
                     onChange={setChaptersTitleFilter}
@@ -527,6 +525,7 @@ export default function TrashPage({ title = 'Удалённое' }: { title?: st
                     openKey={openFilterKey}
                     onOpenChange={setOpenFilterKey}
                   />
+                  {trashViewDropdown}
                   <div className="chapters-page-pagination">
                     <button
                       type="button"

@@ -1,4 +1,5 @@
 import { CreditCard, MoreVertical } from 'lucide-react'
+import { teamRoleLabel } from '../teamRoles'
 
 const presenceLabel = {
   active: 'В сети',
@@ -28,7 +29,7 @@ function TeamCard({ member, onOpenDetails }) {
           </div>
           <div className="team-card-titles">
             <h3 className="team-card-name">{member.name}</h3>
-            <p className="team-card-role">{member.role}</p>
+            <p className="team-card-role">{teamRoleLabel(member.role)}</p>
           </div>
         </div>
         <button type="button" className="team-card-menu" aria-label="Действия">

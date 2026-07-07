@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { apiPostJson } from '../../lib/api'
 import { usePipeline } from '../context/usePipeline'
 import { formatRuDateTime } from '../projectDates'
+import { canReviewChapters } from '../teamRoles'
 import type { ChapterRow } from '../pipelineTypes'
 import ChapterReviewModal from './ChapterReviewModal'
 import DashboardDropdown from './DashboardDropdown'
@@ -14,10 +15,10 @@ import TeamInviteModal from './TeamInviteModal'
 const STATUS_LABEL = {
   ready: 'ГОТОВО',
   ai: 'ОБРАБОТКА',
-  edit: 'РЕДАКТУРА',
+  edit: 'В РЕДАКТУРЕ',
   upload: 'ЗАГРУЗКА',
   waiting_editor: 'ЖДЁТ РЕДАКТОРА',
-  review: 'ПРОВЕРКА',
+  review: 'ОЖИДАЕТ ПРОВЕРКИ',
 }
 
 function AssignEditorControl({
@@ -97,9 +98,9 @@ function ChapterTable({
     return !!team?.is_personal
   }, [teams, currentTeamId])
 
-  const isTeamOwner = useMemo(() => {
+  const canModerateReview = useMemo(() => {
     const team = teams.find((t) => t.id === currentTeamId)
-    return team?.role === 'owner'
+    return canReviewChapters(team?.role)
   }, [teams, currentTeamId])
 
   async function openInviteMemberModal() {
@@ -203,32 +204,32 @@ function ChapterTable({
                     <CloudDownload size={16} strokeWidth={1.8} aria-hidden />
                   </button>
                 ) : null}
-                {isTeamOwner && row.statusCode === 'review' ? (
-                  <>
-                    <button
-                      type="button"
-                      className="review-queue-clear chapters-review-approve"
-                      aria-label={`Принять главу ${row.title}, № ${row.number}`}
-                      title="Принять"
-                      disabled={reviewBusyId === row.id}
-                      onClick={() => {
-                        setReviewBusyId(row.id)
-                        void reviewChapter(row.id, 'approve').finally(() => setReviewBusyId(null))
-                      }}
-                    >
-                      <Check size={16} strokeWidth={2} aria-hidden />
-                    </button>
-                    <button
-                      type="button"
-                      className="review-queue-clear chapters-review-reject"
-                      aria-label={`Вернуть главу редактору ${row.title}, № ${row.number}`}
-                      title="Вернуть редактору"
-                      disabled={reviewBusyId === row.id}
-                      onClick={() => setRejectChapter(row)}
-                    >
-                      <RotateCcw size={16} strokeWidth={1.8} aria-hidden />
-                    </button>
-                  </>
+                {canModerateReview && row.statusCode === 'review' ? (
+                  <button
+                    type="button"
+                    className="review-queue-clear chapters-review-approve"
+                    aria-label={`Принять главу ${row.title}, № ${row.number}`}
+                    title="Принять"
+                    disabled={reviewBusyId === row.id}
+                    onClick={() => {
+                      setReviewBusyId(row.id)
+                      void reviewChapter(row.id, 'approve').finally(() => setReviewBusyId(null))
+                    }}
+                  >
+                    <Check size={16} strokeWidth={2} aria-hidden />
+                  </button>
+                ) : null}
+                {canModerateReview && (row.statusCode === 'review' || row.statusCode === 'ready') ? (
+                  <button
+                    type="button"
+                    className="review-queue-clear chapters-review-reject"
+                    aria-label={`Вернуть главу редактору ${row.title}, № ${row.number}`}
+                    title="Вернуть редактору"
+                    disabled={reviewBusyId === row.id}
+                    onClick={() => setRejectChapter(row)}
+                  >
+                    <RotateCcw size={16} strokeWidth={1.8} aria-hidden />
+                  </button>
                 ) : null}
                 <button
                   type="button"

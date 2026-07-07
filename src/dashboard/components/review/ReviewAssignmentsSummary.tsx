@@ -5,6 +5,7 @@ import { apiPostJson } from '../../../lib/api'
 import { usePipeline } from '../../context/usePipeline'
 import type { ChapterRow } from '../../pipelineTypes'
 import { formatRuDateTime } from '../../projectDates'
+import { canReviewChapters } from '../../teamRoles'
 import ChapterReviewModal from '../ChapterReviewModal'
 import DashboardDropdown from '../DashboardDropdown'
 import TeamInviteModal from '../TeamInviteModal'
@@ -50,9 +51,9 @@ export default function ReviewAssignmentsSummary({
   const [editPage, setEditPage] = useState(0)
   const [reviewPage, setReviewPage] = useState(0)
 
-  const isTeamOwner = useMemo(() => {
+  const canModerateReview = useMemo(() => {
     const team = teams.find((t) => t.id === currentTeamId)
-    return team?.role === 'owner'
+    return canReviewChapters(team?.role)
   }, [teams, currentTeamId])
 
   const isPersonalTeam = useMemo(() => {
@@ -424,7 +425,7 @@ export default function ReviewAssignmentsSummary({
                         >
                           <CloudDownload size={16} strokeWidth={1.8} aria-hidden />
                         </button>
-                        {isTeamOwner ? (
+                        {canModerateReview ? (
                           <>
                             <button
                               type="button"

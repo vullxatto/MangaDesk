@@ -105,14 +105,14 @@ html {
 }
 
 @media (min-width: 900px) {
-  html {
+  html:not(:has(.dashboard-root)) {
     scrollbar-gutter: stable;
   }
 }
 
 html:has(.dashboard-root) {
   min-width: 1280px;
-  scrollbar-gutter: stable;
+  scrollbar-gutter: auto;
 }
 
 html:has(.app-shell--auth) {

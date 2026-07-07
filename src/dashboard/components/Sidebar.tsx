@@ -13,6 +13,7 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { reloadHome } from '../../utils/reloadHome'
 import { DASHBOARD_MENU_ITEMS } from '../dashboardMenu'
+import { teamRoleLabel } from '../teamRoles'
 
 type MenuItem = (typeof DASHBOARD_MENU_ITEMS)[number]
 
@@ -31,12 +32,7 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
-  const teamRoleLabel = (() => {
-    const role = teams.find((t) => t.id === currentTeamId)?.role
-    if (role === 'owner') return 'Владелец'
-    if (role === 'member') return 'Редактор'
-    return 'Участник'
-  })()
+  const teamRoleLabelText = teamRoleLabel(teams.find((t) => t.id === currentTeamId)?.role)
 
   const displayName = user?.username ?? 'Still Rise'
   const avatarSeed = user?.id ?? 'c0000001-0001-0001-0001-000000000001'
@@ -150,7 +146,7 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
           </div>
           <div>
             <div className="dashboard-user-name">{displayName}</div>
-            <div className="dashboard-user-role">{teamRoleLabel}</div>
+            <div className="dashboard-user-role">{teamRoleLabelText}</div>
           </div>
         </div>
         <div className="dashboard-user-meta">

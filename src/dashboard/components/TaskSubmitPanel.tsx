@@ -1,7 +1,8 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState, type ReactNode } from 'react'
 import { Upload, X } from 'lucide-react'
 import { PressActionButton } from '../../components/PressActionButton'
 import { usePipeline } from '../context/usePipeline'
+import type { ChapterStatusCode } from '../pipelineTypes'
 
 function formatBytes(n: number) {
   if (n < 1024) return `${n} Б`
@@ -14,13 +15,27 @@ function isAllowedArchive(file: File) {
   return name.endsWith('.zip') || name.endsWith('.rar')
 }
 
+const UPLOAD_TIP = 'Перетащите архив .zip или .rar с итоговой работой'
+
 type TaskSubmitPanelProps = {
   chapterId: string
+  statusCode: ChapterStatusCode
   reviewFeedback?: string | null
+  showOpenAction?: boolean
   onOpen: () => void
+  gridTemplate: string
+  renderCells: () => ReactNode
 }
 
-export default function TaskSubmitPanel({ chapterId, reviewFeedback, onOpen }: TaskSubmitPanelProps) {
+export default function TaskSubmitPanel({
+  chapterId,
+  statusCode,
+  reviewFeedback,
+  showOpenAction = true,
+  onOpen,
+  gridTemplate,
+  renderCells,
+}: TaskSubmitPanelProps) {
   const { uploadTaskDeliverables, submitTaskForReview } = usePipeline()
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -81,106 +96,107 @@ export default function TaskSubmitPanel({ chapterId, reviewFeedback, onOpen }: T
   }
 
   const canSubmit = pendingFiles.length > 0 && uploaded
+  const awaitingReview = statusCode === 'review'
+  const showSubmitControls = !awaitingReview
+
+  const rowStyle = { gridTemplateColumns: gridTemplate }
 
   return (
-    <>
-      <div className="tasks-table-actions">
-        <PressActionButton buttonClassName="review-queue-submit tasks-action-btn" onClick={onOpen}>
-          <span>Открыть перевод</span>
-        </PressActionButton>
-      </div>
+    <div className="tasks-table-row">
+      <div className="chapters-row chapters-row--tasks" style={rowStyle}>
+        {renderCells()}
+        <span className="chapters-actions">
+          {showOpenAction ? (
+            <PressActionButton buttonClassName="review-queue-submit tasks-action-btn" onClick={onOpen}>
+              <span>Открыть перевод</span>
+            </PressActionButton>
+          ) : null}
 
-      <div className="task-submit-panel">
-        {reviewFeedback ? (
-          <blockquote className="task-submit-feedback">
-            <span className="task-submit-feedback-label">Комментарий проверяющего:</span>
-            {reviewFeedback}
-          </blockquote>
-        ) : null}
-
-        <div className="task-submit-row">
-          <div className="task-submit-main">
-            {pendingFiles.length === 0 ? (
-              <div
-                className={`review-dropzone task-submit-dropzone${isDragging ? ' review-dropzone--active' : ''}${uploading ? ' task-submit-dropzone--disabled' : ''}`}
-                onDragOver={(e) => {
-                  if (uploading) return
-                  e.preventDefault()
-                  setIsDragging(true)
-                }}
-                onDragLeave={() => setIsDragging(false)}
-                onDrop={(e) => {
-                  e.preventDefault()
-                  setIsDragging(false)
-                  if (uploading) return
-                  if (e.dataTransfer.files.length > 0) void stageAndUploadFile(e.dataTransfer.files)
-                }}
-                onClick={() => {
-                  if (!uploading) inputRef.current?.click()
-                }}
-                onKeyDown={(e) => {
-                  if (uploading) return
-                  if (e.key === 'Enter' || e.key === ' ') {
+          {showSubmitControls ? (
+            <div className="tasks-action-col-tools">
+              {pendingFiles.length === 0 ? (
+                <div
+                  className={`task-upload-btn-wrap${isDragging ? ' task-upload-btn-wrap--active' : ''}${uploading ? ' task-upload-btn-wrap--disabled' : ''}`}
+                  data-tip={UPLOAD_TIP}
+                  onDragOver={(e) => {
+                    if (uploading) return
                     e.preventDefault()
-                    inputRef.current?.click()
-                  }
-                }}
-                role="button"
-                tabIndex={uploading ? -1 : 0}
-                aria-disabled={uploading}
-              >
-                <input
-                  ref={inputRef}
-                  type="file"
-                  disabled={uploading}
-                  className="review-dropzone-input"
-                  accept=".zip,.rar,application/zip,application/vnd.rar,application/x-rar-compressed"
-                  onChange={(e) => {
-                    if (e.target.files?.length) void stageAndUploadFile(e.target.files)
-                    e.target.value = ''
+                    setIsDragging(true)
                   }}
-                />
-                <Upload className="review-dropzone-icon" size={18} strokeWidth={1.8} aria-hidden />
-                <p className="review-dropzone-text">
-                  Перетащите архив .zip или .rar с итоговой работой
-                </p>
-              </div>
-            ) : null}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    setIsDragging(false)
+                    if (uploading) return
+                    if (e.dataTransfer.files.length > 0) void stageAndUploadFile(e.dataTransfer.files)
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="review-queue-clear"
+                    onClick={() => {
+                      if (!uploading) inputRef.current?.click()
+                    }}
+                    disabled={uploading}
+                    aria-label={UPLOAD_TIP}
+                    title={UPLOAD_TIP}
+                  >
+                    <Upload size={16} strokeWidth={1.8} aria-hidden />
+                  </button>
+                  <input
+                    ref={inputRef}
+                    type="file"
+                    disabled={uploading}
+                    className="review-dropzone-input"
+                    accept=".zip,.rar,application/zip,application/vnd.rar,application/x-rar-compressed"
+                    onChange={(e) => {
+                      if (e.target.files?.length) void stageAndUploadFile(e.target.files)
+                      e.target.value = ''
+                    }}
+                  />
+                </div>
+              ) : (
+                <ul className="task-submit-files">
+                  {pendingFiles.map((f) => (
+                    <li key={f.name}>
+                      <span className="task-submit-file-name" title={f.name}>
+                        {f.name} · {formatBytes(f.size)}
+                        {uploading ? ' · загрузка…' : uploaded ? ' · загружено' : ''}
+                      </span>
+                      <button
+                        type="button"
+                        className="task-submit-file-remove"
+                        onClick={() => removeFile(f.name)}
+                        disabled={uploading}
+                        aria-label={`Убрать ${f.name}`}
+                      >
+                        <X size={14} strokeWidth={2} aria-hidden />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
 
-            {pendingFiles.length > 0 ? (
-              <ul className="task-submit-files">
-                {pendingFiles.map((f) => (
-                  <li key={f.name}>
-                    <span className="task-submit-file-name">
-                      {f.name} · {formatBytes(f.size)}
-                      {uploading ? ' · загрузка…' : uploaded ? ' · загружено' : ''}
-                    </span>
-                    <button
-                      type="button"
-                      className="task-submit-file-remove"
-                      onClick={() => removeFile(f.name)}
-                      disabled={uploading}
-                      aria-label={`Убрать ${f.name}`}
-                    >
-                      <X size={14} strokeWidth={2} aria-hidden />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </div>
-
-          <PressActionButton
-            buttonClassName="review-queue-submit tasks-action-btn"
-            disabled={!canSubmit || submitting || uploading}
-            onClick={() => void handleSubmit()}
-          >
-            <span>{submitting ? 'Отправка…' : 'Отправить на проверку'}</span>
-          </PressActionButton>
-        </div>
-
-        {error ? <p className="review-queue-field-error task-submit-error">{error}</p> : null}
+              <PressActionButton
+                buttonClassName="review-queue-submit tasks-action-btn"
+                disabled={!canSubmit || submitting || uploading}
+                onClick={() => void handleSubmit()}
+              >
+                <span>{submitting ? 'Отправка…' : 'Отправить на проверку'}</span>
+              </PressActionButton>
+            </div>
+          ) : null}
+        </span>
       </div>
-    </>
+
+      {reviewFeedback ? (
+        <blockquote className="task-submit-feedback">
+          <span className="task-submit-feedback-label">Комментарий проверяющего:</span>
+          {reviewFeedback}
+        </blockquote>
+      ) : null}
+
+      {error ? <p className="review-queue-field-error task-submit-error">{error}</p> : null}
+    </div>
   )
 }

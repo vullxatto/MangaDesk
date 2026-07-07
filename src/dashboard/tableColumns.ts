@@ -56,6 +56,14 @@ const REVIEW_ASSIGNMENTS_COL_WIDTHS: Record<string, string> = {
   editor: 'minmax(220px, 1fr)',
 }
 
+const TASKS_COL_WIDTHS: Record<string, string> = {
+  title: 'minmax(0, 1.2fr)',
+  translate: 'minmax(0, 0.65fr)',
+  date: 'minmax(0, 1fr)',
+}
+
+const TASKS_ACTIONS_COL = 'minmax(18rem, 2.5fr)'
+
 function loadVisibleColumns<T extends string>(storageKey: string, fallback: T[]): T[] {
   if (typeof window === 'undefined') return fallback
   try {
@@ -79,6 +87,12 @@ function saveVisibleColumns<T extends string>(storageKey: string, visible: T[]) 
 function buildGridTemplate(visibleIds: string[], widths: Record<string, string>) {
   const cols = visibleIds.map((id) => widths[id]).filter(Boolean)
   cols.push(ACTIONS_COL)
+  return cols.join(' ')
+}
+
+function buildTasksGridTemplate(visibleIds: string[], widths: Record<string, string>) {
+  const cols = visibleIds.map((id) => widths[id]).filter(Boolean)
+  cols.push(TASKS_ACTIONS_COL)
   return cols.join(' ')
 }
 
@@ -240,6 +254,27 @@ export function useReviewAssignmentsTableColumns(soloMode: boolean) {
   const visibility = useTableColumnVisibility('mangadesk.table-columns.review-assignments', columns)
   const gridTemplate = useMemo(
     () => buildOverviewGridTemplate(visibility.visibleIds, REVIEW_ASSIGNMENTS_COL_WIDTHS),
+    [visibility.visibleIds],
+  )
+  return { ...visibility, gridTemplate }
+}
+
+export function useTasksTableColumns(mode: 'edit' | 'review') {
+  const columns = useMemo<TableColumnConfig<string>[]>(() => {
+    const base: TableColumnConfig<string>[] = [{ id: 'title', label: 'Проект / №' }]
+    base.push({ id: 'date', label: mode === 'edit' ? 'Назначено' : 'Отправлено' })
+    if (mode === 'edit') {
+      base.push({ id: 'translate', label: 'Перевод' })
+    }
+    return base
+  }, [mode])
+  const storageKey =
+    mode === 'edit'
+      ? 'mangadesk.table-columns.tasks-edit.v3'
+      : 'mangadesk.table-columns.tasks-review.v2'
+  const visibility = useTableColumnVisibility(storageKey, columns)
+  const gridTemplate = useMemo(
+    () => buildTasksGridTemplate(visibility.visibleIds, TASKS_COL_WIDTHS),
     [visibility.visibleIds],
   )
   return { ...visibility, gridTemplate }

@@ -629,7 +629,9 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
   const editorTasks = useMemo(
     () =>
       chapters.filter(
-        (c) => c.editorId === CURRENT_USER.id && c.statusCode === 'edit',
+        (c) =>
+          c.editorId === CURRENT_USER.id &&
+          (c.statusCode === 'edit' || c.statusCode === 'review'),
       ),
     [chapters],
   )

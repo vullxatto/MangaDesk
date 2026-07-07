@@ -33,10 +33,10 @@ const sortOptions = [
 const statusOptions = [
   { value: 'all', label: 'Все' },
   { value: 'ready', label: 'Готово' },
-  { value: 'review', label: 'Проверка' },
+  { value: 'review', label: 'Ожидает проверки' },
   { value: 'waiting_editor', label: 'Ждёт редактора' },
   { value: 'ai', label: 'Обработка' },
-  { value: 'edit', label: 'Редактура' },
+  { value: 'edit', label: 'В редактуре' },
   { value: 'upload', label: 'Загрузка' },
 ]
 
@@ -185,7 +185,7 @@ function ChaptersPage({ title }) {
         <h1>{title}</h1>
         <div className="dashboard-filters chapters-page-filters" ref={filtersRef}>
           <DashboardDropdown
-            label="Тайтл"
+            label="Проект"
             options={titleOptions}
             value={titleFilter}
             onChange={setTitleFilter}

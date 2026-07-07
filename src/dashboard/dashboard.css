@@ -878,13 +878,47 @@
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  overflow: visible;
 }
 
-.chapters-panel::-webkit-scrollbar {
-  display: none;
+.chapters-panel > :is(.chapters-table:not(.tasks-table), .projects-table, .glossary-table) {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+}
+
+:is(
+  .chapters-panel > :is(.chapters-table:not(.tasks-table), .projects-table, .glossary-table)
+) {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--fg) 38%, transparent) transparent;
+}
+
+:is(
+  .chapters-panel > :is(.chapters-table:not(.tasks-table), .projects-table, .glossary-table)
+)::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+:is(
+  .chapters-panel > :is(.chapters-table:not(.tasks-table), .projects-table, .glossary-table)
+)::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+:is(
+  .chapters-panel > :is(.chapters-table:not(.tasks-table), .projects-table, .glossary-table)
+)::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--fg) 30%, var(--bg));
+  border: 1px solid rgba(var(--fg-rgb), 0.16);
+  border-radius: var(--radius);
+}
+
+:is(
+  .chapters-panel > :is(.chapters-table:not(.tasks-table), .projects-table, .glossary-table)
+)::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--fg) 44%, var(--bg));
 }
 
 .chapters-table,
@@ -1023,7 +1057,7 @@
 
 .projects-page .projects-table .projects-chapters-cell.review-queue-clear,
 .projects-page .projects-table .projects-link-tag.review-queue-clear,
-.projects-page .chapters-table:not(.tasks-table) .projects-link-tag.review-queue-clear,
+.projects-page .chapters-table .projects-link-tag.review-queue-clear,
 .trash-page .projects-table .projects-chapters-cell.review-queue-clear,
 .trash-page .projects-table .projects-link-tag.review-queue-clear,
 .trash-page .chapters-table.trash-chapters-table .projects-link-tag.review-queue-clear {
@@ -1037,15 +1071,15 @@
 .projects-page .projects-table .projects-chapters-cell.review-queue-clear:hover,
 .projects-page .projects-table .projects-link-tag.review-queue-clear:hover,
 .projects-page .projects-table .projects-link-tag.review-queue-clear:focus-visible,
-.projects-page .chapters-table:not(.tasks-table) .projects-link-tag.review-queue-clear:hover,
-.projects-page .chapters-table:not(.tasks-table) .projects-link-tag.review-queue-clear:focus-visible,
+.projects-page .chapters-table .projects-link-tag.review-queue-clear:hover,
+.projects-page .chapters-table .projects-link-tag.review-queue-clear:focus-visible,
 .trash-page .projects-table .projects-chapters-cell.review-queue-clear:hover,
 .trash-page .projects-table .projects-link-tag.review-queue-clear:hover,
 .trash-page .projects-table .projects-link-tag.review-queue-clear:focus-visible,
 .trash-page .chapters-table.trash-chapters-table .projects-link-tag.review-queue-clear:hover,
 .trash-page .chapters-table.trash-chapters-table .projects-link-tag.review-queue-clear:focus-visible,
 .projects-page .projects-table .chapters-actions .review-queue-clear:hover,
-.projects-page .chapters-table:not(.tasks-table) .chapters-actions .review-queue-clear:hover,
+.projects-page .chapters-table .chapters-actions .review-queue-clear:hover,
 .trash-page .projects-table .chapters-actions .review-queue-clear:hover,
 .trash-page .chapters-table:not(.tasks-table) .chapters-actions .review-queue-clear:hover {
   color: color-mix(in srgb, var(--purple) 88%, transparent);
@@ -1053,7 +1087,7 @@
 }
 
 .projects-page .projects-table .chapters-actions .review-queue-clear,
-.projects-page .chapters-table:not(.tasks-table) .chapters-actions .review-queue-clear,
+.projects-page .chapters-table .chapters-actions .review-queue-clear,
 .trash-page .projects-table .chapters-actions .review-queue-clear,
 .trash-page .chapters-table:not(.tasks-table) .chapters-actions .review-queue-clear {
   display: inline-flex;
@@ -1066,7 +1100,7 @@
 }
 
 .projects-page .projects-table .chapters-actions .review-queue-clear svg,
-.projects-page .chapters-table:not(.tasks-table) .chapters-actions .review-queue-clear svg {
+.projects-page .chapters-table .chapters-actions .review-queue-clear svg {
   width: 16px;
   height: 16px;
 }
@@ -1932,22 +1966,6 @@
   width: min(100%, 1350px);
 }
 
-.trash-page-toolbar-start {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  flex: 0 1 auto;
-}
-
-.trash-page-toolbar-start h1 {
-  flex-shrink: 0;
-}
-
-.trash-page-view-filter {
-  flex-shrink: 0;
-}
-
 .trash-page-toolbar-actions {
   flex-wrap: wrap;
   row-gap: 10px;
@@ -1996,11 +2014,21 @@
   margin-top: 24px;
 }
 
-.team-members-table .projects-row,
+.team-members-table .projects-row {
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.8fr) minmax(0, 0.52fr);
+}
+
 .trash-page .projects-table.trash-projects-table .projects-row {
   grid-template-columns:
     minmax(0, 1.15fr) minmax(0, 0.9fr) minmax(0, 0.95fr) minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr)
     minmax(0, 0.52fr);
+}
+
+.team-member-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .trash-page .projects-table.trash-projects-table .projects-chapters-num {
@@ -3775,25 +3803,32 @@ button.review-feed-scroll-top.review-queue-clear svg {
 }
 
 .chapters-row.chapters-row--tasks {
-  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1.1fr) minmax(0, 1.15fr) minmax(0, 1.45fr);
+  gap: 12px;
 }
 
 .projects-page .chapters-table.tasks-table {
   font-size: 11px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1.1fr) minmax(0, 1.15fr) minmax(0, 1.45fr);
-  column-gap: 12px;
-  row-gap: 0;
 }
 
 .projects-page .chapters-table.tasks-table .chapters-row.chapters-head {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: subgrid;
-  font-size: 12px;
   gap: 12px;
-  padding-bottom: 8px;
-  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+.projects-page .chapters-table.tasks-table .chapters-row:not(.chapters-head) {
+  gap: 12px;
+  align-items: center;
+}
+
+.projects-page .chapters-table.tasks-table > .tasks-table-row + .tasks-table-row {
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid rgba(var(--fg-rgb), 0.12);
+}
+
+.tasks-table-row {
+  display: block;
+  min-width: 0;
 }
 
 .projects-page .chapters-table.tasks-table .chapters-title strong,
@@ -3804,37 +3839,9 @@ button.review-feed-scroll-top.review-queue-clear svg {
   color: var(--fg);
 }
 
-.tasks-table-block {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: subgrid;
-  column-gap: 12px;
-  row-gap: 6px;
-  align-items: center;
-  padding: 8px 0;
-}
-
-.tasks-table-block > .chapters-row.chapters-row--tasks {
-  display: contents;
-}
-
-.tasks-table-block > .tasks-table-actions {
-  grid-column: 4;
-  grid-row: 1;
-  align-self: center;
-}
-
-.tasks-table-block > .task-submit-panel {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  display: grid;
-  grid-template-columns: subgrid;
-}
-
-.tasks-table-block + .tasks-table-block {
-  padding-top: 8px;
-  margin-top: 0;
-  border-top: 1px solid rgba(var(--fg-rgb), 0.1);
+.projects-page .chapters-table.tasks-table .task-submit-feedback,
+.projects-page .chapters-table.tasks-table .task-submit-error {
+  margin: 0 0 4px;
 }
 
 .tasks-empty-panel {
@@ -3842,6 +3849,62 @@ button.review-feed-scroll-top.review-queue-clear svg {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.tasks-empty-panel--section {
+  min-height: 72px;
+}
+
+.tasks-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tasks-section-toolbar {
+  margin-bottom: 10px;
+  padding: 0 2px;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 12px;
+}
+
+.tasks-section-toolbar .tasks-section-title {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.tasks-section-toolbar .projects-page-toolbar-actions {
+  flex: 1 1 auto;
+  min-width: 0;
+  justify-content: flex-end;
+}
+
+.tasks-section-filters {
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tasks-section-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.tasks-section-filters > * {
+  flex-shrink: 0;
+}
+
+.tasks-section-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg);
 }
 
 .tasks-empty-text {
@@ -3852,90 +3915,117 @@ button.review-feed-scroll-top.review-queue-clear svg {
   color: color-mix(in srgb, var(--fg) 50%, transparent);
 }
 
-.tasks-table-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  min-width: 0;
-}
-
 .tasks-action-btn.dashboard-press-btn.review-queue-submit {
   width: 100%;
   justify-content: center;
   text-align: center;
 }
 
-.task-submit-panel {
-  gap: 6px;
-  min-width: 0;
+.tasks-action-col-tools > .tasks-action-btn.dashboard-press-btn.review-queue-submit {
+  width: auto;
+  flex: 0 0 auto;
 }
 
 .task-submit-feedback,
 .task-submit-error {
-  grid-column: 1 / -1;
-}
-
-.task-submit-row {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: subgrid;
-  align-items: center;
   min-width: 0;
 }
 
-.task-submit-main {
-  grid-column: 1 / 4;
+.projects-page .chapters-table.tasks-table .chapters-actions {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.projects-page .chapters-table.tasks-table .tasks-action-col-tools {
+  padding-right: 8px;
+}
+
+.tasks-action-col-tools {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
+  width: 100%;
   min-width: 0;
 }
 
-.task-submit-row > .tasks-action-btn {
-  grid-column: 4;
+.task-upload-btn-wrap {
+  position: relative;
+  flex-shrink: 0;
 }
 
-.task-submit-dropzone {
-  flex: 1 1 0;
-  min-width: 0;
-  display: flex;
-  flex-direction: row;
+.projects-page .chapters-table.tasks-table .chapters-actions .review-queue-clear {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 10px;
-  text-align: left;
-  border-width: 1px;
+  justify-content: center;
+  padding: 4px;
+  margin: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: rgba(var(--fg-rgb), 0.72);
+  cursor: pointer;
 }
 
-.task-submit-dropzone--disabled {
+.projects-page .chapters-table.tasks-table .chapters-actions .review-queue-clear svg {
+  width: 16px;
+  height: 16px;
+}
+
+.projects-page .chapters-table.tasks-table .chapters-actions .review-queue-clear:hover,
+.projects-page .chapters-table.tasks-table .chapters-actions .review-queue-clear:focus-visible,
+.projects-page .chapters-table.tasks-table .task-upload-btn-wrap--active .review-queue-clear {
+  color: color-mix(in srgb, var(--purple) 88%, var(--fg));
+  background: color-mix(in srgb, var(--purple) 10%, transparent);
+}
+
+.task-upload-btn-wrap--disabled {
   opacity: 0.65;
-  cursor: wait;
   pointer-events: none;
 }
 
-.task-submit-dropzone .review-dropzone-icon {
-  flex-shrink: 0;
-  margin-bottom: 0;
+.task-upload-btn-wrap::after {
+  content: attr(data-tip);
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  width: max-content;
+  max-width: 220px;
+  padding: 6px 8px;
+  border-radius: var(--radius);
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 10px;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  white-space: normal;
+  text-align: left;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 150ms ease, visibility 150ms ease;
 }
 
-.task-submit-dropzone .review-dropzone-text {
-  margin: 0;
-  font-size: 11px;
-  line-height: 1.35;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.task-upload-btn-wrap:hover::after,
+.task-upload-btn-wrap:focus-within::after {
+  opacity: 1;
+  visibility: visible;
 }
 
 .task-submit-feedback {
   margin: 0;
-  padding: 6px 10px;
-  border-left: 3px solid color-mix(in srgb, var(--purple) 55%, var(--fg));
-  background: color-mix(in srgb, var(--fg) 4%, var(--bg));
+  padding: 8px 10px 8px 12px;
+  border-left: 4px solid rgba(var(--fg-rgb), 0.35);
+  background: rgba(var(--fg-rgb), 0.06);
+  border-radius: 0 var(--radius) var(--radius) 0;
   font-size: 11px;
+  font-style: normal;
   line-height: 1.4;
-  color: var(--fg);
+  color: color-mix(in srgb, var(--fg) 88%, transparent);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -3949,6 +4039,14 @@ button.review-feed-scroll-top.review-queue-clear svg {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--fg) 62%, transparent);
+}
+
+.tasks-action-col-tools .task-submit-files {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
 }
 
 .task-submit-files {
@@ -3969,6 +4067,8 @@ button.review-feed-scroll-top.review-queue-clear svg {
   display: inline-flex;
   align-items: center;
   gap: var(--task-submit-chip-inset);
+  flex: 1 1 auto;
+  min-width: 0;
   max-width: 100%;
   padding: 4px var(--task-submit-chip-inset);
   border: 1px solid rgba(var(--fg-rgb), 0.14);
@@ -3979,8 +4079,10 @@ button.review-feed-scroll-top.review-queue-clear svg {
 }
 
 .task-submit-file-name {
-  white-space: normal;
-  word-break: break-word;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .task-submit-files .task-submit-file-remove {
@@ -4370,6 +4472,10 @@ button.review-feed-scroll-top.review-queue-clear svg {
 .review-assignments-actions.chapters-actions {
   gap: 4px;
   justify-content: flex-start;
+}
+
+.review-assignments-actions .chapters-review-approve:not(:disabled):hover {
+  color: color-mix(in srgb, var(--purple) 88%, var(--fg));
 }
 
 .review-assignments-table-row--review .review-assignments-actions.chapters-actions {

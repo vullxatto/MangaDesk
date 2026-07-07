@@ -1,50 +1,146 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { ChevronLeft, ChevronRight, RefreshCcw } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { PressActionButton } from '../../../components/PressActionButton'
 import { usePipeline } from '../../context/usePipeline'
+import type { ChapterRow } from '../../pipelineTypes'
+import { useTasksTableColumns } from '../../tableColumns'
 import DashboardDropdown from '../DashboardDropdown'
-import StatusBadge from '../StatusBadge'
+import TableColumnsDropdown from '../TableColumnsDropdown'
 import TaskSubmitPanel from '../TaskSubmitPanel'
-
-const STATUS_LABEL = {
-  ready: 'ГОТОВО',
-  ai: 'ОБРАБОТКА',
-  edit: 'РЕДАКТУРА',
-  upload: 'ЗАГРУЗКА',
-  waiting_editor: 'ЖДЁТ РЕДАКТОРА',
-  review: 'ПРОВЕРКА',
-}
 
 const DEFAULT_TITLE_FILTER = 'all'
 const DEFAULT_SORT = 'number-desc'
+const DEFAULT_PAGE_SIZE = 10
 
-const sortOptions = [
+const pageSizeOptions = [
+  { value: '10', label: '10' },
+  { value: '25', label: '25' },
+  { value: '50', label: '50' },
+  { value: '100', label: '100' },
+]
+
+const editSortOptions = [
   { value: 'assigned-desc', label: 'Назначено — новые сверху' },
   { value: 'assigned-asc', label: 'Назначено — старые сверху' },
   { value: 'number-desc', label: 'Номер — по убыванию' },
   { value: 'number-asc', label: 'Номер — по возрастанию' },
 ]
 
+const reviewSortOptions = [
+  { value: 'assigned-desc', label: 'Отправлено — новые сверху' },
+  { value: 'assigned-asc', label: 'Отправлено — старые сверху' },
+  { value: 'number-desc', label: 'Номер — по убыванию' },
+  { value: 'number-asc', label: 'Номер — по возрастанию' },
+]
+
+function taskDateValue(task: ChapterRow, mode: 'edit' | 'review') {
+  if (mode === 'review') return new Date(task.date).getTime()
+  return new Date(task.assignedAt ?? task.updatedAt).getTime()
+}
+
+function sortTasks(tasks: ChapterRow[], sortBy: string, mode: 'edit' | 'review') {
+  return [...tasks].sort((a, b) => {
+    if (sortBy === 'assigned-desc') return taskDateValue(b, mode) - taskDateValue(a, mode)
+    if (sortBy === 'assigned-asc') return taskDateValue(a, mode) - taskDateValue(b, mode)
+    if (sortBy === 'number-asc') return a.number - b.number
+    return b.number - a.number
+  })
+}
+
+function buildTitleOptions(tasks: ChapterRow[]) {
+  const titles = [...new Set(tasks.map((task) => task.title))].sort((a, b) => a.localeCompare(b, 'ru'))
+  return [{ value: 'all', label: 'Все' }, ...titles.map((title) => ({ value: title, label: title }))]
+}
+
+function filterAndSortTasks(
+  tasks: ChapterRow[],
+  titleFilter: string,
+  sortBy: string,
+  mode: 'edit' | 'review',
+) {
+  const filtered = tasks.filter((task) => titleFilter === 'all' || task.title === titleFilter)
+  return sortTasks(filtered, sortBy, mode)
+}
+
+function paginateTasks(tasks: ChapterRow[], pageSize: number, pageIndex: number) {
+  const totalPages = Math.max(1, Math.ceil(tasks.length / pageSize))
+  const safePageIndex = Math.min(pageIndex, totalPages - 1)
+  const start = safePageIndex * pageSize
+  return {
+    items: tasks.slice(start, start + pageSize),
+    totalPages,
+    safePageIndex,
+  }
+}
+
 function TasksPage({ title = 'Задачи' }) {
   const navigate = useNavigate()
   const { editorTasks } = usePipeline()
-  const [titleFilter, setTitleFilter] = useState(DEFAULT_TITLE_FILTER)
-  const [sortBy, setSortBy] = useState(DEFAULT_SORT)
+  const editColumns = useTasksTableColumns('edit')
+  const reviewColumns = useTasksTableColumns('review')
+  const [editTitleFilter, setEditTitleFilter] = useState(DEFAULT_TITLE_FILTER)
+  const [editSortBy, setEditSortBy] = useState(DEFAULT_SORT)
+  const [editPageSize, setEditPageSize] = useState(DEFAULT_PAGE_SIZE)
+  const [editPageIndex, setEditPageIndex] = useState(0)
+  const [reviewTitleFilter, setReviewTitleFilter] = useState(DEFAULT_TITLE_FILTER)
+  const [reviewSortBy, setReviewSortBy] = useState(DEFAULT_SORT)
+  const [reviewPageSize, setReviewPageSize] = useState(DEFAULT_PAGE_SIZE)
+  const [reviewPageIndex, setReviewPageIndex] = useState(0)
   const [openFilterKey, setOpenFilterKey] = useState<string | null>(null)
 
-  const titleOptions = useMemo(() => {
-    const titles = [...new Set(editorTasks.map((task) => task.title))].sort((a, b) => a.localeCompare(b, 'ru'))
-    return [{ value: 'all', label: 'Все' }, ...titles.map((title) => ({ value: title, label: title }))]
-  }, [editorTasks])
+  const editTasks = useMemo(
+    () => editorTasks.filter((task) => task.statusCode === 'edit'),
+    [editorTasks],
+  )
 
-  const filteredTasks = useMemo(() => {
-    const filtered = editorTasks.filter((task) => titleFilter === 'all' || task.title === titleFilter)
-    return [...filtered].sort((a, b) => {
-      if (sortBy === 'assigned-desc') return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      if (sortBy === 'assigned-asc') return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
-      if (sortBy === 'number-asc') return a.number - b.number
-      return b.number - a.number
-    })
-  }, [editorTasks, sortBy, titleFilter])
+  const reviewTasks = useMemo(
+    () => editorTasks.filter((task) => task.statusCode === 'review'),
+    [editorTasks],
+  )
+
+  const editTitleOptions = useMemo(() => buildTitleOptions(editTasks), [editTasks])
+  const reviewTitleOptions = useMemo(() => buildTitleOptions(reviewTasks), [reviewTasks])
+
+  const filteredEditTasks = useMemo(
+    () => filterAndSortTasks(editTasks, editTitleFilter, editSortBy, 'edit'),
+    [editTasks, editSortBy, editTitleFilter],
+  )
+
+  const filteredReviewTasks = useMemo(
+    () => filterAndSortTasks(reviewTasks, reviewTitleFilter, reviewSortBy, 'review'),
+    [reviewTasks, reviewSortBy, reviewTitleFilter],
+  )
+
+  const editPagination = useMemo(
+    () => paginateTasks(filteredEditTasks, editPageSize, editPageIndex),
+    [filteredEditTasks, editPageIndex, editPageSize],
+  )
+
+  const reviewPagination = useMemo(
+    () => paginateTasks(filteredReviewTasks, reviewPageSize, reviewPageIndex),
+    [filteredReviewTasks, reviewPageIndex, reviewPageSize],
+  )
+
+  useEffect(() => {
+    setEditPageIndex(0)
+  }, [editTitleFilter, editSortBy, editPageSize, editTasks.length])
+
+  useEffect(() => {
+    if (editPageIndex > editPagination.totalPages - 1) {
+      setEditPageIndex(Math.max(0, editPagination.totalPages - 1))
+    }
+  }, [editPageIndex, editPagination.totalPages])
+
+  useEffect(() => {
+    setReviewPageIndex(0)
+  }, [reviewTitleFilter, reviewSortBy, reviewPageSize, reviewTasks.length])
+
+  useEffect(() => {
+    if (reviewPageIndex > reviewPagination.totalPages - 1) {
+      setReviewPageIndex(Math.max(0, reviewPagination.totalPages - 1))
+    }
+  }, [reviewPageIndex, reviewPagination.totalPages])
 
   useEffect(() => {
     function handleMouseDown(e: MouseEvent) {
@@ -68,43 +164,217 @@ function TasksPage({ title = 'Задачи' }) {
     }
   }, [openFilterKey])
 
-  if (editorTasks.length === 0) {
+  const filtersDisabled = editorTasks.length === 0
+
+  function handleResetEditFilters() {
+    setEditTitleFilter(DEFAULT_TITLE_FILTER)
+    setEditSortBy(DEFAULT_SORT)
+    setEditPageSize(DEFAULT_PAGE_SIZE)
+    setEditPageIndex(0)
+    setOpenFilterKey(null)
+  }
+
+  function handleResetReviewFilters() {
+    setReviewTitleFilter(DEFAULT_TITLE_FILTER)
+    setReviewSortBy(DEFAULT_SORT)
+    setReviewPageSize(DEFAULT_PAGE_SIZE)
+    setReviewPageIndex(0)
+    setOpenFilterKey(null)
+  }
+
+  function renderTaskRow(
+    row: ChapterRow,
+    isColumnVisible: (id: string) => boolean,
+    gridTemplate: string,
+  ) {
     return (
-      <div className="chapters-page projects-page tasks-page">
-        <div className="dashboard-toolbar projects-page-toolbar">
-          <h1>{title}</h1>
+      <TaskSubmitPanel
+        key={row.id}
+        chapterId={row.id}
+        statusCode={row.statusCode}
+        reviewFeedback={row.reviewFeedback}
+        showOpenAction={!isColumnVisible('translate')}
+        gridTemplate={gridTemplate}
+        onOpen={() =>
+          navigate(`/dashboard/chapters/${row.id}/edit`, { state: { fromTasks: true } })
+        }
+        renderCells={() => (
+          <>
+            {isColumnVisible('title') ? (
+              <span className="chapters-title">
+                <span className="chapters-title-main">
+                  {row.title} <strong className="chapters-title-number">№ {row.number}</strong>
+                </span>
+              </span>
+            ) : null}
+            {isColumnVisible('date') ? (
+              <span className="chapters-date">
+                {row.statusCode === 'review' ? row.date : (row.assignedAt ?? row.date)}
+              </span>
+            ) : null}
+            {isColumnVisible('translate') ? (
+              <span className="chapters-translate">
+                <Link
+                  className="review-queue-clear projects-link-tag"
+                  to={`/dashboard/chapters/${row.id}/edit`}
+                  state={{ fromTasks: true }}
+                >
+                  Открыть
+                </Link>
+              </span>
+            ) : null}
+          </>
+        )}
+      />
+    )
+  }
+
+  function renderTaskSection({
+    headingId,
+    title: sectionTitle,
+    tasks,
+    allTasks,
+    dateColumnLabel,
+    emptyText,
+    titleOptions,
+    titleFilter,
+    onTitleFilterChange,
+    sortOptions,
+    sortBy,
+    onSortChange,
+    pageSize,
+    onPageSizeChange,
+    onPageIndexChange,
+    totalPages,
+    safePageIndex,
+    columns,
+    onResetFilters,
+    filterKeyPrefix,
+  }: {
+    headingId: string
+    title: string
+    tasks: ChapterRow[]
+    allTasks: ChapterRow[]
+    dateColumnLabel: string
+    emptyText: string
+    titleOptions: { value: string; label: string }[]
+    titleFilter: string
+    onTitleFilterChange: (value: string) => void
+    sortOptions: { value: string; label: string }[]
+    sortBy: string
+    onSortChange: (value: string) => void
+    pageSize: number
+    onPageSizeChange: (value: number) => void
+    onPageIndexChange: (value: number | ((prev: number) => number)) => void
+    totalPages: number
+    safePageIndex: number
+    columns: ReturnType<typeof useTasksTableColumns>
+    onResetFilters: () => void
+    filterKeyPrefix: string
+  }) {
+    const sectionFiltersDisabled = filtersDisabled || allTasks.length === 0
+    const rowStyle = { gridTemplateColumns: columns.gridTemplate }
+
+    return (
+      <section className="tasks-section" aria-labelledby={headingId}>
+        <div className="dashboard-toolbar projects-page-toolbar tasks-section-toolbar">
+          <h2 id={headingId} className="tasks-section-title">
+            {sectionTitle} ({allTasks.length})
+          </h2>
           <div className="projects-page-toolbar-actions">
-            <div className="dashboard-filters chapters-page-filters">
+            <div className="dashboard-filters chapters-page-filters tasks-section-filters">
               <DashboardDropdown
-                label="Тайтл"
+                label="Проект"
                 options={titleOptions}
                 value={titleFilter}
-                onChange={setTitleFilter}
-                ddKey="tasks-filter|title"
+                onChange={onTitleFilterChange}
+                ddKey={`${filterKeyPrefix}|title`}
                 openKey={openFilterKey}
                 onOpenChange={setOpenFilterKey}
                 stableTriggerWidth
                 truncateOptionLabels
-                disabled
+                disabled={sectionFiltersDisabled}
               />
               <DashboardDropdown
                 label="Сортировка"
                 options={sortOptions}
                 value={sortBy}
-                onChange={setSortBy}
-                ddKey="tasks-filter|sort"
+                onChange={onSortChange}
+                ddKey={`${filterKeyPrefix}|sort`}
                 openKey={openFilterKey}
                 onOpenChange={setOpenFilterKey}
                 stableTriggerWidth
-                disabled
+                disabled={sectionFiltersDisabled}
               />
+              <DashboardDropdown
+                label="Число строк"
+                options={pageSizeOptions}
+                value={String(pageSize)}
+                onChange={(value) => onPageSizeChange(Number(value))}
+                ddKey={`${filterKeyPrefix}|page-size`}
+                openKey={openFilterKey}
+                onOpenChange={setOpenFilterKey}
+                stableTriggerWidth
+                disabled={sectionFiltersDisabled}
+              />
+              <TableColumnsDropdown
+                columns={columns.columns}
+                isVisible={columns.isVisible}
+                onToggle={columns.toggleColumn}
+                ddKey={`${filterKeyPrefix}|columns`}
+                openKey={openFilterKey}
+                onOpenChange={setOpenFilterKey}
+              />
+              <div className="chapters-page-pagination">
+                <button
+                  type="button"
+                  className="review-queue-clear chapters-page-pagination-btn"
+                  onClick={() => onPageIndexChange((page) => Math.max(0, page - 1))}
+                  disabled={safePageIndex <= 0 || sectionFiltersDisabled}
+                  aria-label="Предыдущая страница"
+                >
+                  <ChevronLeft size={16} strokeWidth={1.8} aria-hidden />
+                </button>
+                <span className="chapters-page-pagination-label">
+                  {safePageIndex + 1} / {totalPages}
+                </span>
+                <button
+                  type="button"
+                  className="review-queue-clear chapters-page-pagination-btn"
+                  onClick={() => onPageIndexChange((page) => Math.min(totalPages - 1, page + 1))}
+                  disabled={safePageIndex >= totalPages - 1 || sectionFiltersDisabled}
+                  aria-label="Следующая страница"
+                >
+                  <ChevronRight size={16} strokeWidth={1.8} aria-hidden />
+                </button>
+              </div>
             </div>
+            <PressActionButton onClick={onResetFilters} disabled={sectionFiltersDisabled}>
+              <RefreshCcw className="projects-add-project-plus" size={16} strokeWidth={2.2} aria-hidden />
+              <span>Сбросить</span>
+            </PressActionButton>
           </div>
         </div>
-        <div className="chapters-panel article-mini-card tasks-empty-panel">
-          <p className="tasks-empty-text">Нет активных задач</p>
+        <div className="chapters-panel article-mini-card">
+          {tasks.length === 0 ? (
+            <div className="tasks-empty-panel tasks-empty-panel--section">
+              <p className="tasks-empty-text">{emptyText}</p>
+            </div>
+          ) : (
+            <div className="chapters-table tasks-table">
+              <div className="chapters-row chapters-head chapters-row--tasks" style={rowStyle}>
+                {columns.isVisible('title') ? <span>Проект / №</span> : null}
+                {columns.isVisible('date') ? <span>{dateColumnLabel}</span> : null}
+                {columns.isVisible('translate') ? <span>Перевод</span> : null}
+                <span className="chapters-actions-head" aria-hidden="true" />
+              </div>
+              {tasks.map((row) =>
+                renderTaskRow(row, columns.isVisible, columns.gridTemplate),
+              )}
+            </div>
+          )}
         </div>
-      </div>
+      </section>
     )
   }
 
@@ -112,67 +382,60 @@ function TasksPage({ title = 'Задачи' }) {
     <div className="chapters-page projects-page tasks-page">
       <div className="dashboard-toolbar projects-page-toolbar">
         <h1>{title}</h1>
-        <div className="projects-page-toolbar-actions">
-          <div className="dashboard-filters chapters-page-filters">
-            <DashboardDropdown
-              label="Тайтл"
-              options={titleOptions}
-              value={titleFilter}
-              onChange={setTitleFilter}
-              ddKey="tasks-filter|title"
-              openKey={openFilterKey}
-              onOpenChange={setOpenFilterKey}
-              stableTriggerWidth
-              truncateOptionLabels
-            />
-            <DashboardDropdown
-              label="Сортировка"
-              options={sortOptions}
-              value={sortBy}
-              onChange={setSortBy}
-              ddKey="tasks-filter|sort"
-              openKey={openFilterKey}
-              onOpenChange={setOpenFilterKey}
-              stableTriggerWidth
-            />
-          </div>
-        </div>
       </div>
-      <div className="chapters-panel article-mini-card">
-        <div className="chapters-table tasks-table">
-          <div className="chapters-row chapters-head chapters-row--tasks">
-            <span>Проект / №</span>
-            <span>Статус</span>
-            <span>Назначено</span>
-            <span>Действие</span>
-          </div>
-          {filteredTasks.map((row) => (
-            <div key={row.id} className="tasks-table-block">
-              <div className="chapters-row chapters-row--tasks">
-                <span className="chapters-title">
-                  <span className="chapters-title-main">
-                    {row.title} <strong className="chapters-title-number">№ {row.number}</strong>
-                  </span>
-                </span>
-                <span>
-                  <StatusBadge
-                    statusCode={row.statusCode}
-                    status={STATUS_LABEL[row.statusCode] ?? row.statusCode}
-                  />
-                </span>
-                <span className="chapters-date">{row.assignedAt ?? row.date}</span>
-              </div>
-              <TaskSubmitPanel
-                chapterId={row.id}
-                reviewFeedback={row.reviewFeedback}
-                onOpen={() =>
-                  navigate(`/dashboard/chapters/${row.id}/edit`, { state: { fromTasks: true } })
-                }
-              />
-            </div>
-          ))}
+
+      {editorTasks.length === 0 ? (
+        <div className="chapters-panel article-mini-card tasks-empty-panel">
+          <p className="tasks-empty-text">Нет активных задач</p>
         </div>
-      </div>
+      ) : (
+        <div className="tasks-sections">
+          {renderTaskSection({
+            headingId: 'tasks-edit-heading',
+            title: 'В редактуре',
+            tasks: editPagination.items,
+            allTasks: editTasks,
+            dateColumnLabel: 'Назначено',
+            emptyText: 'Сейчас ни одна глава не находится в редактуре.',
+            titleOptions: editTitleOptions,
+            titleFilter: editTitleFilter,
+            onTitleFilterChange: setEditTitleFilter,
+            sortOptions: editSortOptions,
+            sortBy: editSortBy,
+            onSortChange: setEditSortBy,
+            pageSize: editPageSize,
+            onPageSizeChange: setEditPageSize,
+            onPageIndexChange: setEditPageIndex,
+            totalPages: editPagination.totalPages,
+            safePageIndex: editPagination.safePageIndex,
+            columns: editColumns,
+            onResetFilters: handleResetEditFilters,
+            filterKeyPrefix: 'tasks-edit-filter',
+          })}
+          {renderTaskSection({
+            headingId: 'tasks-review-heading',
+            title: 'Ожидает проверки',
+            tasks: reviewPagination.items,
+            allTasks: reviewTasks,
+            dateColumnLabel: 'Отправлено',
+            emptyText: 'Сейчас нет глав, ожидающих проверки.',
+            titleOptions: reviewTitleOptions,
+            titleFilter: reviewTitleFilter,
+            onTitleFilterChange: setReviewTitleFilter,
+            sortOptions: reviewSortOptions,
+            sortBy: reviewSortBy,
+            onSortChange: setReviewSortBy,
+            pageSize: reviewPageSize,
+            onPageSizeChange: setReviewPageSize,
+            onPageIndexChange: setReviewPageIndex,
+            totalPages: reviewPagination.totalPages,
+            safePageIndex: reviewPagination.safePageIndex,
+            columns: reviewColumns,
+            onResetFilters: handleResetReviewFilters,
+            filterKeyPrefix: 'tasks-review-filter',
+          })}
+        </div>
+      )}
     </div>
   )
 }
