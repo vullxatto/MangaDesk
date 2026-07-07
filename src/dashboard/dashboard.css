@@ -4785,11 +4785,22 @@ button.review-feed-scroll-top.review-queue-clear svg {
   display: flex;
   flex-direction: row;
   min-width: 0;
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  overflow: hidden;
 }
 
 .glossary-page-toolbar .projects-page-toolbar-actions {
   flex-wrap: nowrap;
+  flex-shrink: 0;
+}
+
+.glossary-page-toolbar .dashboard-filters {
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+}
+
+.glossary-page-toolbar .dashboard-filters > * {
+  flex-shrink: 0;
 }
 
 .glossary-page-toolbar .dashboard-press-wrap .dashboard-press-btn {
@@ -4805,10 +4816,14 @@ button.review-feed-scroll-top.review-queue-clear svg {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 1 1 auto;
   min-width: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .glossary-page-title-text {
+  flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
