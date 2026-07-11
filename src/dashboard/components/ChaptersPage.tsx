@@ -22,10 +22,10 @@ const pageSizeOptions = [
 ]
 
 const sortOptions = [
-  { value: 'updated-desc', label: 'Дата изменения — новые сверху' },
-  { value: 'updated-asc', label: 'Дата изменения — старые сверху' },
   { value: 'created-desc', label: 'Дата создания — новые сверху' },
   { value: 'created-asc', label: 'Дата создания — старые сверху' },
+  { value: 'updated-desc', label: 'Дата изменения — новые сверху' },
+  { value: 'updated-asc', label: 'Дата изменения — старые сверху' },
   { value: 'number-desc', label: 'Номер — по убыванию' },
   { value: 'number-asc', label: 'Номер — по возрастанию' },
 ]

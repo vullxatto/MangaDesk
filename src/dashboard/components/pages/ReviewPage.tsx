@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
+import { RefreshCcw } from 'lucide-react'
+import { PressActionButton } from '../../../components/PressActionButton'
 import { useAuth } from '../../../context/AuthContext'
 import { usePipeline } from '../../context/usePipeline'
 import { canReviewChapters } from '../../teamRoles'
@@ -11,6 +13,8 @@ import ReviewDropzone from '../review/ReviewDropzone'
 import ReviewOnlineSidebar from '../review/ReviewOnlineSidebar'
 import ReviewProcessingSection from '../review/ReviewProcessingSection'
 
+const DEFAULT_TITLE_FILTER = 'all'
+const DEFAULT_SORT = 'updated-desc'
 const DEFAULT_PAGE_SIZE = 5
 
 const pageSizeOptions = [
@@ -18,6 +22,15 @@ const pageSizeOptions = [
   { value: '10', label: '10' },
   { value: '15', label: '15' },
   { value: '20', label: '20' },
+]
+
+const sortOptions = [
+  { value: 'created-desc', label: 'Дата создания — новые сверху' },
+  { value: 'created-asc', label: 'Дата создания — старые сверху' },
+  { value: 'updated-desc', label: 'Дата изменения — новые сверху' },
+  { value: 'updated-asc', label: 'Дата изменения — старые сверху' },
+  { value: 'number-desc', label: 'Номер — по убыванию' },
+  { value: 'number-asc', label: 'Номер — по возрастанию' },
 ]
 
 const onlineMock = [
@@ -164,8 +177,10 @@ const feedMock = [
 ]
 
 function ReviewPage({ title = 'Обзор' }) {
-  const { soloMode } = usePipeline()
+  const { soloMode, chapters } = usePipeline()
   const { teams, currentTeamId } = useAuth()
+  const [titleFilter, setTitleFilter] = useState(DEFAULT_TITLE_FILTER)
+  const [sortBy, setSortBy] = useState(DEFAULT_SORT)
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
   const [openFilterKey, setOpenFilterKey] = useState<string | null>(null)
   const reviewColumns = useReviewAssignmentsTableColumns(soloMode)
@@ -173,6 +188,20 @@ function ReviewPage({ title = 'Обзор' }) {
     const role = teams.find((t) => t.id === currentTeamId)?.role
     return canReviewChapters(role)
   }, [teams, currentTeamId])
+
+  const titleOptions = useMemo(() => {
+    const titles = [...new Set(chapters.map((chapter) => chapter.title))].sort((a, b) =>
+      a.localeCompare(b, 'ru'),
+    )
+    return [{ value: 'all', label: 'Все' }, ...titles.map((chapterTitle) => ({ value: chapterTitle, label: chapterTitle }))]
+  }, [chapters])
+
+  function handleResetFilters() {
+    setTitleFilter(DEFAULT_TITLE_FILTER)
+    setSortBy(DEFAULT_SORT)
+    setPageSize(DEFAULT_PAGE_SIZE)
+    setOpenFilterKey(null)
+  }
 
   useEffect(() => {
     function handleMouseDown(e: MouseEvent) {
@@ -202,6 +231,27 @@ function ReviewPage({ title = 'Обзор' }) {
         <h1>{title}</h1>
         <div className="dashboard-filters chapters-page-filters">
           <DashboardDropdown
+            label="Проект"
+            options={titleOptions}
+            value={titleFilter}
+            onChange={setTitleFilter}
+            ddKey="review-filter|title"
+            openKey={openFilterKey}
+            onOpenChange={setOpenFilterKey}
+            stableTriggerWidth
+            truncateOptionLabels
+          />
+          <DashboardDropdown
+            label="Сортировка"
+            options={sortOptions}
+            value={sortBy}
+            onChange={setSortBy}
+            ddKey="review-filter|sort"
+            openKey={openFilterKey}
+            onOpenChange={setOpenFilterKey}
+            stableTriggerWidth
+          />
+          <DashboardDropdown
             label="Число строк"
             options={pageSizeOptions}
             value={String(pageSize)}
@@ -219,6 +269,10 @@ function ReviewPage({ title = 'Обзор' }) {
             openKey={openFilterKey}
             onOpenChange={setOpenFilterKey}
           />
+          <PressActionButton onClick={handleResetFilters}>
+            <RefreshCcw className="projects-add-project-plus" size={16} strokeWidth={2.2} aria-hidden />
+            <span>Сбросить</span>
+          </PressActionButton>
         </div>
       </div>
 
@@ -228,6 +282,8 @@ function ReviewPage({ title = 'Обзор' }) {
           <ReviewProcessingSection pageSize={pageSize} />
           <ReviewAssignmentsSummary
             pageSize={pageSize}
+            titleFilter={titleFilter}
+            sortBy={sortBy}
             isColumnVisible={reviewColumns.isVisible}
             gridTemplate={reviewColumns.gridTemplate}
           />

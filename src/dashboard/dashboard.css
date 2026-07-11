@@ -22,7 +22,7 @@
   .chapter-editor-title,
   .team-modal-title,
   .glossary-page-heading h1,
-  .account-card h2
+  .settings-page .dashboard-list-section-title
 ) {
   font-family: var(--font-boltushka);
 }
@@ -2053,7 +2053,7 @@
   font-family: var(--font-shonen);
   font-size: 11px;
   line-height: 1.45;
-  color: color-mix(in srgb, var(--fg) 72%, transparent);
+  color: var(--fg);
   text-transform: none;
 }
 
@@ -3818,6 +3818,31 @@ button.review-feed-scroll-top.review-queue-clear svg {
 .projects-page .chapters-table.tasks-table .chapters-row:not(.chapters-head) {
   gap: 12px;
   align-items: center;
+  font-size: 11px;
+}
+
+.projects-page .chapters-table.tasks-table .chapters-row:not(.chapters-head) .chapters-title small,
+.projects-page .chapters-table.tasks-table .chapters-row:not(.chapters-head) .chapters-title-main,
+.projects-page .chapters-table.tasks-table .chapters-row:not(.chapters-head) .chapters-title-note,
+.projects-page .chapters-table.tasks-table .chapters-row:not(.chapters-head) .chapters-title strong,
+.projects-page .chapters-table.tasks-table .chapters-row:not(.chapters-head) .chapters-date,
+.projects-page .chapters-table.tasks-table .chapters-row:not(.chapters-head) .chapters-editor-name,
+.projects-page .chapters-table.tasks-table .chapters-row:not(.chapters-head) .task-submit-files,
+.projects-page .chapters-table.tasks-table .chapters-row:not(.chapters-head) .dashboard-press-btn,
+.projects-page .chapters-table.tasks-table .chapters-row:not(.chapters-head) .status-badge {
+  font-size: 11px;
+  color: var(--fg);
+}
+
+.projects-page .chapters-table.tasks-table .projects-link-tag.review-queue-clear {
+  font-size: 11px;
+  color: rgba(var(--fg-rgb), 0.72);
+}
+
+.projects-page .chapters-table.tasks-table .projects-link-tag.review-queue-clear:hover,
+.projects-page .chapters-table.tasks-table .projects-link-tag.review-queue-clear:focus-visible {
+  color: color-mix(in srgb, var(--purple) 88%, transparent);
+  background: rgba(var(--fg-rgb), 0.02);
 }
 
 .projects-page .chapters-table.tasks-table > .tasks-table-row + .tasks-table-row {
@@ -3826,22 +3851,22 @@ button.review-feed-scroll-top.review-queue-clear svg {
   border-top: 1px solid rgba(var(--fg-rgb), 0.12);
 }
 
+.projects-page .chapters-table.tasks-table > .tasks-table-row:has(.task-submit-feedback, .task-submit-error) + .tasks-table-row {
+  margin-top: 0;
+}
+
 .tasks-table-row {
   display: block;
   min-width: 0;
 }
 
-.projects-page .chapters-table.tasks-table .chapters-title strong,
-.projects-page .chapters-table.tasks-table .chapters-title-main,
-.projects-page .chapters-table.tasks-table .chapters-date,
-.projects-page .chapters-table.tasks-table .status-badge {
-  font-size: 11px;
-  color: var(--fg);
+.projects-page .chapters-table.tasks-table .tasks-table-row:has(.task-submit-feedback, .task-submit-error):not(:last-child) {
+  padding-bottom: 12px;
 }
 
 .projects-page .chapters-table.tasks-table .task-submit-feedback,
 .projects-page .chapters-table.tasks-table .task-submit-error {
-  margin: 0 0 4px;
+  margin: 12px 0 0;
 }
 
 .tasks-empty-panel {
@@ -3916,14 +3941,21 @@ button.review-feed-scroll-top.review-queue-clear svg {
 }
 
 .tasks-action-btn.dashboard-press-btn.review-queue-submit {
-  width: 100%;
   justify-content: center;
   text-align: center;
 }
 
+.tasks-action-col-tools > .dashboard-press-wrap,
 .tasks-action-col-tools > .tasks-action-btn.dashboard-press-btn.review-queue-submit {
-  width: auto;
   flex: 0 0 auto;
+}
+
+.projects-page .chapters-table.tasks-table .tasks-action-col-tools > .dashboard-press-wrap .tasks-action-btn.review-queue-submit,
+.projects-page .chapters-table.tasks-table .tasks-action-col-tools > .tasks-action-btn.review-queue-submit {
+  width: 14.25rem;
+  min-width: 14.25rem;
+  max-width: 14.25rem;
+  box-sizing: border-box;
 }
 
 .task-submit-feedback,
@@ -3932,13 +3964,27 @@ button.review-feed-scroll-top.review-queue-clear svg {
 }
 
 .projects-page .chapters-table.tasks-table .chapters-actions {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 6px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.projects-page .chapters-table.tasks-table .chapters-actions .tasks-action-col-tools {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+.projects-page .chapters-table.tasks-table .chapters-actions.tasks-review-actions {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
 }
 
 .projects-page .chapters-table.tasks-table .tasks-action-col-tools {
   padding-right: 8px;
+  width: auto;
 }
 
 .tasks-action-col-tools {
@@ -3976,44 +4022,13 @@ button.review-feed-scroll-top.review-queue-clear svg {
 .projects-page .chapters-table.tasks-table .chapters-actions .review-queue-clear:hover,
 .projects-page .chapters-table.tasks-table .chapters-actions .review-queue-clear:focus-visible,
 .projects-page .chapters-table.tasks-table .task-upload-btn-wrap--active .review-queue-clear {
-  color: color-mix(in srgb, var(--purple) 88%, var(--fg));
-  background: color-mix(in srgb, var(--purple) 10%, transparent);
+  color: color-mix(in srgb, var(--purple) 88%, transparent);
+  background: rgba(var(--fg-rgb), 0.02);
 }
 
 .task-upload-btn-wrap--disabled {
   opacity: 0.65;
   pointer-events: none;
-}
-
-.task-upload-btn-wrap::after {
-  content: attr(data-tip);
-  position: absolute;
-  right: calc(100% + 10px);
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 20;
-  width: max-content;
-  max-width: 220px;
-  padding: 6px 8px;
-  border-radius: var(--radius);
-  background: var(--fg);
-  color: var(--bg);
-  font-size: 10px;
-  line-height: 1.35;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  white-space: normal;
-  text-align: left;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 150ms ease, visibility 150ms ease;
-}
-
-.task-upload-btn-wrap:hover::after,
-.task-upload-btn-wrap:focus-within::after {
-  opacity: 1;
-  visibility: visible;
 }
 
 .task-submit-feedback {
@@ -5338,85 +5353,66 @@ button.review-feed-scroll-top.review-queue-clear svg {
   font-weight: 700;
 }
 
-.account-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.account-card {
-  display: grid;
-  gap: 12px;
-}
-
-.account-card--wide {
-  grid-column: 1 / -1;
-}
-
-.account-card h2 {
-  margin: 0;
-  font-size: 0.9rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .account-muted {
   margin: 0;
   font-size: 0.76rem;
   color: color-mix(in srgb, var(--fg) 54%, transparent);
 }
 
-.account-field {
+.settings-sections {
   display: grid;
-  gap: 6px;
+  gap: 0;
 }
 
-.account-field > span {
-  font-size: 0.58rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--fg) 46%, transparent);
+.settings-section {
+  display: grid;
+  gap: 12px;
 }
 
-.account-input {
-  height: 40px;
-  padding: 0 12px;
-  border-radius: var(--radius);
-  border: 1px solid rgba(var(--fg-rgb), 0.14);
-  background: var(--bg);
-  color: var(--fg);
-  font-size: 0.84rem;
-  font-family: inherit;
-}
-
-.account-socials {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.account-social-btn {
-  height: 38px;
-  padding: 0 12px;
-  border: 1px solid rgba(var(--fg-rgb), 0.14);
-  border-radius: var(--radius);
-  background: transparent;
-  color: var(--fg);
-  font-size: 0.72rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.account-footer {
-  margin-top: 28px;
-  padding-top: 20px;
+.settings-section + .settings-section {
+  margin-top: 24px;
+  padding-top: 24px;
   border-top: 1px solid rgba(var(--fg-rgb), 0.1);
 }
 
-@media (max-width: 980px) {
-  .account-grid {
-    grid-template-columns: 1fr;
-  }
+.settings-page .dashboard-list-section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.settings-section-body {
+  display: grid;
+  gap: 10px;
+  max-width: 520px;
+}
+
+.settings-page .settings-section-body .project-form-field {
+  width: 100%;
+}
+
+.settings-page .settings-section-body .project-form-name-cell {
+  width: 100%;
+}
+
+.settings-section-body--row {
+  max-width: none;
+}
+
+.settings-section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.settings-message {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.settings-message--success {
+  color: color-mix(in srgb, var(--fg) 56%, transparent);
 }

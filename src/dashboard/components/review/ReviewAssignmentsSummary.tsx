@@ -31,12 +31,46 @@ function paginateItems<T>(items: T[], pageIndex: number, pageSize: number) {
   }
 }
 
+function parseChapterDate(iso: string) {
+  return new Date(iso).getTime()
+}
+
+function filterAndSortChapters(chapters: ChapterRow[], titleFilter: string, sortBy: string) {
+  const filtered = chapters.filter((chapter) => titleFilter === 'all' || chapter.title === titleFilter)
+
+  return [...filtered].sort((a, b) => {
+    if (sortBy === 'updated-desc') {
+      return parseChapterDate(b.updatedAt) - parseChapterDate(a.updatedAt)
+    }
+    if (sortBy === 'updated-asc') {
+      return parseChapterDate(a.updatedAt) - parseChapterDate(b.updatedAt)
+    }
+    if (sortBy === 'created-desc') {
+      return parseChapterDate(b.createdAt) - parseChapterDate(a.createdAt)
+    }
+    if (sortBy === 'created-asc') {
+      return parseChapterDate(a.createdAt) - parseChapterDate(b.createdAt)
+    }
+    if (sortBy === 'number-desc') {
+      return b.number - a.number
+    }
+    if (sortBy === 'number-asc') {
+      return a.number - b.number
+    }
+    return 0
+  })
+}
+
 export default function ReviewAssignmentsSummary({
   pageSize = 4,
+  titleFilter = 'all',
+  sortBy = 'updated-desc',
   isColumnVisible,
   gridTemplate,
 }: {
   pageSize?: number
+  titleFilter?: string
+  sortBy?: string
   isColumnVisible: (id: string) => boolean
   gridTemplate: string
 }) {
@@ -68,26 +102,32 @@ export default function ReviewAssignmentsSummary({
 
   const waitingEditor = useMemo(
     () =>
-      chapters
-        .filter((chapter) => chapter.statusCode === 'waiting_editor')
-        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
-    [chapters],
+      filterAndSortChapters(
+        chapters.filter((chapter) => chapter.statusCode === 'waiting_editor'),
+        titleFilter,
+        sortBy,
+      ),
+    [chapters, sortBy, titleFilter],
   )
 
   const inEdit = useMemo(
     () =>
-      chapters
-        .filter((chapter) => chapter.statusCode === 'edit')
-        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
-    [chapters],
+      filterAndSortChapters(
+        chapters.filter((chapter) => chapter.statusCode === 'edit'),
+        titleFilter,
+        sortBy,
+      ),
+    [chapters, sortBy, titleFilter],
   )
 
   const reviewQueue = useMemo(
     () =>
-      chapters
-        .filter((chapter) => chapter.statusCode === 'review')
-        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
-    [chapters],
+      filterAndSortChapters(
+        chapters.filter((chapter) => chapter.statusCode === 'review'),
+        titleFilter,
+        sortBy,
+      ),
+    [chapters, sortBy, titleFilter],
   )
 
   useEffect(() => {
@@ -122,6 +162,12 @@ export default function ReviewAssignmentsSummary({
     setInviteLink(res.invite_url)
     setInviteOpen(true)
   }
+
+  useEffect(() => {
+    setWaitingPage(0)
+    setEditPage(0)
+    setReviewPage(0)
+  }, [titleFilter, sortBy, pageSize])
 
   useEffect(() => {
     setWaitingPage((page) => Math.min(page, waitingBoard.totalPages - 1))

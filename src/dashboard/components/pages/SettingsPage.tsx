@@ -99,95 +99,145 @@ function SettingsPage({ title = 'Настройки' }) {
   }
 
   return (
-    <div className="chapters-page projects-page account-page settings-page">
+    <div className="chapters-page projects-page settings-page">
       <div className="dashboard-toolbar projects-page-toolbar">
         <h1>{title}</h1>
-      </div>
-      <div className="account-grid">
-        <section className="account-card article-mini-card">
-          <h2>Профиль</h2>
-          <label className="account-field">
-            <span>Имя пользователя</span>
-            <input className="account-input" value={username} onChange={(e) => setUsername(e.target.value)} />
-          </label>
-          <PressActionButton onClick={() => void saveName()} disabled={profileSaving}>
-            Сохранить имя
+        <div className="projects-page-toolbar-actions">
+          <PressActionButton onClick={handleLogout}>
+            <LogOut className="projects-add-project-plus" size={18} strokeWidth={2.5} aria-hidden />
+            <span>Выйти</span>
           </PressActionButton>
-          {profileMessage ? <p className="account-muted">{profileMessage}</p> : null}
-        </section>
-
-        <section className="account-card article-mini-card">
-          <h2>
-            <CreditCard size={16} strokeWidth={2} /> Подписка
-          </h2>
-          <p className="account-muted">Текущий тариф: Студия Still Rise</p>
-          <PressActionButton>Оплатить подписку</PressActionButton>
-        </section>
-
-        <section className="account-card article-mini-card">
-          <h2>
-            <Link2 size={16} strokeWidth={2} /> Соцсети
-          </h2>
-          <div className="account-socials">
-            <button
-              type="button"
-              className="account-social-btn"
-              onClick={() => (linkedSet.has('google') ? void unlink('google') : void startLink('google'))}
-              disabled={providersLoading}
-            >
-              {linkedSet.has('google') ? 'Отвязать Google' : 'Привязать Google'}
-            </button>
-            <button
-              type="button"
-              className="account-social-btn"
-              onClick={() => (linkedSet.has('vk') ? void unlink('vk') : void startLink('vk'))}
-              disabled={providersLoading}
-            >
-              {linkedSet.has('vk') ? 'Отвязать VK' : 'Привязать VK'}
-            </button>
-          </div>
-          {linkedProviders.length > 0 ? (
-            <div className="account-muted">
-              {linkedProviders.map((p) => `${p.provider}: id:${p.provider_user_id}`).join(' · ')}
-            </div>
-          ) : null}
-          {providersError ? <p className="review-queue-field-error">{providersError}</p> : null}
-        </section>
-
-        <section className="account-card article-mini-card">
-          <h2>
-            <Wallet size={16} strokeWidth={2} /> Баланс токенов
-          </h2>
-          <label className="account-field">
-            <span>Сумма пополнения</span>
-            <input className="account-input" defaultValue="4500" />
-          </label>
-          <PressActionButton>Пополнить токены</PressActionButton>
-        </section>
-
-        <section className="account-card account-card--wide article-mini-card">
-          <h2>Режим работы</h2>
-          <label className="settings-solo-toggle">
-            <span className="settings-solo-label">Режим соло-переводчика</span>
-            <span className="settings-toggle">
-              <input
-                type="checkbox"
-                className="settings-toggle-input"
-                checked={soloMode}
-                onChange={(e) => setSoloMode(e.target.checked)}
-              />
-              <span className="settings-toggle-track" aria-hidden="true">
-                <span className="settings-toggle-thumb" />
-              </span>
-            </span>
-          </label>
-        </section>
+        </div>
       </div>
-      <div className="account-footer">
-        <PressActionButton onClick={handleLogout}>
-          <LogOut className="projects-add-project-plus" size={18} strokeWidth={2.5} aria-hidden />
-          <span>Выйти из аккаунта</span>
-        </PressActionButton>
+
+      <div className="chapters-panel article-mini-card">
+        <div className="settings-sections">
+          <section className="settings-section">
+            <h2 className="dashboard-list-section-title">Профиль</h2>
+            <div className="settings-section-body">
+              <div className="project-form-field review-queue-field">
+                <label className="dashboard-filter-btn review-queue-chapter-cell project-form-name-cell">
+                  <span className="dashboard-filter-btn-text">
+                    <span className="dashboard-filter-btn-label">Имя пользователя:</span>
+                    <input
+                      type="text"
+                      className="review-queue-chapter-input project-form-name-input"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      aria-label="Имя пользователя"
+                    />
+                  </span>
+                </label>
+              </div>
+              <div className="settings-section-actions">
+                <PressActionButton onClick={() => void saveName()} disabled={profileSaving}>
+                  {profileSaving ? 'Сохранение…' : 'Сохранить имя'}
+                </PressActionButton>
+              </div>
+              {profileMessage ? (
+                <p
+                  className={
+                    profileMessage === 'Имя сохранено' ? 'settings-message settings-message--success' : 'review-queue-field-error'
+                  }
+                  role={profileMessage === 'Имя сохранено' ? 'status' : 'alert'}
+                >
+                  {profileMessage}
+                </p>
+              ) : null}
+            </div>
+          </section>
+
+          <section className="settings-section">
+            <h2 className="dashboard-list-section-title">
+              <CreditCard size={16} strokeWidth={2} aria-hidden />
+              Подписка
+            </h2>
+            <div className="settings-section-body">
+              <p className="account-muted">Текущий тариф: Студия Still Rise</p>
+              <div className="settings-section-actions">
+                <PressActionButton>Оплатить подписку</PressActionButton>
+              </div>
+            </div>
+          </section>
+
+          <section className="settings-section">
+            <h2 className="dashboard-list-section-title">
+              <Link2 size={16} strokeWidth={2} aria-hidden />
+              Соцсети
+            </h2>
+            <div className="settings-section-body">
+              <div className="settings-section-actions">
+                <PressActionButton
+                  onClick={() => (linkedSet.has('google') ? void unlink('google') : void startLink('google'))}
+                  disabled={providersLoading}
+                >
+                  {linkedSet.has('google') ? 'Отвязать Google' : 'Привязать Google'}
+                </PressActionButton>
+                <PressActionButton
+                  onClick={() => (linkedSet.has('vk') ? void unlink('vk') : void startLink('vk'))}
+                  disabled={providersLoading}
+                >
+                  {linkedSet.has('vk') ? 'Отвязать VK' : 'Привязать VK'}
+                </PressActionButton>
+              </div>
+              {linkedProviders.length > 0 ? (
+                <p className="account-muted">
+                  {linkedProviders.map((p) => `${p.provider}: id:${p.provider_user_id}`).join(' · ')}
+                </p>
+              ) : null}
+              {providersError ? (
+                <p className="review-queue-field-error" role="alert">
+                  {providersError}
+                </p>
+              ) : null}
+            </div>
+          </section>
+
+          <section className="settings-section">
+            <h2 className="dashboard-list-section-title">
+              <Wallet size={16} strokeWidth={2} aria-hidden />
+              Баланс токенов
+            </h2>
+            <div className="settings-section-body">
+              <div className="project-form-field review-queue-field">
+                <label className="dashboard-filter-btn review-queue-chapter-cell project-form-name-cell">
+                  <span className="dashboard-filter-btn-text">
+                    <span className="dashboard-filter-btn-label">Сумма пополнения:</span>
+                    <input
+                      type="text"
+                      className="review-queue-chapter-input project-form-name-input"
+                      defaultValue="4500"
+                      aria-label="Сумма пополнения"
+                    />
+                  </span>
+                </label>
+              </div>
+              <div className="settings-section-actions">
+                <PressActionButton>Пополнить токены</PressActionButton>
+              </div>
+            </div>
+          </section>
+
+          <section className="settings-section">
+            <h2 className="dashboard-list-section-title">Режим работы</h2>
+            <div className="settings-section-body settings-section-body--row">
+              <label className="settings-solo-toggle">
+                <span className="settings-solo-label">Режим соло-переводчика</span>
+                <span className="settings-toggle">
+                  <input
+                    type="checkbox"
+                    className="settings-toggle-input"
+                    checked={soloMode}
+                    onChange={(e) => setSoloMode(e.target.checked)}
+                  />
+                  <span className="settings-toggle-track" aria-hidden="true">
+                    <span className="settings-toggle-thumb" />
+                  </span>
+                </span>
+              </label>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   )

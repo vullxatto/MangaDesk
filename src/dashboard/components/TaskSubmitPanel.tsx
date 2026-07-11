@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState, type ReactNode } from 'react'
-import { Upload, X } from 'lucide-react'
+import { Check, CloudDownload, RotateCcw, Upload, X } from 'lucide-react'
 import { PressActionButton } from '../../components/PressActionButton'
 import { usePipeline } from '../context/usePipeline'
 import type { ChapterStatusCode } from '../pipelineTypes'
@@ -19,24 +19,32 @@ const UPLOAD_TIP = 'Перетащите архив .zip или .rar с итог
 
 type TaskSubmitPanelProps = {
   chapterId: string
+  chapterTitle: string
+  chapterNumber: number
   statusCode: ChapterStatusCode
   reviewFeedback?: string | null
-  showOpenAction?: boolean
-  onOpen: () => void
+  canModerateReview?: boolean
+  reviewBusyId?: string | null
+  onRejectChapter?: () => void
+  onApproveChapter?: () => void
   gridTemplate: string
   renderCells: () => ReactNode
 }
 
 export default function TaskSubmitPanel({
   chapterId,
+  chapterTitle,
+  chapterNumber,
   statusCode,
   reviewFeedback,
-  showOpenAction = true,
-  onOpen,
+  canModerateReview = false,
+  reviewBusyId = null,
+  onRejectChapter,
+  onApproveChapter,
   gridTemplate,
   renderCells,
 }: TaskSubmitPanelProps) {
-  const { uploadTaskDeliverables, submitTaskForReview } = usePipeline()
+  const { uploadTaskDeliverables, submitTaskForReview, downloadChapterDeliverables } = usePipeline()
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [pendingFiles, setPendingFiles] = useState<File[]>([])
@@ -106,18 +114,47 @@ export default function TaskSubmitPanel({
       <div className="chapters-row chapters-row--tasks" style={rowStyle}>
         {renderCells()}
         <span className="chapters-actions">
-          {showOpenAction ? (
-            <PressActionButton buttonClassName="review-queue-submit tasks-action-btn" onClick={onOpen}>
-              <span>Открыть перевод</span>
-            </PressActionButton>
-          ) : null}
-
-          {showSubmitControls ? (
+          {awaitingReview ? (
+            <span className="tasks-review-actions review-assignments-actions chapters-actions">
+              <button
+                type="button"
+                className="review-queue-clear"
+                aria-label={`Скачать главу ${chapterTitle}, № ${chapterNumber}`}
+                title="Скачать"
+                onClick={() => void downloadChapterDeliverables(chapterId)}
+              >
+                <CloudDownload size={16} strokeWidth={1.8} aria-hidden />
+              </button>
+              {canModerateReview ? (
+                <>
+                  <button
+                    type="button"
+                    className="review-queue-clear chapters-review-approve"
+                    aria-label={`Принять главу ${chapterTitle}, № ${chapterNumber}`}
+                    title="Принять"
+                    disabled={reviewBusyId === chapterId}
+                    onClick={onApproveChapter}
+                  >
+                    <Check size={16} strokeWidth={2} aria-hidden />
+                  </button>
+                  <button
+                    type="button"
+                    className="review-queue-clear chapters-review-reject"
+                    aria-label={`Вернуть главу редактору ${chapterTitle}, № ${chapterNumber}`}
+                    title="Вернуть редактору"
+                    disabled={reviewBusyId === chapterId}
+                    onClick={onRejectChapter}
+                  >
+                    <RotateCcw size={16} strokeWidth={1.8} aria-hidden />
+                  </button>
+                </>
+              ) : null}
+            </span>
+          ) : showSubmitControls ? (
             <div className="tasks-action-col-tools">
               {pendingFiles.length === 0 ? (
                 <div
                   className={`task-upload-btn-wrap${isDragging ? ' task-upload-btn-wrap--active' : ''}${uploading ? ' task-upload-btn-wrap--disabled' : ''}`}
-                  data-tip={UPLOAD_TIP}
                   onDragOver={(e) => {
                     if (uploading) return
                     e.preventDefault()

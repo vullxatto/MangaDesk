@@ -1,23 +1,31 @@
-import { useEffect, useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight, RefreshCcw } from 'lucide-react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
+import { ChevronLeft, ChevronRight, RefreshCcw, User } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../../context/AuthContext'
 import { PressActionButton } from '../../../components/PressActionButton'
 import { usePipeline } from '../../context/usePipeline'
 import type { ChapterRow } from '../../pipelineTypes'
-import { useTasksTableColumns } from '../../tableColumns'
+import { canReviewChapters } from '../../teamRoles'
+import {
+  useTasksTableColumns,
+  getTaskColumnLabel,
+  buildSectionTasksGrid,
+  type TasksSectionGridLayout,
+} from '../../tableColumns'
+import ChapterReviewModal from '../ChapterReviewModal'
 import DashboardDropdown from '../DashboardDropdown'
 import TableColumnsDropdown from '../TableColumnsDropdown'
 import TaskSubmitPanel from '../TaskSubmitPanel'
 
 const DEFAULT_TITLE_FILTER = 'all'
 const DEFAULT_SORT = 'number-desc'
-const DEFAULT_PAGE_SIZE = 10
+const DEFAULT_PAGE_SIZE = 5
 
 const pageSizeOptions = [
+  { value: '5', label: '5' },
   { value: '10', label: '10' },
-  { value: '25', label: '25' },
-  { value: '50', label: '50' },
-  { value: '100', label: '100' },
+  { value: '15', label: '15' },
+  { value: '20', label: '20' },
 ]
 
 const editSortOptions = [
@@ -76,7 +84,8 @@ function paginateTasks(tasks: ChapterRow[], pageSize: number, pageIndex: number)
 
 function TasksPage({ title = 'Задачи' }) {
   const navigate = useNavigate()
-  const { editorTasks } = usePipeline()
+  const { teams, currentTeamId } = useAuth()
+  const { editorTasks, reviewChapter } = usePipeline()
   const editColumns = useTasksTableColumns('edit')
   const reviewColumns = useTasksTableColumns('review')
   const [editTitleFilter, setEditTitleFilter] = useState(DEFAULT_TITLE_FILTER)
@@ -88,6 +97,13 @@ function TasksPage({ title = 'Задачи' }) {
   const [reviewPageSize, setReviewPageSize] = useState(DEFAULT_PAGE_SIZE)
   const [reviewPageIndex, setReviewPageIndex] = useState(0)
   const [openFilterKey, setOpenFilterKey] = useState<string | null>(null)
+  const [rejectChapter, setRejectChapter] = useState<ChapterRow | null>(null)
+  const [reviewBusyId, setReviewBusyId] = useState<string | null>(null)
+
+  const canModerateReview = useMemo(() => {
+    const team = teams.find((t) => t.id === currentTeamId)
+    return canReviewChapters(team?.role)
+  }, [teams, currentTeamId])
 
   const editTasks = useMemo(
     () => editorTasks.filter((task) => task.statusCode === 'edit'),
@@ -184,45 +200,92 @@ function TasksPage({ title = 'Задачи' }) {
 
   function renderTaskRow(
     row: ChapterRow,
-    isColumnVisible: (id: string) => boolean,
-    gridTemplate: string,
+    slotEntries: TasksSectionGridLayout['slotEntries'],
+    gridLayout: TasksSectionGridLayout,
   ) {
+    const editorCell = (
+      <span className="chapters-editor">
+        {row.editorId ? (
+          <>
+            <div className="chapters-editor-avatar-wrap">
+              <div className="chapters-editor-avatar">
+                <img
+                  src={`https://picsum.photos/seed/mangadesk-team-${row.editorId}/96/96`}
+                  alt=""
+                  className="chapters-editor-avatar-img"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <span className="chapters-editor-name">{row.editorName ?? '—'}</span>
+          </>
+        ) : (
+          <>
+            <User size={12} strokeWidth={2} aria-hidden />
+            <span className="chapters-editor-name">Без редактора</span>
+          </>
+        )}
+      </span>
+    )
+
+    function renderTaskColumnCell(columnId: string) {
+      if (columnId === 'title') {
+        return (
+          <span className="chapters-title">
+            <span className="chapters-title-main">
+              {row.title} <strong className="chapters-title-number">№ {row.number}</strong>
+            </span>
+          </span>
+        )
+      }
+      if (columnId === 'date') {
+        return (
+          <span className="chapters-date">
+            {row.statusCode === 'review' ? row.date : (row.assignedAt ?? row.date)}
+          </span>
+        )
+      }
+      if (columnId === 'translate') {
+        return (
+          <span className="chapters-translate">
+            <Link
+              className="review-queue-clear projects-link-tag"
+              to={`/dashboard/chapters/${row.id}/edit`}
+              state={{ fromTasks: true }}
+            >
+              Открыть
+            </Link>
+          </span>
+        )
+      }
+      if (columnId === 'editor') {
+        return editorCell
+      }
+      return null
+    }
+
     return (
       <TaskSubmitPanel
         key={row.id}
         chapterId={row.id}
+        chapterTitle={row.title}
+        chapterNumber={row.number}
         statusCode={row.statusCode}
         reviewFeedback={row.reviewFeedback}
-        showOpenAction={!isColumnVisible('translate')}
-        gridTemplate={gridTemplate}
-        onOpen={() =>
-          navigate(`/dashboard/chapters/${row.id}/edit`, { state: { fromTasks: true } })
-        }
+        canModerateReview={canModerateReview}
+        reviewBusyId={reviewBusyId}
+        onRejectChapter={() => setRejectChapter(row)}
+        onApproveChapter={() => {
+          setReviewBusyId(row.id)
+          void reviewChapter(row.id, 'approve').finally(() => setReviewBusyId(null))
+        }}
+        gridTemplate={gridLayout.gridTemplate}
         renderCells={() => (
           <>
-            {isColumnVisible('title') ? (
-              <span className="chapters-title">
-                <span className="chapters-title-main">
-                  {row.title} <strong className="chapters-title-number">№ {row.number}</strong>
-                </span>
-              </span>
-            ) : null}
-            {isColumnVisible('date') ? (
-              <span className="chapters-date">
-                {row.statusCode === 'review' ? row.date : (row.assignedAt ?? row.date)}
-              </span>
-            ) : null}
-            {isColumnVisible('translate') ? (
-              <span className="chapters-translate">
-                <Link
-                  className="review-queue-clear projects-link-tag"
-                  to={`/dashboard/chapters/${row.id}/edit`}
-                  state={{ fromTasks: true }}
-                >
-                  Открыть
-                </Link>
-              </span>
-            ) : null}
+            {slotEntries.map((entry) => (
+              <Fragment key={entry.columnId}>{renderTaskColumnCell(entry.columnId)}</Fragment>
+            ))}
           </>
         )}
       />
@@ -250,6 +313,7 @@ function TasksPage({ title = 'Задачи' }) {
     columns,
     onResetFilters,
     filterKeyPrefix,
+    sectionMode,
   }: {
     headingId: string
     title: string
@@ -271,9 +335,11 @@ function TasksPage({ title = 'Задачи' }) {
     columns: ReturnType<typeof useTasksTableColumns>
     onResetFilters: () => void
     filterKeyPrefix: string
+    sectionMode: 'edit' | 'review'
   }) {
     const sectionFiltersDisabled = filtersDisabled || allTasks.length === 0
-    const rowStyle = { gridTemplateColumns: columns.gridTemplate }
+    const gridLayout = buildSectionTasksGrid(sectionMode, columns.isVisible)
+    const rowStyle = { gridTemplateColumns: gridLayout.gridTemplate }
 
     return (
       <section className="tasks-section" aria-labelledby={headingId}>
@@ -363,13 +429,15 @@ function TasksPage({ title = 'Задачи' }) {
           ) : (
             <div className="chapters-table tasks-table">
               <div className="chapters-row chapters-head chapters-row--tasks" style={rowStyle}>
-                {columns.isVisible('title') ? <span>Проект / №</span> : null}
-                {columns.isVisible('date') ? <span>{dateColumnLabel}</span> : null}
-                {columns.isVisible('translate') ? <span>Перевод</span> : null}
+                {gridLayout.slotEntries.map((entry) => (
+                  <span key={entry.columnId}>
+                    {getTaskColumnLabel(entry.columnId, sectionMode, dateColumnLabel)}
+                  </span>
+                ))}
                 <span className="chapters-actions-head" aria-hidden="true" />
               </div>
               {tasks.map((row) =>
-                renderTaskRow(row, columns.isVisible, columns.gridTemplate),
+                renderTaskRow(row, gridLayout.slotEntries, gridLayout),
               )}
             </div>
           )}
@@ -411,6 +479,7 @@ function TasksPage({ title = 'Задачи' }) {
             columns: editColumns,
             onResetFilters: handleResetEditFilters,
             filterKeyPrefix: 'tasks-edit-filter',
+            sectionMode: 'edit',
           })}
           {renderTaskSection({
             headingId: 'tasks-review-heading',
@@ -433,9 +502,26 @@ function TasksPage({ title = 'Задачи' }) {
             columns: reviewColumns,
             onResetFilters: handleResetReviewFilters,
             filterKeyPrefix: 'tasks-review-filter',
+            sectionMode: 'review',
           })}
         </div>
       )}
+      <ChapterReviewModal
+        open={!!rejectChapter}
+        chapterLabel={rejectChapter ? `${rejectChapter.title} № ${rejectChapter.number}` : ''}
+        onClose={() => setRejectChapter(null)}
+        submitting={!!rejectChapter && reviewBusyId === rejectChapter.id}
+        onConfirm={async (comment) => {
+          if (!rejectChapter) return
+          setReviewBusyId(rejectChapter.id)
+          try {
+            await reviewChapter(rejectChapter.id, 'reject', comment)
+            setRejectChapter(null)
+          } finally {
+            setReviewBusyId(null)
+          }
+        }}
+      />
     </div>
   )
 }

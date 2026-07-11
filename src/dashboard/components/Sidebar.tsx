@@ -110,9 +110,6 @@ function Sidebar({ menuItems }: { menuItems: readonly MenuItem[] }) {
       <div className="dashboard-user-card dashboard-user-menu-wrap" ref={menuRef}>
         {menuOpen ? (
           <div className="dashboard-user-menu article-mini-card" role="menu">
-            <Link className="dashboard-user-menu-item" to="/dashboard/statistics" onClick={() => setMenuOpen(false)}>
-              <SlidersHorizontal size={15} strokeWidth={1.9} aria-hidden /> Статистика
-            </Link>
             <Link className="dashboard-user-menu-item" to="/dashboard/trash" onClick={() => setMenuOpen(false)}>
               <ShoppingBasket size={15} strokeWidth={1.9} aria-hidden /> Удалённое
             </Link>

@@ -58,11 +58,78 @@ const REVIEW_ASSIGNMENTS_COL_WIDTHS: Record<string, string> = {
 
 const TASKS_COL_WIDTHS: Record<string, string> = {
   title: 'minmax(0, 1.2fr)',
-  translate: 'minmax(0, 0.65fr)',
   date: 'minmax(0, 1fr)',
+  translate: 'minmax(0, 1.05fr)',
+  editor: 'minmax(0, 1.05fr)',
 }
 
-const TASKS_ACTIONS_COL = 'minmax(18rem, 2.5fr)'
+const TASKS_ACTIONS_COL = '18rem'
+
+export type TaskSlotType = 'title' | 'date' | 'third'
+
+export type TaskColumnSlotEntry = {
+  columnId: string
+}
+
+export type TasksSectionGridLayout = {
+  gridTemplate: string
+  slotEntries: TaskColumnSlotEntry[]
+}
+
+function getLogicalSlotEntries(
+  mode: 'edit' | 'review',
+  isVisible: (id: string) => boolean,
+): Array<{ slot: TaskSlotType; columnId: string }> {
+  const entries: Array<{ slot: TaskSlotType; columnId: string }> = []
+
+  if (isVisible('title')) {
+    entries.push({ slot: 'title', columnId: 'title' })
+  }
+
+  if (isVisible('date')) {
+    entries.push({ slot: 'date', columnId: 'date' })
+  } else if (mode === 'review' && isVisible('editor')) {
+    entries.push({ slot: 'date', columnId: 'editor' })
+  } else if (mode === 'edit' && isVisible('translate')) {
+    entries.push({ slot: 'date', columnId: 'translate' })
+  }
+
+  if (mode === 'edit' && isVisible('translate') && isVisible('date')) {
+    entries.push({ slot: 'third', columnId: 'translate' })
+  } else if (mode === 'review' && isVisible('editor') && isVisible('date')) {
+    entries.push({ slot: 'third', columnId: 'editor' })
+  }
+
+  return entries
+}
+
+export function buildSectionTasksGrid(
+  mode: 'edit' | 'review',
+  isVisible: (id: string) => boolean,
+): TasksSectionGridLayout {
+  const slotEntries = getLogicalSlotEntries(mode, isVisible).map((entry) => ({
+    columnId: entry.columnId,
+  }))
+  const cols = slotEntries.map((entry) => TASKS_COL_WIDTHS[entry.columnId])
+  cols.push(TASKS_ACTIONS_COL)
+
+  return {
+    gridTemplate: cols.join(' '),
+    slotEntries,
+  }
+}
+
+export function getTaskColumnLabel(
+  columnId: string,
+  mode: 'edit' | 'review',
+  dateColumnLabel: string,
+) {
+  if (columnId === 'title') return 'Проект / №'
+  if (columnId === 'date') return dateColumnLabel
+  if (columnId === 'translate') return 'Перевод'
+  if (columnId === 'editor') return 'Редактор'
+  return columnId
+}
 
 function loadVisibleColumns<T extends string>(storageKey: string, fallback: T[]): T[] {
   if (typeof window === 'undefined') return fallback
@@ -87,12 +154,6 @@ function saveVisibleColumns<T extends string>(storageKey: string, visible: T[]) 
 function buildGridTemplate(visibleIds: string[], widths: Record<string, string>) {
   const cols = visibleIds.map((id) => widths[id]).filter(Boolean)
   cols.push(ACTIONS_COL)
-  return cols.join(' ')
-}
-
-function buildTasksGridTemplate(visibleIds: string[], widths: Record<string, string>) {
-  const cols = visibleIds.map((id) => widths[id]).filter(Boolean)
-  cols.push(TASKS_ACTIONS_COL)
   return cols.join(' ')
 }
 
@@ -265,17 +326,15 @@ export function useTasksTableColumns(mode: 'edit' | 'review') {
     base.push({ id: 'date', label: mode === 'edit' ? 'Назначено' : 'Отправлено' })
     if (mode === 'edit') {
       base.push({ id: 'translate', label: 'Перевод' })
+    } else {
+      base.push({ id: 'editor', label: 'Редактор' })
     }
     return base
   }, [mode])
   const storageKey =
     mode === 'edit'
       ? 'mangadesk.table-columns.tasks-edit.v3'
-      : 'mangadesk.table-columns.tasks-review.v2'
+      : 'mangadesk.table-columns.tasks-review.v3'
   const visibility = useTableColumnVisibility(storageKey, columns)
-  const gridTemplate = useMemo(
-    () => buildTasksGridTemplate(visibility.visibleIds, TASKS_COL_WIDTHS),
-    [visibility.visibleIds],
-  )
-  return { ...visibility, gridTemplate }
+  return visibility
 }
