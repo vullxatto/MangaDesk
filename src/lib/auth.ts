@@ -50,6 +50,14 @@ export const DEMO_SESSION_USER = {
   username: 'Still Rise',
 } as const
 
+export const DEMO_SESSION_PERSONAL_TEAM = {
+  id: 'b0000002-0001-0001-0001-000000000002',
+  slug: 'p-c00000010001',
+  name: 'Still Rise — личное',
+  is_personal: true,
+  role: 'owner',
+} as const
+
 export const DEMO_SESSION_TEAM = {
   id: import.meta.env.VITE_TEAM_ID || 'b0000001-0001-0001-0001-000000000001',
   slug: 'still-rise-studio',

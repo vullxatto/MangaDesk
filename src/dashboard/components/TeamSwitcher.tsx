@@ -2,7 +2,6 @@ import { ChevronDown, Plus } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { usePipeline } from '../context/usePipeline'
-import { skipAuth } from '../../lib/auth'
 import { apiPostJson } from '../../lib/api'
 import CreateTeamModal from './CreateTeamModal'
 
@@ -48,7 +47,7 @@ export default function TeamSwitcher() {
     [reloadMe, refreshDashboard, setCurrentTeamId],
   )
 
-  if (skipAuth() || !ready) return null
+  if (!ready) return null
   if (teams.length === 0) return null
 
   const current = teams.find((t) => t.id === currentTeamId) ?? teams[0]

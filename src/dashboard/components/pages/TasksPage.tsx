@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, RefreshCcw, User } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
 import { PressActionButton } from '../../../components/PressActionButton'
 import { usePipeline } from '../../context/usePipeline'
@@ -83,7 +83,6 @@ function paginateTasks(tasks: ChapterRow[], pageSize: number, pageIndex: number)
 }
 
 function TasksPage({ title = 'Задачи' }) {
-  const navigate = useNavigate()
   const { teams, currentTeamId } = useAuth()
   const { editorTasks, reviewChapter } = usePipeline()
   const editColumns = useTasksTableColumns('edit')

@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { apiGet } from '../lib/api'
 import {
   clearSession,
+  DEMO_SESSION_PERSONAL_TEAM,
   DEMO_SESSION_TEAM,
   DEMO_SESSION_USER,
   getAccessToken,
@@ -45,6 +46,26 @@ type MeResponse = {
   teams: AuthTeam[]
 }
 
+function applyMeResponse(
+  me: MeResponse,
+  setUser: (u: AuthUser) => void,
+  setTeams: (t: AuthTeam[]) => void,
+  setCurrentTeamIdState: (id: string) => void,
+) {
+  setUser({ id: me.id, email: me.email, username: me.username })
+  setUserProfile(me.id, me.username)
+  setTeams(me.teams)
+  let tid = localStorage.getItem(TEAM_KEY) ?? ''
+  if (!tid || !me.teams.some((t) => t.id === tid)) {
+    const personal = me.teams.find((t) => t.is_personal)
+    tid = personal?.id ?? me.teams[0]?.id ?? ''
+  }
+  if (tid) {
+    setTeamId(tid)
+    setCurrentTeamIdState(tid)
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false)
   const [user, setUser] = useState<AuthUser | null>(null)
@@ -55,15 +76,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const reloadMe = useCallback(async () => {
     if (skipAuth()) {
-      setUser({
-        id: DEMO_SESSION_USER.id,
-        email: DEMO_SESSION_USER.email,
-        username: DEMO_SESSION_USER.username,
-      })
-      setUserProfile(DEMO_SESSION_USER.id, DEMO_SESSION_USER.username)
-      setTeams([{ ...DEMO_SESSION_TEAM }])
-      setTeamId(DEMO_SESSION_TEAM.id)
-      setCurrentTeamIdState(DEMO_SESSION_TEAM.id)
+      try {
+        const me = await apiGet<MeResponse>('/auth/me')
+        applyMeResponse(me, setUser, setTeams, setCurrentTeamIdState)
+      } catch {
+        applyMeResponse(
+          {
+            id: DEMO_SESSION_USER.id,
+            email: DEMO_SESSION_USER.email,
+            username: DEMO_SESSION_USER.username,
+            teams: [{ ...DEMO_SESSION_PERSONAL_TEAM }, { ...DEMO_SESSION_TEAM }],
+          },
+          setUser,
+          setTeams,
+          setCurrentTeamIdState,
+        )
+      }
       setReady(true)
       return
     }
@@ -77,20 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     try {
       const me = await apiGet<MeResponse>('/auth/me')
-      setUser({ id: me.id, email: me.email, username: me.username })
-      setUserProfile(me.id, me.username)
-      setTeams(me.teams)
-      let tid = localStorage.getItem(TEAM_KEY) ?? ''
-      if (!tid || !me.teams.some((t) => t.id === tid)) {
-        const personal = me.teams.find((t) => t.is_personal)
-        tid = personal?.id ?? me.teams[0]?.id ?? ''
-        if (tid) {
-          localStorage.setItem(TEAM_KEY, tid)
-          setCurrentTeamIdState(tid)
-        }
-      } else {
-        setCurrentTeamIdState(tid)
-      }
+      applyMeResponse(me, setUser, setTeams, setCurrentTeamIdState)
     } catch {
       setUser(null)
       setTeams([])

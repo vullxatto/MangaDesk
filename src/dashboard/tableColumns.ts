@@ -121,7 +121,7 @@ export function buildSectionTasksGrid(
 
 export function getTaskColumnLabel(
   columnId: string,
-  mode: 'edit' | 'review',
+  _mode: 'edit' | 'review',
   dateColumnLabel: string,
 ) {
   if (columnId === 'title') return 'Проект / №'
