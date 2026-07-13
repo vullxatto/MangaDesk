@@ -465,7 +465,7 @@ export default function ChapterEditorPage() {
         {},
       )
       const jid = start.job_id
-      // GIMP первый запуск занимает до 3–5 минут; даём 12 минут с запасом.
+      // Photoshop COM на Windows; первый запуск может занять 1–2 минуты.
       const TIMEOUT_MS = 720_000
       const startedAt = Date.now()
       const deadline = startedAt + TIMEOUT_MS
@@ -503,7 +503,7 @@ export default function ChapterEditorPage() {
         // Превышен лимит ожидания на стороне браузера — сервер может ещё работать
         setPsdBanner(
           `Экспорт PSD занял больше ${Math.round(TIMEOUT_MS / 60000)} мин. ` +
-            'Обновите страницу и попробуйте снова; при первом запуске GIMP инициализируется дольше обычного.',
+            'Убедитесь, что Photoshop запущен (или worker: python scripts/psd_com_worker.py) и попробуйте снова.',
         )
       }
     } catch (e) {
