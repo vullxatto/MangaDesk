@@ -389,6 +389,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
         return
       }
       setDashboardError(null)
+      let createdChapterId: string | undefined
       try {
         const created = await apiPostJson<ChapterApi>('/chapters', {
           project_id: item.projectId,
@@ -396,6 +397,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
           chapter_title: null,
         })
         const chapterId = created.id
+        createdChapterId = chapterId
         const lower = item.file.name.toLowerCase()
         if (lower.endsWith('.zip') || lower.endsWith('.rar')) {
           const fd = new FormData()
@@ -431,6 +433,15 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
         setUploadQueue((prev) => prev.filter((q) => q.id !== id))
       } catch (e) {
         console.error(e)
+        // Слот uploading/processing не попадает в GET /chapters, но UNIQUE держит номер.
+        // Удаляем сироту, чтобы повторная отправка с тем же номером не ловила 409.
+        if (createdChapterId) {
+          try {
+            await apiDelete(`/chapters/${createdChapterId}`)
+          } catch (cleanupErr) {
+            console.error(cleanupErr)
+          }
+        }
         setDashboardError(e instanceof Error ? e.message : 'Ошибка загрузки')
       }
     },
