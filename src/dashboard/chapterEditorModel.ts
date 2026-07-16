@@ -26,6 +26,7 @@ export interface ChapterEditorApiResponse {
   chapter_number: number
   chapter_title: string | null
   project_id: string | null
+  project_title?: string | null
   layout?: 'flat' | 'multi'
   storage_key: string | null
   image_width: number | null

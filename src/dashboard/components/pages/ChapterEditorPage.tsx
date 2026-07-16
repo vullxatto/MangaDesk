@@ -325,6 +325,7 @@ export default function ChapterEditorPage() {
     chapter_number: number
     chapter_title: string | null
     project_id: string | null
+    project_title: string | null
   } | null>(null)
 
   const tableWrapRef = useRef<HTMLDivElement>(null)
@@ -490,8 +491,19 @@ export default function ChapterEditorPage() {
       }
 
       if (last.state === 'done' && last.storage_key) {
+        const projectName = (
+          navState?.projectTitle ??
+          editorHead?.project_title ??
+          chapter?.title ??
+          'project'
+        )
+          .trim()
+          .replace(/[^\p{L}\p{N}._-]+/gu, '_')
+          .replace(/^[._]+|[._]+$/g, '') || 'project'
+        const chapterNum = chapter?.number ?? navState?.chapterNumber ?? editorHead?.chapter_number ?? 0
+        const downloadName = `${projectName}_${chapterNum}.psd`
         try {
-          await apiDownloadFile(last.storage_key, 'chapter.psd')
+          await apiDownloadFile(last.storage_key, downloadName)
           setPsdBanner('Файл PSD сохранён в папку загрузок браузера.')
         } catch {
           window.open(apiFileUrl(last.storage_key), '_blank', 'noopener,noreferrer')
@@ -512,13 +524,23 @@ export default function ChapterEditorPage() {
     } finally {
       setPsdExporting(false)
     }
-  }, [chapterId, slices])
+  }, [
+    chapterId,
+    slices,
+    chapter?.number,
+    chapter?.title,
+    navState?.projectTitle,
+    navState?.chapterNumber,
+    editorHead?.project_title,
+    editorHead?.chapter_number,
+  ])
 
   const applyEditorPayload = useCallback((data: ChapterEditorApiResponse) => {
     setEditorHead({
       chapter_number: data.chapter_number,
       chapter_title: data.chapter_title,
       project_id: data.project_id,
+      project_title: data.project_title ?? null,
     })
     setPageDims({})
     const list = Array.isArray(data.slices) ? data.slices : []
