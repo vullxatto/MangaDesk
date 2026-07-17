@@ -133,7 +133,7 @@ html {
 
 html:has(.dashboard-root) {
   min-width: 1280px;
-  scrollbar-gutter: auto;
+  overflow: hidden;
 }
 
 html:has(.app-shell--auth) {
@@ -3595,6 +3595,19 @@ html.viewport-le-1400 .how-it-works__panel {
 
 body:has(.dashboard-root) {
   padding: 0;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  background-color: var(--bg);
+  background-image: none;
+}
+
+#root:has(.dashboard-root) {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .dashboard-root a.dashboard-nav-item {

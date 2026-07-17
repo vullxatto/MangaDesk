@@ -1,5 +1,9 @@
 .dashboard-root {
-  min-height: 100vh;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   background: var(--bg);
@@ -229,10 +233,12 @@
 
 .dashboard-layout {
   flex: 1;
-  min-height: 100vh;
+  min-height: 0;
+  height: 100%;
   display: grid;
   grid-template-columns: 236px 1fr;
   background: var(--bg);
+  overflow: hidden;
 }
 
 .dashboard-main-column {
@@ -240,18 +246,20 @@
   flex-direction: column;
   min-width: 0;
   min-height: 0;
+  overflow: hidden;
 }
 
 .dashboard-sidebar {
-  position: sticky;
-  top: 0;
-  height: 100vh;
+  height: 100%;
+  min-height: 0;
   border-right: 1px solid rgba(var(--fg-rgb), 0.14);
   background: var(--bg);
   padding: 14px 12px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .dashboard-nav {
@@ -305,6 +313,8 @@
   flex: 1;
   min-width: 0;
   min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
   background-color: var(--bg);
   background-image: radial-gradient(color-mix(in srgb, var(--fg) 6%, var(--bg)) 1px, transparent 1px);
   background-size: 20px 20px;
@@ -2702,10 +2712,6 @@
   color: color-mix(in srgb, var(--fg) 45%, transparent);
 }
 
-.review-processing-section .review-dropzone-hint {
-  margin: 0;
-}
-
 .review-queue-section {
   gap: var(--review-block-gap);
 }
@@ -4239,16 +4245,11 @@ button.review-feed-scroll-top.review-queue-clear svg {
 }
 
 .review-processing-section {
-  gap: var(--review-block-gap);
+  gap: 0;
 }
 
-.review-processing-section > .review-section-title {
-  margin-bottom: 0;
-}
-
-.review-processing-group.article-mini-card {
-  min-height: auto;
-  padding: var(--space-3);
+.review-processing-section .review-assignments-head {
+  margin-bottom: 12px;
 }
 
 .review-assignments-grid {
@@ -4293,6 +4294,7 @@ button.review-feed-scroll-top.review-queue-clear svg {
   flex-shrink: 0;
 }
 
+.review-assignments-card.article-mini-card .review-assignments-empty,
 .review-assignments-empty {
   margin: 0;
   font-size: 11px;

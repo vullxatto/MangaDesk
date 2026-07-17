@@ -88,60 +88,51 @@ export default function ReviewProcessingSection({ pageSize = 4 }: { pageSize?: n
     setPageIndex((page) => Math.min(page, totalPages - 1))
   }, [totalPages])
 
-  if (overviewJobs.length === 0) {
-    return (
-      <section className="review-section review-processing-section" aria-labelledby="review-processing-heading">
-        <h2 id="review-processing-heading" className="review-section-title">
-          Обработка
-        </h2>
-        <p className="review-dropzone-hint">
-          После подтверждения в модальном окне здесь отображается прогресс OCR и перевода. Глава появится во
-          вкладке «Главы», когда обработка завершится.
-        </p>
-      </section>
-    )
-  }
-
   return (
     <section className="review-section review-processing-section" aria-labelledby="review-processing-heading">
-      <div className="review-queue-head">
-        <h2 id="review-processing-heading" className="review-section-title review-queue-section-title">
+      <div className="review-assignments-head">
+        <h2 id="review-processing-heading" className="review-assignments-title">
           Обработка ({overviewJobs.length})
         </h2>
-        <div className="review-queue-head-actions">
-          {totalPages > 1 ? (
-            <div className="review-assignments-pagination review-assignments-pagination--head">
-              <button
-                type="button"
-                className="review-queue-clear chapters-page-pagination-btn"
-                onClick={() => setPageIndex((page) => Math.max(0, page - 1))}
-                disabled={safePageIndex <= 0}
-                aria-label="Предыдущая страница обработки"
-              >
-                <ChevronLeft size={16} strokeWidth={1.8} aria-hidden />
-              </button>
-              <span className="review-assignments-page-indicator">
-                {safePageIndex + 1} / {totalPages}
-              </span>
-              <button
-                type="button"
-                className="review-queue-clear chapters-page-pagination-btn"
-                onClick={() => setPageIndex((page) => Math.min(totalPages - 1, page + 1))}
-                disabled={safePageIndex >= totalPages - 1}
-                aria-label="Следующая страница обработки"
-              >
-                <ChevronRight size={16} strokeWidth={1.8} aria-hidden />
-              </button>
-            </div>
-          ) : null}
-        </div>
+        {totalPages > 1 ? (
+          <div className="review-assignments-pagination review-assignments-pagination--head">
+            <button
+              type="button"
+              className="review-queue-clear chapters-page-pagination-btn"
+              onClick={() => setPageIndex((page) => Math.max(0, page - 1))}
+              disabled={safePageIndex <= 0}
+              aria-label="Предыдущая страница обработки"
+            >
+              <ChevronLeft size={16} strokeWidth={1.8} aria-hidden />
+            </button>
+            <span className="review-assignments-page-indicator">
+              {safePageIndex + 1} / {totalPages}
+            </span>
+            <button
+              type="button"
+              className="review-queue-clear chapters-page-pagination-btn"
+              onClick={() => setPageIndex((page) => Math.min(totalPages - 1, page + 1))}
+              disabled={safePageIndex >= totalPages - 1}
+              aria-label="Следующая страница обработки"
+            >
+              <ChevronRight size={16} strokeWidth={1.8} aria-hidden />
+            </button>
+          </div>
+        ) : null}
       </div>
-      <div className="article-mini-card review-processing-group">
-        <ul className="review-processing-group-list">
-          {visibleJobs.map((job) => (
-            <ProcessingJobRow key={job.chapterId} job={job} onDismiss={dismissOverviewJob} />
-          ))}
-        </ul>
+      <div className="review-assignments-card article-mini-card">
+        {overviewJobs.length === 0 ? (
+          <p className="review-assignments-empty">
+            После подтверждения в модальном окне здесь отображается прогресс OCR и перевода. Глава появится во
+            вкладке «Главы», когда обработка завершится.
+          </p>
+        ) : (
+          <ul className="review-processing-group-list">
+            {visibleJobs.map((job) => (
+              <ProcessingJobRow key={job.chapterId} job={job} onDismiss={dismissOverviewJob} />
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   )
