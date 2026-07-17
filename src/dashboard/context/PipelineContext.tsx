@@ -15,6 +15,7 @@ import { pruneProjectLinksStorage } from '../projectLinks'
 import { CURRENT_USER, getNextFreeChapterNumberForProject, isDuplicateChapterNumber, SOLO_KEY } from './pipelineConstants'
 import { useAuth } from '../../context/AuthContext'
 import { PipelineReactContext } from './pipelineReactContext'
+import { normalizeProjectFontSettings, type ProjectFontSettings } from '../projectFonts'
 import {
   apiDelete,
   apiDownloadChapterArchive,
@@ -48,6 +49,7 @@ type ProjectApi = {
   source_language: string | null
   target_language: string | null
   cover_storage_key: string | null
+  font_settings?: ProjectFontSettings | Record<string, string> | null
   created_at: string
   updated_at: string
 }
@@ -151,6 +153,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
             slug: p.slug,
             createdAt: dates.createdAt,
             updatedAt: dates.updatedAt,
+            fontSettings: normalizeProjectFontSettings(p.font_settings),
           }
         }),
       )
@@ -278,12 +281,14 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
       description?: string | null
       source_language?: string | null
       target_language?: string | null
+      font_settings?: ProjectFontSettings
     }) => {
       const created = await apiPostJson<ProjectApi>('/projects', {
         title: payload.title,
         description: payload.description ?? null,
         source_language: payload.source_language ?? null,
         target_language: payload.target_language ?? null,
+        font_settings: normalizeProjectFontSettings(payload.font_settings),
       })
       await refreshDashboard()
       const dates = resolveProjectDates(created.id, created.created_at, created.updated_at)
@@ -293,6 +298,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
         slug: created.slug,
         createdAt: dates.createdAt,
         updatedAt: dates.updatedAt,
+        fontSettings: normalizeProjectFontSettings(created.font_settings),
       }
     },
     [refreshDashboard],
@@ -306,6 +312,7 @@ export function PipelineProvider({ children }: PipelineProviderProps) {
         description?: string | null
         source_language?: string | null
         target_language?: string | null
+        font_settings?: ProjectFontSettings
       },
     ) => {
       await apiPatchJson<ProjectApi>(`/projects/${projectId}`, payload)

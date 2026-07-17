@@ -21,6 +21,11 @@ import {
 } from '../../chapterEditorModel'
 import { apiDownloadFile, apiFileUrl, apiGet, apiPostJson, apiPutJson } from '../../../lib/api'
 import scanPlaceholder from '../../../assets/projects - titles/title.png'
+import {
+  DEFAULT_PROJECT_FONT_SETTINGS,
+  fontFamilyForSetting,
+  sliceTypeToFontSettingKey,
+} from '../../projectFonts'
 
 type ChapterEditorNavState = {
   fromTrash?: boolean
@@ -305,7 +310,7 @@ export default function ChapterEditorPage() {
   const chapterId = chapterIdParam?.trim() ?? ''
   const location = useLocation()
   const navState = (location.state ?? null) as ChapterEditorNavState | null
-  const { chapters, addGlossaryEntry } = usePipeline()
+  const { chapters, addGlossaryEntry, projects } = usePipeline()
 
   const chapter = useMemo(() => {
     if (!chapterId) return undefined
@@ -439,6 +444,18 @@ export default function ChapterEditorPage() {
   const glossaryProjectId = useMemo(
     () => chapter?.projectId ?? editorHead?.project_id ?? navState?.projectId ?? null,
     [chapter?.projectId, editorHead?.project_id, navState?.projectId],
+  )
+
+  const projectFontSettings = useMemo(() => {
+    const pid = glossaryProjectId
+    if (!pid) return DEFAULT_PROJECT_FONT_SETTINGS
+    return projects.find((p) => p.id === pid)?.fontSettings ?? DEFAULT_PROJECT_FONT_SETTINGS
+  }, [glossaryProjectId, projects])
+
+  const glassFontFamily = useCallback(
+    (sliceType: string | null | undefined) =>
+      fontFamilyForSetting(projectFontSettings, sliceTypeToFontSettingKey(sliceType)),
+    [projectFontSettings],
   )
 
   const onGlossaryPaneContextMenu = useCallback(
@@ -778,6 +795,7 @@ export default function ChapterEditorPage() {
                               top: pos.top,
                               width: pos.width,
                               height: pos.height,
+                              fontFamily: glassFontFamily(row.type),
                             }}
                             role="group"
                             aria-label={`Фрагмент ${row.slice_id}, стр. ${page.order_index + 1}`}
@@ -832,6 +850,7 @@ export default function ChapterEditorPage() {
                           top: pos.top,
                           width: pos.width,
                           height: pos.height,
+                          fontFamily: glassFontFamily(row.type),
                         }}
                         role="group"
                         aria-label={`Фрагмент ${row.slice_id} на скане`}

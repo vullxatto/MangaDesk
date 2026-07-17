@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { ChevronDown, X } from 'lucide-react'
 import { PressActionButton } from '../../components/PressActionButton'
 import DashboardDropdown, { type DashboardDropdownOption } from './DashboardDropdown'
+import ProjectFontTypeCarousel from './ProjectFontTypeCarousel'
 import { usePipeline } from '../context/usePipeline'
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock'
 import {
@@ -11,6 +12,17 @@ import {
   setProjectLinks,
   type ProjectLink,
 } from '../projectLinks'
+import {
+  DEFAULT_PROJECT_FONT_SETTINGS,
+  PROJECT_FONT_OPTIONS,
+  PROJECT_FONT_PANGRAM,
+  PROJECT_FONT_TYPE_SLIDES,
+  downloadProjectFont,
+  getProjectFontOption,
+  normalizeProjectFontSettings,
+  type ProjectFontId,
+  type ProjectFontSettings,
+} from '../projectFonts'
 
 const sourceLangOptions: DashboardDropdownOption[] = [
   { value: 'jp', label: 'Японский' },
@@ -24,12 +36,18 @@ const targetLangOptions: DashboardDropdownOption[] = [
   { value: 'en', label: 'Английский' },
 ]
 
+const fontDropdownOptions: DashboardDropdownOption[] = PROJECT_FONT_OPTIONS.map((f) => ({
+  value: f.id,
+  label: f.label,
+}))
+
 type ProjectFormModalProps = {
   open: boolean
   mode: 'add' | 'edit'
   projectId?: string
   initialName?: string
   initialLinks?: ProjectLink[]
+  initialFontSettings?: ProjectFontSettings
   onDelete?: () => void
   onClose: () => void
   onCreated?: (projectId: string) => void
@@ -42,17 +60,22 @@ export default function ProjectFormModal({
   projectId,
   initialName = '',
   initialLinks = EMPTY_PROJECT_LINKS,
+  initialFontSettings,
   onDelete,
   onClose,
   onCreated,
   onSaved,
 }: ProjectFormModalProps) {
-  const { createProject, updateProject } = usePipeline()
+  const { createProject, updateProject, projects } = usePipeline()
   const titleId = useId()
   const [name, setName] = useState(initialName)
   const [sourceLang, setSourceLang] = useState('jp')
   const [targetLang, setTargetLang] = useState('ru')
   const [links, setLinks] = useState<ProjectLink[]>(initialLinks)
+  const [fontSettings, setFontSettings] = useState<ProjectFontSettings>(
+    () => initialFontSettings ?? DEFAULT_PROJECT_FONT_SETTINGS,
+  )
+  const [fontTypeIndex, setFontTypeIndex] = useState(0)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [openDropdownKey, setOpenDropdownKey] = useState<string | null>(null)
@@ -76,9 +99,14 @@ export default function ProjectFormModal({
     if (!open) return
     setName(initialName)
     setLinks(initialLinks.length > 0 ? initialLinks.map((link) => ({ ...link })) : [{ label: '', href: '' }])
+    const fromProp = initialFontSettings
+    const fromStore =
+      projectId != null ? projects.find((p) => p.id === projectId)?.fontSettings : undefined
+    setFontSettings(normalizeProjectFontSettings(fromProp ?? fromStore ?? DEFAULT_PROJECT_FONT_SETTINGS))
+    setFontTypeIndex(0)
     setError(null)
     setOpenDropdownKey(null)
-  }, [open, initialName, initialLinks])
+  }, [open, initialName, initialLinks, initialFontSettings, projectId, projects])
 
   useEffect(() => {
     if (!open) return undefined
@@ -121,7 +149,7 @@ export default function ProjectFormModal({
       ro?.disconnect()
       window.removeEventListener('resize', updateScrollHint)
     }
-  }, [open, links, updateScrollHint])
+  }, [open, links, fontSettings, fontTypeIndex, updateScrollHint])
 
   if (!open) return null
 
@@ -137,6 +165,10 @@ export default function ProjectFormModal({
     setLinks((prev) => (prev.length <= 1 ? [{ label: '', href: '' }] : prev.filter((_, i) => i !== index)))
   }
 
+  const activeType = PROJECT_FONT_TYPE_SLIDES[fontTypeIndex] ?? PROJECT_FONT_TYPE_SLIDES[0]!
+  const activeFontId = fontSettings[activeType.settingKey]
+  const activeFont = getProjectFontOption(activeFontId)
+
   async function handleSave() {
     const trimmed = name.trim()
     if (!trimmed) {
@@ -144,6 +176,7 @@ export default function ProjectFormModal({
       return
     }
     const cleanedLinks = normalizeProjectLinks(links)
+    const fontsPayload = normalizeProjectFontSettings(fontSettings)
     setSaving(true)
     setError(null)
     try {
@@ -153,6 +186,7 @@ export default function ProjectFormModal({
           description: null,
           source_language: sourceLang,
           target_language: targetLang,
+          font_settings: fontsPayload,
         })
         setProjectLinks(created.id, cleanedLinks)
         onCreated?.(created.id)
@@ -161,6 +195,7 @@ export default function ProjectFormModal({
           title: trimmed,
           source_language: sourceLang,
           target_language: targetLang,
+          font_settings: fontsPayload,
         })
         setProjectLinks(projectId, cleanedLinks)
       }
@@ -235,6 +270,51 @@ export default function ProjectFormModal({
               onOpenChange={setOpenDropdownKey}
             />
           </div>
+
+          <div className="project-form-fonts">
+            <div className="project-form-links-head">
+              <span>Шрифты</span>
+            </div>
+            <ProjectFontTypeCarousel
+              slides={PROJECT_FONT_TYPE_SLIDES}
+              index={fontTypeIndex}
+              onIndexChange={setFontTypeIndex}
+            >
+              <div className="project-form-font-panel">
+                <div className="project-form-field review-queue-field">
+                  <DashboardDropdown
+                    label="Шрифт"
+                    options={fontDropdownOptions}
+                    value={activeFontId}
+                    onChange={(value) => {
+                      setFontSettings((prev) => ({
+                        ...prev,
+                        [activeType.settingKey]: value as ProjectFontId,
+                      }))
+                    }}
+                    ddKey={`project-form|font|${activeType.settingKey}`}
+                    openKey={openDropdownKey}
+                    onOpenChange={setOpenDropdownKey}
+                  />
+                </div>
+                <div
+                  className="project-form-font-preview"
+                  style={{ fontFamily: activeFont.cssFamily }}
+                  aria-label={`Пример шрифта ${activeFont.label}`}
+                >
+                  {PROJECT_FONT_PANGRAM}
+                </div>
+                <button
+                  type="button"
+                  className="review-queue-clear project-form-font-download"
+                  onClick={() => downloadProjectFont(activeFont)}
+                >
+                  Скачать шрифт
+                </button>
+              </div>
+            </ProjectFontTypeCarousel>
+          </div>
+
           <div className="project-form-links">
             <div className="project-form-links-head">
               <span>Ссылки</span>

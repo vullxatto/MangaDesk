@@ -5034,7 +5034,7 @@ button.review-feed-scroll-top.review-queue-clear svg {
 .project-form-modal,
 .project-jump-modal,
 .team-invite-modal {
-  width: min(100%, 500px);
+  width: min(100%, 560px);
 }
 
 .project-form-modal.team-modal {
@@ -5225,6 +5225,79 @@ button.review-feed-scroll-top.review-queue-clear svg {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+.project-form-fonts {
+  display: grid;
+  gap: 10px;
+}
+
+.project-font-carousel {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.project-font-carousel__nav-wrap {
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.project-font-carousel__slide {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(var(--fg-rgb), 0.14);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+}
+
+.project-font-carousel__type-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.project-font-carousel__type-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fg) 72%, transparent);
+}
+
+.project-font-carousel__counter {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--fg) 42%, transparent);
+}
+
+.project-form-font-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.project-form-font-preview {
+  min-height: 64px;
+  padding: 10px 12px;
+  border: 1px solid rgba(var(--fg-rgb), 0.14);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--fg);
+  font-size: 15px;
+  line-height: 1.35;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.project-form-font-download {
+  justify-self: start;
 }
 
 .project-form-link-row {

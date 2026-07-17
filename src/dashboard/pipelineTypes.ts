@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { GlossaryEntry } from './glossary/glossaryTypes'
+import type { ProjectFontSettings } from './projectFonts'
 
 export type ChapterStatusCode =
   | 'ready'
@@ -15,6 +16,7 @@ export interface DashboardProject {
   slug: string
   createdAt: string
   updatedAt: string
+  fontSettings: ProjectFontSettings
 }
 
 export interface TeamMember {
@@ -72,6 +74,7 @@ export interface PipelineContextValue {
     description?: string | null
     source_language?: string | null
     target_language?: string | null
+    font_settings?: ProjectFontSettings
   }) => Promise<DashboardProject>
   updateProject: (
     projectId: string,
@@ -80,6 +83,7 @@ export interface PipelineContextValue {
       description?: string | null
       source_language?: string | null
       target_language?: string | null
+      font_settings?: ProjectFontSettings
     },
   ) => Promise<void>
   removeProject: (projectId: string) => Promise<void>
